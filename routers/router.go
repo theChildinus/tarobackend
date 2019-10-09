@@ -16,6 +16,6 @@ func init() {
 	}))
 
 	beego.Router("/", &controllers.MainController{}, "*:Index")
-	beego.Router("resource/Create", &controllers.ResourceController{}, "post:Create")
-	beego.Router("resource/List", &controllers.ResourceController{}, "*:List")
+	beego.Router("resource/create", &controllers.ResourceController{}, "post:Create")
+	beego.Router("resource/list", &controllers.ResourceController{}, "*:List")
 }

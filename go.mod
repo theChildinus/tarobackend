@@ -11,7 +11,8 @@ require (
 	github.com/couchbase/goutils v0.0.0-20190315194238-f9d42b11473b // indirect
 	github.com/edsrzf/mmap-go v1.0.0 // indirect
 	github.com/go-redis/redis v6.15.5+incompatible // indirect
-	github.com/go-xorm/xorm v0.7.9 // indirect
+	github.com/go-sql-driver/mysql v1.4.1
+	github.com/go-xorm/xorm v0.7.9
 	github.com/gogo/protobuf v1.3.0 // indirect
 	github.com/golang/protobuf v1.3.2 // indirect
 	github.com/golang/snappy v0.0.1 // indirect

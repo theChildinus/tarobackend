@@ -1,8 +1,12 @@
 package controllers
 
 import (
+	"encoding/json"
 	"github.com/astaxie/beego"
 	"github.com/astaxie/beego/logs"
+	"tarobackend/models"
+	"tarobackend/services"
+	"time"
 )
 
 type ResourceController struct {
@@ -20,6 +24,18 @@ func (c *ResourceController) List() {
 
 func (c *ResourceController) Create() {
 	logs.Debug("enter ResourceController")
-	c.Data["json"] = 1
+	var m models.TaroResource
+	var err error
+	err = json.Unmarshal(c.Ctx.Input.RequestBody, &m)
+	m.ResourceCtime = time.Now()
+	if err == nil {
+		i, err := services.CreateResource(&m)
+		if err != nil {
+			logs.Debug("CreateResource error", err.Error())
+		}
+		c.Data["json"] = i
+	} else {
+		c.Data["json"] = err.Error()
+	}
 	c.ServeJSON()
 }
