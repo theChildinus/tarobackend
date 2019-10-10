@@ -1,7 +1,7 @@
 package models
 
 type TaroUser struct {
-	UserId         int    `json:"user_id" xorm:"not null pk comment('用户id') INT(11)"`
+	UserId         int    `json:"user_id" xorm:"not null pk comment('用户id') INT(1)"`
 	UserName       string `json:"user_name" xorm:"comment('用户名') VARCHAR(255)"`
 	UserRole       string `json:"user_role" xorm:"comment('用户角色') VARCHAR(255)"`
 	UserDepartment string `json:"user_department" xorm:"comment('用户部门') VARCHAR(255)"`
