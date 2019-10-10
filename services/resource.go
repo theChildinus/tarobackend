@@ -16,7 +16,13 @@ func ListResource(index, offset int64) ([]models.TaroResource, int64, error) {
 		logs.Debug("Resource Find failed")
 		return nil, 0, err
 	}
-	return resources, int64(len(resources)), nil
+	r := new(models.TaroResource)
+	count, err := engine.Count(r)
+	if err != nil {
+		logs.Debug("Resource Count failed")
+		return nil, 0, err
+	}
+	return resources, count, nil
 }
 
 func CreateResource(r *models.TaroResource) (int64, error) {
@@ -29,4 +35,14 @@ func CreateResource(r *models.TaroResource) (int64, error) {
 		logs.Debug("Resource InsertOne failed")
 	}
 	return res, nil
+}
+
+func DeleteResourceById(id int) error {
+	engine := utils.Engine_mysql
+	r := new(models.TaroResource)
+	_, err := engine.ID(id).Delete(r)
+	if err != nil {
+		return err
+	}
+	return nil
 }

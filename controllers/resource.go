@@ -15,6 +15,7 @@ type ResourceController struct {
 }
 
 type ResourceReq struct {
+	Id int `json:"resource_id"`
 }
 
 type ResourceResp struct {
@@ -27,7 +28,6 @@ func (c ResourceController) URLMapping() {
 }
 
 func (c *ResourceController) List() {
-	logs.Debug("enter ListResource")
 	var page utils.Page
 	var err error
 	err = json.Unmarshal(c.Ctx.Input.RequestBody, &page)
@@ -41,7 +41,7 @@ func (c *ResourceController) List() {
 			Count: count,
 		}
 	} else {
-		c.Data["json"] = &utils.Error{
+		c.Data["json"] = &utils.ErrorResp{
 			ErrMsg: err.Error(),
 		}
 	}
@@ -49,21 +49,50 @@ func (c *ResourceController) List() {
 }
 
 func (c *ResourceController) Create() {
-	logs.Debug("enter ResourceController")
 	var m models.TaroResource
 	var err error
 	err = json.Unmarshal(c.Ctx.Input.RequestBody, &m)
 	m.ResourceCtime = time.Now()
 	if err == nil {
-		i, err := services.CreateResource(&m)
+		_, err := services.CreateResource(&m)
 		if err != nil {
 			logs.Error("CreateResource error", err.Error())
 		}
-		c.Data["json"] = i
+		c.Data["json"] = &utils.NormalResp{
+			NorMsg: "Crete Resource Success",
+		}
 	} else {
-		c.Data["json"] = &utils.Error{
+		c.Data["json"] = &utils.ErrorResp{
 			ErrMsg: err.Error(),
 		}
 	}
 	c.ServeJSON()
+}
+
+func (c *ResourceController) DeleteOne() {
+	var req ResourceReq
+	var err error
+	err = json.Unmarshal(c.Ctx.Input.RequestBody, &req)
+	if err != nil {
+		c.Data["json"] = &utils.ErrorResp{
+			ErrMsg: "Json Parse Error",
+		}
+		c.ServeJSON()
+		return
+	}
+
+	err = services.DeleteResourceById(req.Id)
+	if err != nil {
+		logs.Error("DeleteResourceById error", err.Error())
+		c.Data["json"] = &utils.ErrorResp{
+			ErrMsg: "DeleteResourceById error",
+		}
+		c.ServeJSON()
+		return
+	}
+	c.Data["json"] = &utils.NormalResp{
+		NorMsg: "DeleteResourceById success",
+	}
+	c.ServeJSON()
+	return
 }
