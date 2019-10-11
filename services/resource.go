@@ -6,20 +6,43 @@ import (
 	"tarobackend/utils"
 )
 
-func ListResource(index, offset int64) ([]models.TaroResource, int64, error) {
+type ResourceReq struct {
+	PageIndex  int64  `json:"page_index"`
+	PageSize   int64  `json:"page_size"`
+	SearchType int64  `json:"search_type"`
+	SearchName string `json:"search_name"`
+}
+
+type ResourceResp struct {
+	List  []models.TaroResource `json:"list"`
+	Count int64                 `json:"count"`
+}
+
+func ListResource(req *ResourceReq) ([]models.TaroResource, int64, error) {
 	engine := utils.Engine_mysql
-	var resources []models.TaroResource
-	err := engine.Table("taro_resource").
-		Limit(int(offset), int((index-1)*offset)).
-		Find(&resources)
+	var (
+		resources []models.TaroResource
+		err       error
+		count     int64
+	)
+	m := new(models.TaroResource)
+	if req.SearchType != -1 {
+		err = engine.Table("taro_resource").
+			Where("resource_name like ? ", "%"+req.SearchName+"%").
+			And("resource_type = ?", req.SearchType).
+			Limit(int(req.PageSize), int((req.PageIndex-1)*req.PageSize)).
+			Find(&resources)
+		count, _ = engine.Where("resource_name like ? ", "%"+req.SearchName+"%").
+			And("resource_type = ?", req.SearchType).Count(m)
+	} else {
+		err = engine.Table("taro_resource").
+			Limit(int(req.PageSize), int((req.PageIndex-1)*req.PageSize)).
+			Find(&resources)
+		count, _ = engine.Count(m)
+	}
+
 	if err != nil {
 		logs.Debug("Resource Find failed")
-		return nil, 0, err
-	}
-	r := new(models.TaroResource)
-	count, err := engine.Count(r)
-	if err != nil {
-		logs.Debug("Resource Count failed")
 		return nil, 0, err
 	}
 	return resources, count, nil

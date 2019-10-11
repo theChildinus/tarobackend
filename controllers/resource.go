@@ -14,26 +14,21 @@ type ResourceController struct {
 	beego.Controller
 }
 
-type ResourceResp struct {
-	List  []models.TaroResource `json:"list"`
-	Count int64                 `json:"count"`
-}
-
 func (c *ResourceController) List() {
-	var page utils.Page
+	var req services.ResourceReq
 	var err error
-	err = json.Unmarshal(c.Ctx.Input.RequestBody, &page)
+	err = json.Unmarshal(c.Ctx.Input.RequestBody, &req)
 	if err != nil {
 		utils.BuildJsonResp(c, "Error", "Json Parse Error")
 		return
 	}
-	list, count, err := services.ListResource(page.PageIndex, page.PageSize)
+	list, count, err := services.ListResource(&req)
 	if err != nil {
 		logs.Error("List Resource Error", err.Error())
 		utils.BuildJsonResp(c, "Error", "List Resource Error")
 		return
 	}
-	c.Data["json"] = &ResourceResp{
+	c.Data["json"] = &services.ResourceResp{
 		List:  list,
 		Count: count,
 	}
