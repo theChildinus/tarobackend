@@ -46,3 +46,12 @@ func DeleteResourceById(id int) error {
 	}
 	return nil
 }
+
+func UpdateResource(r *models.TaroResource) error {
+	engine := utils.Engine_mysql
+	_, err := engine.ID(r.ResourceId).Update(r)
+	if err != nil {
+		return err
+	}
+	return nil
+}

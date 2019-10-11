@@ -14,10 +14,6 @@ type ResourceController struct {
 	beego.Controller
 }
 
-type ResourceReq struct {
-	Id int `json:"resource_id"`
-}
-
 type ResourceResp struct {
 	List  []models.TaroResource `json:"list"`
 	Count int64                 `json:"count"`
@@ -65,21 +61,39 @@ func (c *ResourceController) Create() {
 }
 
 func (c *ResourceController) DeleteOne() {
-	var req ResourceReq
+	var m models.TaroResource
 	var err error
-	err = json.Unmarshal(c.Ctx.Input.RequestBody, &req)
+	err = json.Unmarshal(c.Ctx.Input.RequestBody, &m)
 	if err != nil {
 		logs.Error("Json Parse error", err.Error())
 		utils.BuildJsonResp(c, "Error", "Json Parse Error")
 		return
 	}
 
-	err = services.DeleteResourceById(req.Id)
+	err = services.DeleteResourceById(m.ResourceId)
 	if err != nil {
 		logs.Error("DeleteResourceById error", err.Error())
 		utils.BuildJsonResp(c, "Error", "DeleteResourceById Error")
 		return
 	}
 	utils.BuildJsonResp(c, "Normal", "DeleteResourceById Success")
+	return
+}
+
+func (c *ResourceController) Update() {
+	var m models.TaroResource
+	var err error
+	err = json.Unmarshal(c.Ctx.Input.RequestBody, &m)
+	if err != nil {
+		utils.BuildJsonResp(c, "Error", "Json Parse Error")
+		return
+	}
+	err = services.UpdateResource(&m)
+	if err != nil {
+		logs.Error("Update Resource error", err.Error())
+		utils.BuildJsonResp(c, "Error", "Update Resource error")
+		return
+	}
+	utils.BuildJsonResp(c, "Normal", "Update Resource Success")
 	return
 }

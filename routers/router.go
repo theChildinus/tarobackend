@@ -19,4 +19,5 @@ func init() {
 	beego.Router("resource/create", &controllers.ResourceController{}, "post:Create")
 	beego.Router("resource/list", &controllers.ResourceController{}, "*:List")
 	beego.Router("resource/deleteOne", &controllers.ResourceController{}, "post:DeleteOne")
+	beego.Router("resource/update", &controllers.ResourceController{}, "post:Update")
 }
