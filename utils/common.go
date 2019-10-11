@@ -25,7 +25,7 @@ func BuildJsonResp(c interface{}, msgType, msg string) {
 		nr := &NormalResp{Code: 0, NorMsg: msg}
 		e.Elem().FieldByName("Data").SetMapIndex(reflect.ValueOf("json"), reflect.ValueOf(nr))
 	} else if msgType == "Error" {
-		er := &ErrorResp{Code: 0, ErrMsg: msg}
+		er := &ErrorResp{Code: -1, ErrMsg: msg}
 		e.Elem().FieldByName("Data").SetMapIndex(reflect.ValueOf("json"), reflect.ValueOf(er))
 	}
 	e.MethodByName("ServeJSON").CallSlice([]reflect.Value{reflect.ValueOf([]bool{})})

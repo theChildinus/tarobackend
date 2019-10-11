@@ -20,4 +20,10 @@ func init() {
 	beego.Router("resource/list", &controllers.ResourceController{}, "*:List")
 	beego.Router("resource/deleteOne", &controllers.ResourceController{}, "post:DeleteOne")
 	beego.Router("resource/update", &controllers.ResourceController{}, "post:Update")
+
+	beego.Router("policy/create", &controllers.PolicyController{}, "post:Create")
+	beego.Router("policy/list", &controllers.PolicyController{}, "*:List")
+	beego.Router("policy/deleteOne", &controllers.PolicyController{}, "post:DeleteOne")
+	beego.Router("policy/update", &controllers.PolicyController{}, "post:Update")
+
 }
