@@ -42,7 +42,7 @@ func ListResource(req *ResourceReq) ([]models.TaroResource, int64, error) {
 	}
 
 	if err != nil {
-		logs.Debug("Resource Find failed")
+		logs.Error("ListResource: Table Resource Find Error")
 		return nil, 0, err
 	}
 	return resources, count, nil
@@ -52,6 +52,7 @@ func CreateResource(r *models.TaroResource) (int64, error) {
 	engine := utils.Engine_mysql
 	res, err := engine.InsertOne(r)
 	if err != nil {
+		logs.Error("CreateResource: Table Resource InsertOne Error")
 		return 0, err
 	}
 	if res == 0 {
@@ -65,6 +66,7 @@ func DeleteResourceById(id int) error {
 	r := new(models.TaroResource)
 	_, err := engine.ID(id).Delete(r)
 	if err != nil {
+		logs.Error("DeleteResourceById: Table Resource Delete Error")
 		return err
 	}
 	return nil
@@ -74,6 +76,7 @@ func UpdateResource(r *models.TaroResource) error {
 	engine := utils.Engine_mysql
 	_, err := engine.ID(r.ResourceId).Update(r)
 	if err != nil {
+		logs.Error("UpdateResource: Table Resource Update Error")
 		return err
 	}
 	return nil

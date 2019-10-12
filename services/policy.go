@@ -39,7 +39,7 @@ func ListPolicy(req *PolicyReq) ([]models.TaroPolicy, int64, error) {
 	}
 
 	if err != nil {
-		logs.Debug("Policy Find failed")
+		logs.Error("Table Policy Find Failed")
 		return nil, 0, err
 	}
 	return policies, count, nil
@@ -49,7 +49,7 @@ func CreatePolicy(r *models.TaroPolicy) (bool, error) {
 	engine := utils.Engine_mysql
 	_, err := engine.InsertOne(r)
 	if err != nil {
-		logs.Error("Policy InsertOne Failed")
+		logs.Error("Table Policy InsertOne Error")
 		return false, err
 	}
 
@@ -67,6 +67,7 @@ func DeletePolicyById(id int) (bool, error) {
 	has, err := engine.Table("taro_policy").
 		Where("policy_id = ?", id).Get(r)
 	if err != nil {
+		logs.Error("DeletePolicyById: Table Policy Get Error")
 		return false, err
 	}
 	if has {
@@ -77,6 +78,7 @@ func DeletePolicyById(id int) (bool, error) {
 
 	_, err = engine.ID(id).Delete(r)
 	if err != nil {
+		logs.Error("DeletePolicyById: Table Policy Delete Error")
 		return false, err
 	}
 	return ret, nil
@@ -87,8 +89,9 @@ func UpdatePolicy(r *models.TaroPolicy) (bool, error) {
 	old := new(models.TaroPolicy)
 	var ret bool
 	has, err := engine.Table("taro_policy").
-		Where("policy_id = ?", r.PolicyId).Get(&old)
+		Where("policy_id = ?", r.PolicyId).Get(old)
 	if err != nil {
+		logs.Error("UpdatePolicy: Table Policy Get Error")
 		return false, err
 	}
 	if has {
@@ -100,6 +103,7 @@ func UpdatePolicy(r *models.TaroPolicy) (bool, error) {
 	}
 	_, err = engine.ID(r.PolicyId).Update(r)
 	if err != nil {
+		logs.Error("UpdatePolicy: Table Policy Update Error")
 		return false, err
 	}
 	return ret, nil

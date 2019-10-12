@@ -2,6 +2,5 @@ p, alice, data1, read
 p, bob, data2, write
 p, data2_admin, data2, read
 p, data2_admin, data2, write
-p, cora, data2, read
-p, cora, data3, exec
+p, cora, data2, exec
 g, alice, data2_admin
