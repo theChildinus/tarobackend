@@ -26,4 +26,9 @@ func init() {
 	beego.Router("policy/deleteOne", &controllers.PolicyController{}, "post:DeleteOne")
 	beego.Router("policy/update", &controllers.PolicyController{}, "post:Update")
 
+	beego.Router("user/create", &controllers.UserController{}, "post:Create")
+	beego.Router("user/list", &controllers.UserController{}, "*:List")
+	beego.Router("user/deleteOne", &controllers.UserController{}, "post:DeleteOne")
+	beego.Router("user/update", &controllers.UserController{}, "post:Update")
+
 }
