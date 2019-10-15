@@ -3,4 +3,5 @@ p, bob, data2, write
 p, data2_admin, data2, read
 p, data2_admin, data2, write
 p, cora, data2, exec
+p, aaaaaaa, data6, read
 g, alice, data2_admin

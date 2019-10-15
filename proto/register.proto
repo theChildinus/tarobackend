@@ -1,0 +1,19 @@
+syntax = "proto3";
+
+option java_multiple_files = true;
+option java_package = "org.kong.proto";
+option java_outer_classname = "RegisterProto";
+
+package proto;
+
+message RegisterReq {
+    string username = 1;
+}
+
+message RegisterResp {
+    int64 code = 1;
+}
+
+service Register {
+    rpc Register(RegisterReq) returns (RegisterResp) {}
+}

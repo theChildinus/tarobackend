@@ -90,3 +90,22 @@ func (c *UserController) Update() {
 	utils.BuildJsonResp(c, "Normal", "Update User Success")
 	return
 }
+
+func (c *UserController) Register() {
+	var req services.UserReq
+	var err error
+	err = json.Unmarshal(c.Ctx.Input.RequestBody, &req)
+	if err != nil {
+		utils.BuildJsonResp(c, "Error", "Json Parse Error")
+		return
+	}
+	_, err = services.RegisterUser(&req)
+	if err != nil {
+		logs.Error("List User Error", err.Error())
+		utils.BuildJsonResp(c, "Error", "List User Error")
+		return
+	}
+	logs.Info("Regist" + req.RegisterName + "Success")
+	utils.BuildJsonResp(c, "Normal", "Regist" + req.RegisterName + "Success")
+	return
+}

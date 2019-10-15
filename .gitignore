@@ -4,5 +4,6 @@
 *.swp
 *.swo
 beego.iml
-rbac_policy.csv
+./rbac_model.conf
+./rbac_policy.csv
 /dbdata

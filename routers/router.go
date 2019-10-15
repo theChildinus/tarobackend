@@ -30,5 +30,6 @@ func init() {
 	beego.Router("user/list", &controllers.UserController{}, "*:List")
 	beego.Router("user/deleteOne", &controllers.UserController{}, "post:DeleteOne")
 	beego.Router("user/update", &controllers.UserController{}, "post:Update")
+	beego.Router("user/register", &controllers.UserController{}, "post:Register")
 
 }
