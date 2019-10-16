@@ -87,6 +87,8 @@ func UpdateUser(r *models.TaroUser) error {
 
 func RegisterUser(req *UserReq) (int64, error) {
 	// Set up a connection to the server.
+	// TODO User in DB ?
+	// TODO USer registed ?
 	conn, err := grpc.Dial(beego.AppConfig.String("register_server"), grpc.WithInsecure())
 	if err != nil {
 		logs.Error("did not connect: %v", err)
@@ -102,5 +104,7 @@ func RegisterUser(req *UserReq) (int64, error) {
 		logs.Error("could not Register: %v", err)
 		return -1, err
 	}
+
+	// TODO: update user status in db
 	return r.GetCode(), nil
 }

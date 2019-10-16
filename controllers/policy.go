@@ -109,3 +109,27 @@ func (c *PolicyController) Update() {
 
 	return
 }
+
+func (c *PolicyController) Check() {
+	var m models.TaroPolicy
+	var ret bool
+	var err error
+	err = json.Unmarshal(c.Ctx.Input.RequestBody, &m)
+	if err != nil {
+		utils.BuildJsonResp(c, "Error", "Json Parse Error")
+		return
+	}
+	ret, err = services.CheckPolicy(&m)
+	if err != nil {
+		logs.Error("Check Policy error", err.Error())
+		utils.BuildJsonResp(c, "Error", "Check Policy error")
+		return
+	}
+	if ret {
+		utils.BuildJsonResp(c, "Normal", "Policy Check Success")
+	} else {
+		utils.BuildJsonResp(c, "Error", "Policy Check Failed")
+	}
+
+	return
+}

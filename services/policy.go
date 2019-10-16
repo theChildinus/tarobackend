@@ -108,3 +108,9 @@ func UpdatePolicy(r *models.TaroPolicy) (bool, error) {
 	}
 	return ret, nil
 }
+
+func CheckPolicy(r *models.TaroPolicy) (bool, error) {
+	enf := utils.Enforcer
+	ret := enf.Enforce(r.PolicySub, r.PolicyObj, r.PolicyAct)
+	return ret, nil
+}
