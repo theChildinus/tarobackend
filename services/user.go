@@ -12,9 +12,10 @@ import (
 )
 
 type UserReq struct {
-	PageIndex  int64  `json:"page_index"`
-	PageSize   int64  `json:"page_size"`
-	SearchName string `json:"search_name"`
+	PageIndex    int64  `json:"page_index"`
+	PageSize     int64  `json:"page_size"`
+	SearchName   string `json:"search_name"`
+	RegisterId   int64  `json:"register_id"`
 	RegisterName string `json:"register_name"`
 }
 
@@ -87,8 +88,6 @@ func UpdateUser(r *models.TaroUser) error {
 
 func RegisterUser(req *UserReq) (int64, error) {
 	// Set up a connection to the server.
-	// TODO User in DB ?
-	// TODO USer registed ?
 	conn, err := grpc.Dial(beego.AppConfig.String("register_server"), grpc.WithInsecure())
 	if err != nil {
 		logs.Error("did not connect: %v", err)
@@ -97,14 +96,21 @@ func RegisterUser(req *UserReq) (int64, error) {
 	//defer conn.Close()
 	c := pb.NewRegisterClient(conn)
 	// Contact the server and print out its response.
-	ctx, cancel := context.WithTimeout(context.Background(), time.Second * 5)
+	ctx, cancel := context.WithTimeout(context.Background(), time.Second*5)
 	defer cancel()
 	r, err := c.Register(ctx, &pb.RegisterReq{Username: req.RegisterName})
 	if err != nil {
 		logs.Error("could not Register: %v", err)
 		return -1, err
 	}
-
-	// TODO: update user status in db
+	if r.GetCode() == 0 {
+		user := models.TaroUser{UserStatus: 1}
+		engine := utils.Engine_mysql
+		_, err = engine.ID(req.RegisterId).Update(&user)
+		if err != nil {
+			logs.Error("UpdateUser: Table User Update Error")
+			return -1, err
+		}
+	}
 	return r.GetCode(), nil
 }

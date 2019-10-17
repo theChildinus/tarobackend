@@ -99,13 +99,18 @@ func (c *UserController) Register() {
 		utils.BuildJsonResp(c, "Error", "Json Parse Error")
 		return
 	}
-	_, err = services.RegisterUser(&req)
+	code, err := services.RegisterUser(&req)
 	if err != nil {
 		logs.Error("List User Error", err.Error())
 		utils.BuildJsonResp(c, "Error", "List User Error")
 		return
 	}
-	logs.Info("Regist" + req.RegisterName + "Success")
-	utils.BuildJsonResp(c, "Normal", "Regist" + req.RegisterName + "Success")
+	if code == 0 {
+		logs.Info("Regist " + req.RegisterName + " Success")
+		utils.BuildJsonResp(c, "Normal", "Regist "+req.RegisterName+" Success")
+	} else {
+		logs.Info("Regist " + req.RegisterName + " Failed")
+		utils.BuildJsonResp(c, "Error", "Regist "+req.RegisterName+" Failed")
+	}
 	return
 }
