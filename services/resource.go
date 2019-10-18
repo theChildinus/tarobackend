@@ -9,7 +9,7 @@ import (
 type ResourceReq struct {
 	PageIndex  int64  `json:"page_index"`
 	PageSize   int64  `json:"page_size"`
-	SearchType int64  `json:"search_type"`
+	SearchType string `json:"search_type"`
 	SearchName string `json:"search_name"`
 }
 
@@ -26,7 +26,7 @@ func ListResource(req *ResourceReq) ([]models.TaroResource, int64, error) {
 		count     int64
 	)
 	m := new(models.TaroResource)
-	if req.SearchType != -1 {
+	if len(req.SearchType) != 0 {
 		err = engine.Table("taro_resource").
 			Where("resource_name like ? ", "%"+req.SearchName+"%").
 			And("resource_type = ?", req.SearchType).
