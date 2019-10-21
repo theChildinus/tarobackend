@@ -7,8 +7,8 @@ import (
 )
 
 type PolicyReq struct {
-	PageIndex int64 `json:"page_index"`
-	PageSize  int64 `json:"page_size"`
+	PageIndex int64  `json:"page_index"`
+	PageSize  int64  `json:"page_size"`
 	SearchSub string `json:"search_sub"`
 }
 
