@@ -4,13 +4,13 @@ protoc -I. \
   -I$GOPATH/src \
   -I$GOPATH/pkg/mod/github.com/grpc-ecosystem/grpc-gateway@v1.11.2/third_party/googleapis \
   --go_out=plugins=grpc:. \
-  ./proto/register.proto
+  ./proto/fabric_service.proto
 
 # grpc 结合 protobuf 和 grpc-gateway 自动生成 pb.gw.go
 protoc -I. \
   -I$GOPATH/pkg/mod/github.com/grpc-ecosystem/grpc-gateway@v1.11.2/third_party/googleapis \
   --grpc-gateway_out=logtostderr=true:. \
-  ./proto/register.proto
+  ./proto/fabric_service.proto
 
 # curl 构造POST请求 请求体为 json
 curl --header "Content-Type: application/json" \

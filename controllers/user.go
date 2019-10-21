@@ -101,8 +101,8 @@ func (c *UserController) Register() {
 	}
 	code, err := services.RegisterUser(&req)
 	if err != nil {
-		logs.Error("List User Error", err.Error())
-		utils.BuildJsonResp(c, "Error", "List User Error")
+		logs.Error("Regist Error", err.Error())
+		utils.BuildJsonResp(c, "Error", "Regist Error")
 		return
 	}
 	if code == 0 {
@@ -113,4 +113,23 @@ func (c *UserController) Register() {
 		utils.BuildJsonResp(c, "Error", "Regist "+req.RegisterName+" Failed")
 	}
 	return
+}
+
+func (c *UserController) Download() {
+	var req services.UserReq
+	var err error
+	err = json.Unmarshal(c.Ctx.Input.RequestBody, &req)
+	if err != nil {
+		utils.BuildJsonResp(c, "Error", "Json Parse Error")
+		return
+	}
+
+	resp, err := services.DownloadCard(&req)
+	if err != nil {
+		logs.Error("Download Card Error", err.Error())
+		utils.BuildJsonResp(c, "Error", "Download Card Error")
+		return
+	}
+	c.Data["json"] = resp
+	c.ServeJSON()
 }

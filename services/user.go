@@ -1,6 +1,7 @@
 package services
 
 import (
+	"errors"
 	"github.com/astaxie/beego"
 	"github.com/astaxie/beego/logs"
 	"golang.org/x/net/context"
@@ -88,13 +89,13 @@ func UpdateUser(r *models.TaroUser) error {
 
 func RegisterUser(req *UserReq) (int64, error) {
 	// Set up a connection to the server.
-	conn, err := grpc.Dial(beego.AppConfig.String("register_server"), grpc.WithInsecure())
+	conn, err := grpc.Dial(beego.AppConfig.String("fabric_service"), grpc.WithInsecure())
 	if err != nil {
 		logs.Error("did not connect: %v", err)
 		return -1, err
 	}
 	//defer conn.Close()
-	c := pb.NewRegisterClient(conn)
+	c := pb.NewFabricServiceClient(conn)
 	// Contact the server and print out its response.
 	ctx, cancel := context.WithTimeout(context.Background(), time.Second*5)
 	defer cancel()
@@ -113,4 +114,28 @@ func RegisterUser(req *UserReq) (int64, error) {
 		}
 	}
 	return r.GetCode(), nil
+}
+
+func DownloadCard(req *UserReq) (*pb.DownloadResp, error) {
+	// Set up a connection to the server.
+	conn, err := grpc.Dial(beego.AppConfig.String("fabric_service"), grpc.WithInsecure())
+	if err != nil {
+		logs.Error("did not connect: %v", err)
+		return nil, err
+	}
+	//defer conn.Close()
+	c := pb.NewFabricServiceClient(conn)
+	// Contact the server and print out its response.
+	ctx, cancel := context.WithTimeout(context.Background(), time.Second*5)
+	defer cancel()
+	r, err := c.Download(ctx, &pb.DownloadReq{Username: req.RegisterName})
+	if err != nil {
+		logs.Error("could not Download: %v", err)
+		return nil, err
+	}
+	if len(r.Card) == 0 {
+		logs.Error("Card is Empty")
+		return nil, errors.New("Card is Empty")
+	}
+	return r, nil
 }
