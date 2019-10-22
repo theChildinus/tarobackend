@@ -13,10 +13,10 @@ protoc -I. \
   ./proto/fabric_service.proto
 
 # curl 构造POST请求 请求体为 json
-curl --header "Content-Type: application/json" \
+curl -k --header "Content-Type: application/json" \
   --request POST \
-  --data '{"username":"xyz","password":"xyz"}' \
-  http://localhost:3000/api/login
+  --data '{"username":"zhao","userhash":"317fd62b83164a6d0cd2b27808941da2"}' \
+  https://localhost:4433/user/login
 
 # xorm 自动生成 model代码
 xorm reverse mysql root:123456@/taro?charset=utf8 templates/goxorm

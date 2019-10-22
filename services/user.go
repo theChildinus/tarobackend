@@ -18,8 +18,6 @@ type UserReq struct {
 	PageIndex    int64  `json:"page_index"`
 	PageSize     int64  `json:"page_size"`
 	SearchName   string `json:"search_name"`
-	RegisterId   int64  `json:"register_id"`
-	RegisterName string `json:"register_name"`
 }
 
 type UserResp struct {
@@ -89,7 +87,7 @@ func UpdateUser(r *models.TaroUser) error {
 	return nil
 }
 
-func RegisterUser(req *UserReq) (int64, error) {
+func RegisterUser(req *pb.RegisterReq) (int64, error) {
 	// Set up a connection to the server.
 	conn, err := grpc.Dial(beego.AppConfig.String("fabric_service"), grpc.WithInsecure())
 	if err != nil {
@@ -101,7 +99,7 @@ func RegisterUser(req *UserReq) (int64, error) {
 	// Contact the server and print out its response.
 	ctx, cancel := context.WithTimeout(context.Background(), time.Second*5)
 	defer cancel()
-	r, err := c.Register(ctx, &pb.RegisterReq{Username: req.RegisterName})
+	r, err := c.Register(ctx, &pb.RegisterReq{Username: req.Username})
 	if err != nil {
 		logs.Error("RegisterUser: could not Register: %v", err)
 		return -1, err
@@ -109,7 +107,7 @@ func RegisterUser(req *UserReq) (int64, error) {
 	if r.GetCode() == 0 {
 		user := models.TaroUser{UserStatus: 1}
 		engine := utils.Engine_mysql
-		_, err = engine.ID(req.RegisterId).Update(&user)
+		_, err = engine.ID(req.Userid).Update(&user)
 		if err != nil {
 			logs.Error("RegisterUser: User Status Update Error")
 			return -1, err
@@ -118,7 +116,7 @@ func RegisterUser(req *UserReq) (int64, error) {
 	return r.GetCode(), nil
 }
 
-func DownloadCard(req *UserReq) (*pb.DownloadResp, error) {
+func DownloadCard(req *pb.DownloadReq) (*pb.DownloadResp, error) {
 	// Set up a connection to the server.
 	conn, err := grpc.Dial(beego.AppConfig.String("fabric_service"), grpc.WithInsecure())
 	if err != nil {
@@ -130,7 +128,7 @@ func DownloadCard(req *UserReq) (*pb.DownloadResp, error) {
 	// Contact the server and print out its response.
 	ctx, cancel := context.WithTimeout(context.Background(), time.Second*5)
 	defer cancel()
-	r, err := c.Download(ctx, &pb.DownloadReq{Username: req.RegisterName})
+	r, err := c.Download(ctx, &pb.DownloadReq{Username: req.Username})
 	if err != nil {
 		logs.Error("DownloadCard: could not Download: %v", err)
 		return nil, err
@@ -146,10 +144,46 @@ func DownloadCard(req *UserReq) (*pb.DownloadResp, error) {
 	engine := utils.Engine_mysql
 	user := new(models.TaroUser)
 	user.UserHash = hex.EncodeToString(md5Sum)
-	_, err = engine.ID(req.RegisterId).Update(user)
+	_, err = engine.ID(req.Userid).Update(user)
 	if err != nil {
 		logs.Error("DownloadCard: User Hash Update Error")
 		return nil, err
 	}
 	return r, nil
+}
+
+func Login(req *pb.LoginReq) (int64, error) {
+	if len(req.Userhash) == 0 {
+		logs.Error("Login: User Hash Empty")
+		return -1, nil
+	}
+	fromdb := new(models.TaroUser)
+	engine := utils.Engine_mysql
+	has, err := engine.Table("taro_user").
+		Where("user_name = ?", req.Username).Get(fromdb)
+	if err != nil {
+		logs.Error("Login: User Hash Get Error")
+		return -1, err
+	}
+	if has && len(fromdb.UserHash) != 0 && fromdb.UserHash == req.Userhash {
+		// Set up a connection to the server.
+		conn, err := grpc.Dial(beego.AppConfig.String("fabric_service"), grpc.WithInsecure())
+		if err != nil {
+			logs.Error("Login: did not connect: %v", err)
+			return -1, err
+		}
+		//defer conn.Close()
+		c := pb.NewFabricServiceClient(conn)
+		// Contact the server and print out its response.
+		ctx, cancel := context.WithTimeout(context.Background(), time.Second*5)
+		defer cancel()
+		r, err := c.Login(ctx, &pb.LoginReq{Username: req.Username})
+		if err != nil {
+			logs.Error("Login: could not Download: %v", err)
+			return -1, err
+		}
+		return r.GetCode(), nil
+	} else {
+		return -1, nil
+	}
 }

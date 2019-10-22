@@ -5,6 +5,7 @@ import (
 	"github.com/astaxie/beego"
 	"github.com/astaxie/beego/logs"
 	"tarobackend/models"
+	pb "tarobackend/proto"
 	"tarobackend/services"
 	"tarobackend/utils"
 )
@@ -92,7 +93,7 @@ func (c *UserController) Update() {
 }
 
 func (c *UserController) Register() {
-	var req services.UserReq
+	var req pb.RegisterReq
 	var err error
 	err = json.Unmarshal(c.Ctx.Input.RequestBody, &req)
 	if err != nil {
@@ -106,17 +107,17 @@ func (c *UserController) Register() {
 		return
 	}
 	if code == 0 {
-		logs.Info("Regist " + req.RegisterName + " Success")
-		utils.BuildJsonResp(c, "Normal", "Regist "+req.RegisterName+" Success")
+		logs.Info("Regist " + req.Username + " Success")
+		utils.BuildJsonResp(c, "Normal", "Regist "+req.Username+" Success")
 	} else {
-		logs.Info("Regist " + req.RegisterName + " Failed")
-		utils.BuildJsonResp(c, "Error", "Regist "+req.RegisterName+" Failed")
+		logs.Info("Regist " + req.Username + " Failed")
+		utils.BuildJsonResp(c, "Error", "Regist "+req.Username+" Failed")
 	}
 	return
 }
 
 func (c *UserController) Download() {
-	var req services.UserReq
+	var req pb.DownloadReq
 	var err error
 	err = json.Unmarshal(c.Ctx.Input.RequestBody, &req)
 	if err != nil {
@@ -132,4 +133,29 @@ func (c *UserController) Download() {
 	}
 	c.Data["json"] = resp
 	c.ServeJSON()
+}
+
+func (c *UserController) Login() {
+	var req pb.LoginReq
+	var err error
+	err = json.Unmarshal(c.Ctx.Input.RequestBody, &req)
+	if err != nil {
+		utils.BuildJsonResp(c, "Error", "Json Parse Error")
+		return
+	}
+
+	code, err := services.Login(&req)
+	if err != nil {
+		logs.Error("User Login Error", err.Error())
+		utils.BuildJsonResp(c, "Error", "User Login Error")
+		return
+	}
+	if code == 0 {
+		logs.Info("Login " + req.Username + " Success")
+		utils.BuildJsonResp(c, "Normal", "Login "+req.Username+" Success")
+	} else {
+		logs.Info("Login " + req.Username + " Failed")
+		utils.BuildJsonResp(c, "Error", "Login "+req.Username+" Failed")
+	}
+	return
 }

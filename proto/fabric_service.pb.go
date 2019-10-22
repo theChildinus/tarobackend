@@ -25,7 +25,8 @@ var _ = math.Inf
 const _ = proto.ProtoPackageIsVersion3 // please upgrade the proto package
 
 type RegisterReq struct {
-	Username             string   `protobuf:"bytes,1,opt,name=username,proto3" json:"username,omitempty"`
+	Userid               int64    `protobuf:"varint,1,opt,name=userid,proto3" json:"userid,omitempty"`
+	Username             string   `protobuf:"bytes,2,opt,name=username,proto3" json:"username,omitempty"`
 	XXX_NoUnkeyedLiteral struct{} `json:"-"`
 	XXX_unrecognized     []byte   `json:"-"`
 	XXX_sizecache        int32    `json:"-"`
@@ -55,6 +56,13 @@ func (m *RegisterReq) XXX_DiscardUnknown() {
 }
 
 var xxx_messageInfo_RegisterReq proto.InternalMessageInfo
+
+func (m *RegisterReq) GetUserid() int64 {
+	if m != nil {
+		return m.Userid
+	}
+	return 0
+}
 
 func (m *RegisterReq) GetUsername() string {
 	if m != nil {
@@ -103,7 +111,8 @@ func (m *RegisterResp) GetCode() int64 {
 }
 
 type DownloadReq struct {
-	Username             string   `protobuf:"bytes,1,opt,name=username,proto3" json:"username,omitempty"`
+	Userid               int64    `protobuf:"varint,1,opt,name=userid,proto3" json:"userid,omitempty"`
+	Username             string   `protobuf:"bytes,2,opt,name=username,proto3" json:"username,omitempty"`
 	XXX_NoUnkeyedLiteral struct{} `json:"-"`
 	XXX_unrecognized     []byte   `json:"-"`
 	XXX_sizecache        int32    `json:"-"`
@@ -133,6 +142,13 @@ func (m *DownloadReq) XXX_DiscardUnknown() {
 }
 
 var xxx_messageInfo_DownloadReq proto.InternalMessageInfo
+
+func (m *DownloadReq) GetUserid() int64 {
+	if m != nil {
+		return m.Userid
+	}
+	return 0
+}
 
 func (m *DownloadReq) GetUsername() string {
 	if m != nil {
@@ -180,30 +196,131 @@ func (m *DownloadResp) GetCard() string {
 	return ""
 }
 
+type LoginReq struct {
+	Userid               int64    `protobuf:"varint,1,opt,name=userid,proto3" json:"userid,omitempty"`
+	Username             string   `protobuf:"bytes,2,opt,name=username,proto3" json:"username,omitempty"`
+	Userhash             string   `protobuf:"bytes,3,opt,name=userhash,proto3" json:"userhash,omitempty"`
+	XXX_NoUnkeyedLiteral struct{} `json:"-"`
+	XXX_unrecognized     []byte   `json:"-"`
+	XXX_sizecache        int32    `json:"-"`
+}
+
+func (m *LoginReq) Reset()         { *m = LoginReq{} }
+func (m *LoginReq) String() string { return proto.CompactTextString(m) }
+func (*LoginReq) ProtoMessage()    {}
+func (*LoginReq) Descriptor() ([]byte, []int) {
+	return fileDescriptor_4b05191437143c17, []int{4}
+}
+
+func (m *LoginReq) XXX_Unmarshal(b []byte) error {
+	return xxx_messageInfo_LoginReq.Unmarshal(m, b)
+}
+func (m *LoginReq) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	return xxx_messageInfo_LoginReq.Marshal(b, m, deterministic)
+}
+func (m *LoginReq) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_LoginReq.Merge(m, src)
+}
+func (m *LoginReq) XXX_Size() int {
+	return xxx_messageInfo_LoginReq.Size(m)
+}
+func (m *LoginReq) XXX_DiscardUnknown() {
+	xxx_messageInfo_LoginReq.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_LoginReq proto.InternalMessageInfo
+
+func (m *LoginReq) GetUserid() int64 {
+	if m != nil {
+		return m.Userid
+	}
+	return 0
+}
+
+func (m *LoginReq) GetUsername() string {
+	if m != nil {
+		return m.Username
+	}
+	return ""
+}
+
+func (m *LoginReq) GetUserhash() string {
+	if m != nil {
+		return m.Userhash
+	}
+	return ""
+}
+
+type LoginResp struct {
+	Code                 int64    `protobuf:"varint,1,opt,name=code,proto3" json:"code,omitempty"`
+	XXX_NoUnkeyedLiteral struct{} `json:"-"`
+	XXX_unrecognized     []byte   `json:"-"`
+	XXX_sizecache        int32    `json:"-"`
+}
+
+func (m *LoginResp) Reset()         { *m = LoginResp{} }
+func (m *LoginResp) String() string { return proto.CompactTextString(m) }
+func (*LoginResp) ProtoMessage()    {}
+func (*LoginResp) Descriptor() ([]byte, []int) {
+	return fileDescriptor_4b05191437143c17, []int{5}
+}
+
+func (m *LoginResp) XXX_Unmarshal(b []byte) error {
+	return xxx_messageInfo_LoginResp.Unmarshal(m, b)
+}
+func (m *LoginResp) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	return xxx_messageInfo_LoginResp.Marshal(b, m, deterministic)
+}
+func (m *LoginResp) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_LoginResp.Merge(m, src)
+}
+func (m *LoginResp) XXX_Size() int {
+	return xxx_messageInfo_LoginResp.Size(m)
+}
+func (m *LoginResp) XXX_DiscardUnknown() {
+	xxx_messageInfo_LoginResp.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_LoginResp proto.InternalMessageInfo
+
+func (m *LoginResp) GetCode() int64 {
+	if m != nil {
+		return m.Code
+	}
+	return 0
+}
+
 func init() {
 	proto.RegisterType((*RegisterReq)(nil), "proto.RegisterReq")
 	proto.RegisterType((*RegisterResp)(nil), "proto.RegisterResp")
 	proto.RegisterType((*DownloadReq)(nil), "proto.DownloadReq")
 	proto.RegisterType((*DownloadResp)(nil), "proto.DownloadResp")
+	proto.RegisterType((*LoginReq)(nil), "proto.LoginReq")
+	proto.RegisterType((*LoginResp)(nil), "proto.LoginResp")
 }
 
 func init() { proto.RegisterFile("proto/fabric_service.proto", fileDescriptor_4b05191437143c17) }
 
 var fileDescriptor_4b05191437143c17 = []byte{
-	// 208 bytes of a gzipped FileDescriptorProto
-	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0xff, 0xe2, 0x92, 0x2a, 0x28, 0xca, 0x2f,
-	0xc9, 0xd7, 0x4f, 0x4b, 0x4c, 0x2a, 0xca, 0x4c, 0x8e, 0x2f, 0x4e, 0x2d, 0x2a, 0xcb, 0x4c, 0x4e,
-	0xd5, 0x03, 0x0b, 0x0a, 0xb1, 0x82, 0x29, 0x25, 0x4d, 0x2e, 0xee, 0xa0, 0xd4, 0xf4, 0xcc, 0xe2,
-	0x92, 0xd4, 0xa2, 0xa0, 0xd4, 0x42, 0x21, 0x29, 0x2e, 0x8e, 0xd2, 0xe2, 0xd4, 0xa2, 0xbc, 0xc4,
-	0xdc, 0x54, 0x09, 0x46, 0x05, 0x46, 0x0d, 0xce, 0x20, 0x38, 0x5f, 0x49, 0x89, 0x8b, 0x07, 0xa1,
-	0xb4, 0xb8, 0x40, 0x48, 0x88, 0x8b, 0x25, 0x39, 0x3f, 0x05, 0xa2, 0x8e, 0x39, 0x08, 0xcc, 0x06,
-	0x19, 0xe7, 0x92, 0x5f, 0x9e, 0x97, 0x93, 0x9f, 0x98, 0x42, 0x84, 0x71, 0x08, 0xa5, 0x50, 0xe3,
-	0x12, 0x8b, 0x52, 0xa0, 0xea, 0xc0, 0x6c, 0xa3, 0x5a, 0x2e, 0x5e, 0x37, 0xb0, 0xe3, 0x83, 0x21,
-	0x6e, 0x17, 0x32, 0xe5, 0xe2, 0x80, 0xb9, 0x41, 0x48, 0x08, 0xe2, 0x13, 0x3d, 0x24, 0xf7, 0x4b,
-	0x09, 0x63, 0x88, 0x15, 0x17, 0x28, 0x31, 0x80, 0xb4, 0xc1, 0xec, 0x82, 0x6b, 0x43, 0x72, 0x27,
-	0x5c, 0x1b, 0xb2, 0x83, 0x94, 0x18, 0x9c, 0x14, 0xb9, 0xf8, 0xf2, 0x8b, 0xd2, 0xf5, 0xb2, 0xf3,
-	0xf3, 0xd2, 0x21, 0x0a, 0x9c, 0x78, 0x61, 0x06, 0x07, 0x80, 0xb8, 0x01, 0x8c, 0x49, 0x6c, 0x60,
-	0x71, 0x63, 0x40, 0x00, 0x00, 0x00, 0xff, 0xff, 0xc9, 0x63, 0x5b, 0x40, 0x6b, 0x01, 0x00, 0x00,
+	// 276 bytes of a gzipped FileDescriptorProto
+	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0xff, 0xa4, 0x90, 0xb1, 0x4e, 0xc3, 0x30,
+	0x10, 0x86, 0x6b, 0x4a, 0xab, 0xe4, 0xa0, 0x80, 0x0e, 0x09, 0x45, 0x59, 0x28, 0x9e, 0x3a, 0xa0,
+	0x20, 0x81, 0x78, 0x00, 0x2a, 0xc4, 0xc4, 0x50, 0x99, 0x8d, 0x05, 0xb9, 0x89, 0x49, 0x2d, 0x20,
+	0x0e, 0x76, 0x80, 0x87, 0xe2, 0x25, 0x91, 0x1d, 0x3b, 0x09, 0x82, 0x09, 0xa6, 0xdc, 0xdd, 0x9f,
+	0xfb, 0x7f, 0xdf, 0x07, 0x69, 0xad, 0x55, 0xa3, 0xce, 0x1e, 0xf9, 0x5a, 0xcb, 0xfc, 0xc1, 0x08,
+	0xfd, 0x2e, 0x73, 0x91, 0xb9, 0x21, 0x4e, 0xdc, 0x87, 0x5e, 0xc1, 0x0e, 0x13, 0xa5, 0x34, 0x8d,
+	0xd0, 0x4c, 0xbc, 0xe2, 0x11, 0x4c, 0xdf, 0x8c, 0xd0, 0xb2, 0x48, 0xc8, 0x9c, 0x2c, 0xc6, 0xcc,
+	0x77, 0x98, 0x42, 0x64, 0xab, 0x8a, 0xbf, 0x88, 0x64, 0x6b, 0x4e, 0x16, 0x31, 0xeb, 0x7a, 0x4a,
+	0x61, 0xb7, 0xb7, 0x30, 0x35, 0x22, 0x6c, 0xe7, 0xaa, 0x10, 0xde, 0xc1, 0xd5, 0x36, 0xe6, 0x5a,
+	0x7d, 0x54, 0xcf, 0x8a, 0x17, 0xff, 0x88, 0xe9, 0x2d, 0x7c, 0x0c, 0xd7, 0xad, 0x43, 0xcc, 0x5c,
+	0x4d, 0xef, 0x21, 0xba, 0x55, 0xa5, 0xac, 0xfe, 0x98, 0x11, 0xb4, 0x0d, 0x37, 0x9b, 0x64, 0xdc,
+	0x6b, 0xb6, 0xa7, 0xc7, 0x10, 0x7b, 0xef, 0xdf, 0x6f, 0x3c, 0xff, 0x24, 0x30, 0xbb, 0x71, 0xa8,
+	0xef, 0x5a, 0xd2, 0x78, 0x09, 0x51, 0x20, 0x83, 0xd8, 0x72, 0xcf, 0x06, 0xb4, 0xd3, 0xc3, 0x1f,
+	0x33, 0x53, 0xd3, 0x91, 0x5d, 0x0b, 0x97, 0x76, 0x6b, 0x03, 0x7a, 0xdd, 0xda, 0x10, 0x07, 0x1d,
+	0xe1, 0x29, 0x4c, 0xdc, 0x03, 0x71, 0xdf, 0xeb, 0x01, 0x45, 0x7a, 0xf0, 0x7d, 0x60, 0xff, 0x5e,
+	0x9e, 0xc0, 0x9e, 0xd2, 0x65, 0xf6, 0xa4, 0xaa, 0xb2, 0x55, 0x97, 0xb3, 0xf0, 0x8c, 0x95, 0x6d,
+	0x57, 0x64, 0x3d, 0x75, 0xf3, 0x8b, 0xaf, 0x00, 0x00, 0x00, 0xff, 0xff, 0x6d, 0x7a, 0xbb, 0x42,
+	0x47, 0x02, 0x00, 0x00,
 }
 
 // Reference imports to suppress errors if they are not otherwise used.
@@ -220,6 +337,7 @@ const _ = grpc.SupportPackageIsVersion4
 type FabricServiceClient interface {
 	Register(ctx context.Context, in *RegisterReq, opts ...grpc.CallOption) (*RegisterResp, error)
 	Download(ctx context.Context, in *DownloadReq, opts ...grpc.CallOption) (*DownloadResp, error)
+	Login(ctx context.Context, in *LoginReq, opts ...grpc.CallOption) (*LoginResp, error)
 }
 
 type fabricServiceClient struct {
@@ -248,10 +366,20 @@ func (c *fabricServiceClient) Download(ctx context.Context, in *DownloadReq, opt
 	return out, nil
 }
 
+func (c *fabricServiceClient) Login(ctx context.Context, in *LoginReq, opts ...grpc.CallOption) (*LoginResp, error) {
+	out := new(LoginResp)
+	err := c.cc.Invoke(ctx, "/proto.FabricService/Login", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // FabricServiceServer is the server API for FabricService service.
 type FabricServiceServer interface {
 	Register(context.Context, *RegisterReq) (*RegisterResp, error)
 	Download(context.Context, *DownloadReq) (*DownloadResp, error)
+	Login(context.Context, *LoginReq) (*LoginResp, error)
 }
 
 // UnimplementedFabricServiceServer can be embedded to have forward compatible implementations.
@@ -263,6 +391,9 @@ func (*UnimplementedFabricServiceServer) Register(ctx context.Context, req *Regi
 }
 func (*UnimplementedFabricServiceServer) Download(ctx context.Context, req *DownloadReq) (*DownloadResp, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method Download not implemented")
+}
+func (*UnimplementedFabricServiceServer) Login(ctx context.Context, req *LoginReq) (*LoginResp, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method Login not implemented")
 }
 
 func RegisterFabricServiceServer(s *grpc.Server, srv FabricServiceServer) {
@@ -305,6 +436,24 @@ func _FabricService_Download_Handler(srv interface{}, ctx context.Context, dec f
 	return interceptor(ctx, in, info, handler)
 }
 
+func _FabricService_Login_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(LoginReq)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(FabricServiceServer).Login(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/proto.FabricService/Login",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(FabricServiceServer).Login(ctx, req.(*LoginReq))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 var _FabricService_serviceDesc = grpc.ServiceDesc{
 	ServiceName: "proto.FabricService",
 	HandlerType: (*FabricServiceServer)(nil),
@@ -316,6 +465,10 @@ var _FabricService_serviceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "Download",
 			Handler:    _FabricService_Download_Handler,
+		},
+		{
+			MethodName: "Login",
+			Handler:    _FabricService_Login_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},
