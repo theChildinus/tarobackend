@@ -1,6 +1,8 @@
 package services
 
 import (
+	"crypto/md5"
+	"encoding/hex"
 	"errors"
 	"github.com/astaxie/beego"
 	"github.com/astaxie/beego/logs"
@@ -61,7 +63,7 @@ func CreateUser(r *models.TaroUser) (int64, error) {
 		return 0, err
 	}
 	if res == 0 {
-		logs.Debug("User InsertOne failed")
+		logs.Debug("CreateUser: User InsertOne failed")
 	}
 	return res, nil
 }
@@ -101,7 +103,7 @@ func RegisterUser(req *UserReq) (int64, error) {
 	defer cancel()
 	r, err := c.Register(ctx, &pb.RegisterReq{Username: req.RegisterName})
 	if err != nil {
-		logs.Error("could not Register: %v", err)
+		logs.Error("RegisterUser: could not Register: %v", err)
 		return -1, err
 	}
 	if r.GetCode() == 0 {
@@ -109,7 +111,7 @@ func RegisterUser(req *UserReq) (int64, error) {
 		engine := utils.Engine_mysql
 		_, err = engine.ID(req.RegisterId).Update(&user)
 		if err != nil {
-			logs.Error("UpdateUser: Table User Update Error")
+			logs.Error("RegisterUser: User Status Update Error")
 			return -1, err
 		}
 	}
@@ -120,7 +122,7 @@ func DownloadCard(req *UserReq) (*pb.DownloadResp, error) {
 	// Set up a connection to the server.
 	conn, err := grpc.Dial(beego.AppConfig.String("fabric_service"), grpc.WithInsecure())
 	if err != nil {
-		logs.Error("did not connect: %v", err)
+		logs.Error("DownloadCard: did not connect: %v", err)
 		return nil, err
 	}
 	//defer conn.Close()
@@ -130,12 +132,24 @@ func DownloadCard(req *UserReq) (*pb.DownloadResp, error) {
 	defer cancel()
 	r, err := c.Download(ctx, &pb.DownloadReq{Username: req.RegisterName})
 	if err != nil {
-		logs.Error("could not Download: %v", err)
+		logs.Error("DownloadCard: could not Download: %v", err)
 		return nil, err
 	}
 	if len(r.Card) == 0 {
 		logs.Error("Card is Empty")
 		return nil, errors.New("Card is Empty")
+	}
+
+	md5Inst := md5.New()
+	md5Inst.Write([]byte(r.Card))
+	md5Sum := md5Inst.Sum([]byte(""))
+	engine := utils.Engine_mysql
+	user := new(models.TaroUser)
+	user.UserHash = hex.EncodeToString(md5Sum)
+	_, err = engine.ID(req.RegisterId).Update(user)
+	if err != nil {
+		logs.Error("DownloadCard: User Hash Update Error")
+		return nil, err
 	}
 	return r, nil
 }

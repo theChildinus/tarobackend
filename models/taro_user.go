@@ -9,4 +9,5 @@ type TaroUser struct {
 	UserEmail      string `json:"user_email" xorm:"comment('电子邮箱') VARCHAR(255)"`
 	UserPhone      string `json:"user_phone" xorm:"comment('联系方式') VARCHAR(255)"`
 	UserStatus     int    `json:"user_status" xorm:"comment('用户状态') INT(1)"`
+	UserHash       string `json:"user_hash" xorm:"comment('用户哈希') VARCHAR(255)"`
 }
