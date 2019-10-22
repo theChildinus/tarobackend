@@ -56,7 +56,7 @@ func CreateResource(r *models.TaroResource) (int64, error) {
 		return 0, err
 	}
 	if res == 0 {
-		logs.Debug("Resource InsertOne failed")
+		logs.Debug("CreateResource: Resource InsertOne failed")
 	}
 	return res, nil
 }

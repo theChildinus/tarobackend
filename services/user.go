@@ -93,7 +93,7 @@ func RegisterUser(req *UserReq) (int64, error) {
 	// Set up a connection to the server.
 	conn, err := grpc.Dial(beego.AppConfig.String("fabric_service"), grpc.WithInsecure())
 	if err != nil {
-		logs.Error("did not connect: %v", err)
+		logs.Error("RegisterUser: did not connect: %v", err)
 		return -1, err
 	}
 	//defer conn.Close()
@@ -136,8 +136,8 @@ func DownloadCard(req *UserReq) (*pb.DownloadResp, error) {
 		return nil, err
 	}
 	if len(r.Card) == 0 {
-		logs.Error("Card is Empty")
-		return nil, errors.New("Card is Empty")
+		logs.Error("DownloadCard: Card is Empty")
+		return nil, errors.New("DownloadCard: Card is Empty")
 	}
 
 	md5Inst := md5.New()

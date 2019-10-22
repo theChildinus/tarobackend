@@ -39,7 +39,7 @@ func ListPolicy(req *PolicyReq) ([]models.TaroPolicy, int64, error) {
 	}
 
 	if err != nil {
-		logs.Error("Table Policy Find Failed")
+		logs.Error("ListPolicy: Table Policy List Failed")
 		return nil, 0, err
 	}
 	return policies, count, nil
@@ -49,7 +49,7 @@ func CreatePolicy(r *models.TaroPolicy) (bool, error) {
 	engine := utils.Engine_mysql
 	_, err := engine.InsertOne(r)
 	if err != nil {
-		logs.Error("Table Policy InsertOne Error")
+		logs.Error("CreatePolicy: Table Policy InsertOne Error")
 		return false, err
 	}
 
