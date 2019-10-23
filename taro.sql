@@ -11,7 +11,7 @@
  Target Server Version : 50727
  File Encoding         : 65001
 
- Date: 23/10/2019 11:21:29
+ Date: 23/10/2019 15:44:54
 */
 
 SET NAMES utf8mb4;
@@ -52,15 +52,12 @@ CREATE TABLE `taro_policy`  (
 -- ----------------------------
 -- Records of taro_policy
 -- ----------------------------
-INSERT INTO `taro_policy` VALUES (2, 'bob', 'data2', 'write', '2019-10-11 21:24:22');
-INSERT INTO `taro_policy` VALUES (3, 'alice', 'data1', 'read', '2019-10-11 21:25:02');
-INSERT INTO `taro_policy` VALUES (4, 'data2_admin', 'data2', 'read', '2019-10-11 21:25:54');
-INSERT INTO `taro_policy` VALUES (5, 'data2_admin', 'data2', 'write', '2019-10-11 21:26:07');
-INSERT INTO `taro_policy` VALUES (6, 'cora', 'data2', 'exec', '2019-10-11 21:26:32');
-INSERT INTO `taro_policy` VALUES (8, 'aaaaaaa', 'data6', 'read', '2019-10-14 10:43:45');
-INSERT INTO `taro_policy` VALUES (9, 'zzzzz', 'dfasdfasdf', 'exec', '2019-10-18 15:03:55');
-INSERT INTO `taro_policy` VALUES (10, 'cora', '12312', 'upload', '2019-10-18 15:08:16');
-INSERT INTO `taro_policy` VALUES (11, 'aaaaa', 'dfdfd', 'exec', '2019-10-18 15:26:08');
+INSERT INTO `taro_policy` VALUES (2, 'yang', 'data2', 'write', '2019-10-11 21:24:22');
+INSERT INTO `taro_policy` VALUES (3, 'kong', 'data2', 'exec', '2019-10-11 21:25:02');
+INSERT INTO `taro_policy` VALUES (4, 'zhao', 'data1', 'read', '2019-10-11 21:25:54');
+INSERT INTO `taro_policy` VALUES (5, 'zhao', 'data2', 'exec', '2019-10-11 21:26:07');
+INSERT INTO `taro_policy` VALUES (6, '管理员', 'data3', 'upload', '2019-10-11 21:26:32');
+INSERT INTO `taro_policy` VALUES (8, '管理员', 'data4', 'exec', '2019-10-14 10:43:45');
 
 -- ----------------------------
 -- Table structure for taro_resource

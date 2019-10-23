@@ -1,6 +1,7 @@
 package services
 
 import (
+	"errors"
 	"github.com/astaxie/beego/logs"
 	"tarobackend/models"
 	"tarobackend/utils"
@@ -10,6 +11,14 @@ type PolicyReq struct {
 	PageIndex int64  `json:"page_index"`
 	PageSize  int64  `json:"page_size"`
 	SearchSub string `json:"search_sub"`
+}
+
+type PolicyCheckReq struct {
+	PolicySub string `json:"policysub"`
+	PolicyObj string `json:"policyobj"`
+	PolicyAct string `json:"policyact"`
+	UserName  string `json:"username"`
+	UserHash  string `json:"userhash"`
 }
 
 type PolicyResp struct {
@@ -109,8 +118,28 @@ func UpdatePolicy(r *models.TaroPolicy) (bool, error) {
 	return ret, nil
 }
 
-func CheckPolicy(r *models.TaroPolicy) (bool, error) {
-	enf := utils.Enforcer
-	ret := enf.Enforce(r.PolicySub, r.PolicyObj, r.PolicyAct)
-	return ret, nil
+func CheckPolicy(r *PolicyCheckReq) (bool, error) {
+	if len(r.UserHash) == 0 {
+		logs.Error("CheckPolicy: UserHase Empty")
+		return false, errors.New("CheckPolicy: UserHase Empty")
+	}
+	engine := utils.Engine_mysql
+	m := new(models.TaroUser)
+	has, err := engine.Table("taro_user").
+		Where("user_name = ?", r.UserName).
+		And("user_hash = ?", r.UserHash).Get(m)
+	if err != nil {
+		logs.Error("CheckPolicy: Table User Get Error")
+		return false, err
+	}
+	// fmt.Println("r.policysub:", r.PolicySub, "m.username:", m.UserName, "m.userrole:", m.UserRole)
+	if has &&
+		r.UserHash == m.UserHash &&
+		(r.PolicySub == m.UserName || r.PolicySub == m.UserRole) {
+		enf := utils.Enforcer
+		ret := enf.Enforce(r.PolicySub, r.PolicyObj, r.PolicyAct)
+		return ret, nil
+	} else {
+		return false, nil
+	}
 }

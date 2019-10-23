@@ -1,13 +1,9 @@
-p, alice, data1, read
-p, bob, data2, write
-p, data2_admin, data2, read
-p, data2_admin, data2, write
-p, cora, data2, exec
-p, aaaaaaa, data6, read
-p, zzzzz, dfasdfasdf, exec
-p, cora, 12312, upload
-p, aaaaa, dfdfd, exec
-g, alice, data2_admin
+p, yang, data2, write
+p, kong, data2, exec
+p, zhao, data1, read
+p, zhao, data2, exec
+p, 管理员, data3, upload
+p, 管理员, data4, exec
 g, zhao, 管理员
 g, kong, 经理
 g, yang, 经理

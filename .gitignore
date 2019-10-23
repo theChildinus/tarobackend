@@ -9,3 +9,4 @@ beego.iml
 ./conf/www.taro.com_chain.crt
 ./conf/www.taro.com_key.key
 /dbdata
+/test

@@ -12,11 +12,17 @@ protoc -I. \
   --grpc-gateway_out=logtostderr=true:. \
   ./proto/fabric_service.proto
 
-# curl 构造POST请求 请求体为 json
+# curl 构造登录 POST 请求 请求体为 json 格式
 curl -k --header "Content-Type: application/json" \
   --request POST \
   --data '{"username":"zhao","userhash":"317fd62b83164a6d0cd2b27808941da2"}' \
   https://localhost:4433/user/login
+
+# 构造策略判定 POST 请求 请求体为 json 格式
+curl -k --header "Content-Type: application/json charset=UTF-8" \
+  --request POST \
+  --data '{"username":"zhao","userhash":"317fd62b83164a6d0cd2b27808941da2","policysub":"zhao","policyobj":"data4","policyact":"exec"}' \
+  https://localhost:4433/policy/check
 
 # xorm 自动生成 model代码
 xorm reverse mysql root:123456@/taro?charset=utf8 templates/goxorm
