@@ -8,6 +8,7 @@ import (
 	"github.com/astaxie/beego/logs"
 	"golang.org/x/net/context"
 	"google.golang.org/grpc"
+	"strings"
 	"tarobackend/models"
 	pb "tarobackend/proto"
 	"tarobackend/utils"
@@ -23,6 +24,11 @@ type UserReq struct {
 type UserResp struct {
 	List  []models.TaroUser `json:"list"`
 	Count int64             `json:"count"`
+}
+
+type UserNameAndRoleResp struct {
+	List  []string `json:"list"`
+	Count int64    `json:"count"`
 }
 
 func ListUser(req *UserReq) ([]models.TaroUser, int64, error) {
@@ -115,6 +121,29 @@ func UpdateUser(r *models.TaroUser) (bool, error) {
 		return false, err
 	}
 	return ret, nil
+}
+
+func ListUserNameAndRole() ([]string, int64, error) {
+	engine := utils.Engine_mysql
+	var (
+		names, roles []string
+		err error
+		count int64
+	)
+	err = engine.Table("taro_user").Select("user_name").Find(&names)
+	if err != nil {
+		logs.Error("ListUserNameAndRole: Table User Find Names Error")
+		return nil, 0, err
+	}
+
+	ev, err := GetEnumValue(&models.TaroEnum{EnumKey: "user_role"})
+	if err != nil {
+		logs.Error("ListUserNameAndRole: Table Enum Find Roles Error")
+		return nil, 0, err
+	}
+	roles = strings.Split(ev.EnumValue, "##")
+	count = int64(len(names) + len(roles))
+	return append(names, roles...), count, nil
 }
 
 func RegisterUser(req *pb.RegisterReq) (int64, error) {

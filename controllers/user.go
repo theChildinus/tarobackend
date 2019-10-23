@@ -106,6 +106,28 @@ func (c *UserController) Update() {
 	return
 }
 
+func (c *UserController) ListNameAndRole() {
+	var req services.UserReq
+	var err error
+	err = json.Unmarshal(c.Ctx.Input.RequestBody, &req)
+	if err != nil {
+		utils.BuildJsonResp(c, "Error", "Json Parse Error")
+		return
+	}
+	list, count, err := services.ListUserNameAndRole()
+	if err != nil {
+		logs.Error("List User Error", err.Error())
+		utils.BuildJsonResp(c, "Error", "List User Error")
+		return
+	}
+	c.Data["json"] = &services.UserNameAndRoleResp{
+		List:  list,
+		Count: count,
+	}
+	c.ServeJSON()
+	return
+}
+
 func (c *UserController) Register() {
 	var req pb.RegisterReq
 	var err error

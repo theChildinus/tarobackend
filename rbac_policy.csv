@@ -4,6 +4,7 @@ p, zhao, data1, read
 p, zhao, data2, exec
 p, 管理员, data3, upload
 p, 管理员, data4, exec
+p, abddd, data1, read
 g, zhao, 管理员
 g, kong, 经理
 g, yang, 经理
