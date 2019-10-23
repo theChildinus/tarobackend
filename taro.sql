@@ -11,7 +11,7 @@
  Target Server Version : 50727
  File Encoding         : 65001
 
- Date: 22/10/2019 09:46:10
+ Date: 23/10/2019 11:21:29
 */
 
 SET NAMES utf8mb4;
@@ -127,17 +127,18 @@ CREATE TABLE `taro_user`  (
   `user_status` int(1) NULL DEFAULT NULL COMMENT '用户状态',
   `user_hash` varchar(255) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL COMMENT '用户哈希',
   PRIMARY KEY (`user_id`) USING BTREE
-) ENGINE = InnoDB AUTO_INCREMENT = 9 CHARACTER SET = utf8 COLLATE = utf8_general_ci ROW_FORMAT = Dynamic;
+) ENGINE = InnoDB AUTO_INCREMENT = 16 CHARACTER SET = utf8 COLLATE = utf8_general_ci ROW_FORMAT = Dynamic;
 
 -- ----------------------------
 -- Records of taro_user
 -- ----------------------------
-INSERT INTO `taro_user` VALUES (1, 'zhao', '管理员', 'A部门', '111111', '655565565@163.com', '123123123', 1, NULL);
-INSERT INTO `taro_user` VALUES (2, 'kong', '员工', 'A部门', '123131231', 'df@qq.com', '12312312', 1, NULL);
+INSERT INTO `taro_user` VALUES (1, 'zhao', '管理员', 'A部门', '111111', '655565565@163.com', '123123123', 1, '317fd62b83164a6d0cd2b27808941da2');
+INSERT INTO `taro_user` VALUES (2, 'kong', '经理', 'A部门', '123131231', 'df@qq.com', '12312312', 1, '9a53066fdbc99967e9cbedd845745984');
 INSERT INTO `taro_user` VALUES (3, 'yang', '经理', 'B部门', '1231', 'dfdf@qq.com', '12312312', 0, NULL);
 INSERT INTO `taro_user` VALUES (4, 'zzzz', '员工', 'A部门', '1231adfasdf', 'dfdf@qq.com', '12312312', 0, NULL);
-INSERT INTO `taro_user` VALUES (5, 'adsfasdf', '员工', 'A部门', '1231adfasdf', 'dfdf@qq.com', '12312312', 0, NULL);
-INSERT INTO `taro_user` VALUES (6, 'ggggggg', '经理', 'C部门', '1231adfasdf', 'dfdf@qq.com', '12312312', 0, NULL);
-INSERT INTO `taro_user` VALUES (8, 'gggdfffff', '员工', 'C部门', '1231adfasdf', 'dfdf@qq.com', '12312312', 0, NULL);
+INSERT INTO `taro_user` VALUES (5, 'adsfasdf', '第三方团队', 'A部门', '1231adfasdf', 'dfdf@qq.com', '12312312', 0, NULL);
+INSERT INTO `taro_user` VALUES (6, 'ggggggg', '经理', 'C部门', '1231adfasdf', 'dfdf@qq.com', '12312312', 1, NULL);
+INSERT INTO `taro_user` VALUES (14, 'abddd', '员工', '第三方团队2', 'adfad', '11233434322@qq.com', '123124ddd', 0, '');
+INSERT INTO `taro_user` VALUES (15, 'abdddaaaa', '员工', 'B部门', 'adfad', '11233434322@qq.com', '123124ddd', 0, '');
 
 SET FOREIGN_KEY_CHECKS = 1;

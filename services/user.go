@@ -15,9 +15,9 @@ import (
 )
 
 type UserReq struct {
-	PageIndex    int64  `json:"page_index"`
-	PageSize     int64  `json:"page_size"`
-	SearchName   string `json:"search_name"`
+	PageIndex  int64  `json:"page_index"`
+	PageSize   int64  `json:"page_size"`
+	SearchName string `json:"search_name"`
 }
 
 type UserResp struct {
@@ -53,38 +53,68 @@ func ListUser(req *UserReq) ([]models.TaroUser, int64, error) {
 	return users, count, nil
 }
 
-func CreateUser(r *models.TaroUser) (int64, error) {
+func CreateUser(r *models.TaroUser) (bool, error) {
 	engine := utils.Engine_mysql
 	res, err := engine.InsertOne(r)
 	if err != nil {
 		logs.Error("CreateUser: Table User InsertOne Error")
-		return 0, err
+		return false, err
 	}
 	if res == 0 {
-		logs.Debug("CreateUser: User InsertOne failed")
+		logs.Error("CreateUser: User InsertOne Failed")
+		return false, errors.New("CreateUser: User InsertOne Failed")
 	}
-	return res, nil
+	enf := utils.Enforcer
+	success := enf.AddRoleForUser(r.UserName, r.UserRole)
+	_ = enf.SavePolicy()
+	if !success {
+		logs.Error("CreateUser: User Add Role Failed")
+		return false, errors.New("CreateUser: User Add Role Failed")
+	}
+	return true, nil
 }
 
-func DeleteUserById(id int) error {
+func DeleteUserById(r *models.TaroUser) (bool, error) {
 	engine := utils.Engine_mysql
-	r := new(models.TaroUser)
-	_, err := engine.ID(id).Delete(r)
+	m := new(models.TaroUser)
+	_, err := engine.ID(r.UserId).Delete(m)
 	if err != nil {
 		logs.Error("DeleteUserById: Table User Delete Error")
-		return err
+		return false, err
 	}
-	return nil
+	enf := utils.Enforcer
+	success := enf.DeleteRoleForUser(r.UserName, r.UserRole)
+	_ = enf.SavePolicy()
+	if !success {
+		logs.Error("DeleteUserById: Delete User Role Error")
+		return false, errors.New("DeleteUserById: Delete User Role Error")
+	}
+	return true, nil
 }
 
-func UpdateUser(r *models.TaroUser) error {
+func UpdateUser(r *models.TaroUser) (bool, error) {
 	engine := utils.Engine_mysql
-	_, err := engine.ID(r.UserId).Update(r)
+	old := new(models.TaroUser)
+	var ret bool
+	has, err := engine.Table("taro_user").
+		Where("user_id = ?", r.UserId).Get(old)
 	if err != nil {
-		logs.Error("UpdateUser: Table User Update Error")
-		return err
+		logs.Error("UpdateUser: Table User Get Error")
+		return false, err
 	}
-	return nil
+	if has {
+		enf := utils.Enforcer
+		ret1 := enf.DeleteRoleForUser(old.UserName, old.UserRole)
+		ret2 := enf.AddRoleForUser(r.UserName, r.UserRole)
+		_ = enf.SavePolicy()
+		ret = ret1 && ret2
+	}
+	_, err = engine.ID(r.UserId).Update(r)
+	if err != nil {
+		logs.Error("UpdatePolicy: Table Policy Update Error")
+		return false, err
+	}
+	return ret, nil
 }
 
 func RegisterUser(req *pb.RegisterReq) (int64, error) {

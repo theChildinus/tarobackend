@@ -39,18 +39,24 @@ func (c *UserController) List() {
 func (c *UserController) Create() {
 	var m models.TaroUser
 	var err error
+	var ret bool
 	err = json.Unmarshal(c.Ctx.Input.RequestBody, &m)
 	if err != nil {
 		utils.BuildJsonResp(c, "Error", "Json Parse Error")
 		return
 	}
-	_, err = services.CreateUser(&m)
+	ret, err = services.CreateUser(&m)
 	if err != nil {
 		logs.Error("Create User error", err.Error())
 		utils.BuildJsonResp(c, "Error", "Create User error")
 		return
 	}
-	utils.BuildJsonResp(c, "Normal", "Create User Success")
+	if ret {
+		utils.BuildJsonResp(c, "Normal", "Create User Success")
+	} else {
+		utils.BuildJsonResp(c, "Error", "Create User Failed")
+	}
+
 	return
 }
 
@@ -64,13 +70,17 @@ func (c *UserController) DeleteOne() {
 		return
 	}
 
-	err = services.DeleteUserById(m.UserId)
+	ret, err := services.DeleteUserById(&m)
 	if err != nil {
 		logs.Error("DeleteUserById error", err.Error())
 		utils.BuildJsonResp(c, "Error", "DeleteUserById Error")
 		return
 	}
-	utils.BuildJsonResp(c, "Normal", "DeleteUserById Success")
+	if ret {
+		utils.BuildJsonResp(c, "Normal", "DeleteUserById Success")
+	} else {
+		utils.BuildJsonResp(c, "Error", "DeleteUserById Failed")
+	}
 	return
 }
 
@@ -82,13 +92,17 @@ func (c *UserController) Update() {
 		utils.BuildJsonResp(c, "Error", "Json Parse Error")
 		return
 	}
-	err = services.UpdateUser(&m)
+	ret, err := services.UpdateUser(&m)
 	if err != nil {
 		logs.Error("Update User error", err.Error())
 		utils.BuildJsonResp(c, "Error", "Update User error")
 		return
 	}
-	utils.BuildJsonResp(c, "Normal", "Update User Success")
+	if ret {
+		utils.BuildJsonResp(c, "Normal", "Update User Success")
+	} else {
+		utils.BuildJsonResp(c, "Error", "Update User Failed")
+	}
 	return
 }
 
