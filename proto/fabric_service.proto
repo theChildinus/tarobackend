@@ -21,7 +21,7 @@ message DownloadReq {
 }
 
 message DownloadResp {
-    string card = 1;
+    string cert = 1;
 }
 
 message LoginReq {

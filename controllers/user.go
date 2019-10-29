@@ -161,10 +161,10 @@ func (c *UserController) Download() {
 		return
 	}
 
-	resp, err := services.DownloadCard(&req)
+	resp, err := services.DownloadCert(&req)
 	if err != nil {
-		logs.Error("Download Card Error", err.Error())
-		utils.BuildJsonResp(c, "Error", "Download Card Error")
+		logs.Error("Download Cert Error", err.Error())
+		utils.BuildJsonResp(c, "Error", "Download Cert Error")
 		return
 	}
 	c.Data["json"] = resp

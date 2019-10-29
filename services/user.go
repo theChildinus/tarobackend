@@ -147,6 +147,7 @@ func ListUserNameAndRole() ([]string, int64, error) {
 }
 
 func RegisterUser(req *pb.RegisterReq) (int64, error) {
+	// TODO Register User Id/Name in UserTable？
 	// Set up a connection to the server.
 	conn, err := grpc.Dial(beego.AppConfig.String("fabric_service"), grpc.WithInsecure())
 	if err != nil {
@@ -156,7 +157,7 @@ func RegisterUser(req *pb.RegisterReq) (int64, error) {
 	//defer conn.Close()
 	c := pb.NewFabricServiceClient(conn)
 	// Contact the server and print out its response.
-	ctx, cancel := context.WithTimeout(context.Background(), time.Second*5)
+	ctx, cancel := context.WithTimeout(context.Background(), time.Second*10)
 	defer cancel()
 	r, err := c.Register(ctx, &pb.RegisterReq{Username: req.Username})
 	if err != nil {
@@ -175,37 +176,37 @@ func RegisterUser(req *pb.RegisterReq) (int64, error) {
 	return r.GetCode(), nil
 }
 
-func DownloadCard(req *pb.DownloadReq) (*pb.DownloadResp, error) {
+func DownloadCert(req *pb.DownloadReq) (*pb.DownloadResp, error) {
 	// Set up a connection to the server.
 	conn, err := grpc.Dial(beego.AppConfig.String("fabric_service"), grpc.WithInsecure())
 	if err != nil {
-		logs.Error("DownloadCard: did not connect: %v", err)
+		logs.Error("DownloadCert: did not connect: %v", err)
 		return nil, err
 	}
 	//defer conn.Close()
 	c := pb.NewFabricServiceClient(conn)
 	// Contact the server and print out its response.
-	ctx, cancel := context.WithTimeout(context.Background(), time.Second*5)
+	ctx, cancel := context.WithTimeout(context.Background(), time.Second*10)
 	defer cancel()
 	r, err := c.Download(ctx, &pb.DownloadReq{Username: req.Username})
 	if err != nil {
-		logs.Error("DownloadCard: could not Download: %v", err)
+		logs.Error("DownloadCert: could not Download: %v", err)
 		return nil, err
 	}
-	if len(r.Card) == 0 {
-		logs.Error("DownloadCard: Card is Empty")
-		return nil, errors.New("DownloadCard: Card is Empty")
+	if len(r.Cert) == 0 {
+		logs.Error("DownloadCert: Cert is Empty")
+		return nil, errors.New("DownloadCert: Cert is Empty")
 	}
 
 	md5Inst := md5.New()
-	md5Inst.Write([]byte(r.Card))
+	md5Inst.Write([]byte(r.Cert))
 	md5Sum := md5Inst.Sum([]byte(""))
 	engine := utils.Engine_mysql
 	user := new(models.TaroUser)
 	user.UserHash = hex.EncodeToString(md5Sum)
 	_, err = engine.ID(req.Userid).Update(user)
 	if err != nil {
-		logs.Error("DownloadCard: User Hash Update Error")
+		logs.Error("DownloadCert: User Hash Update Error")
 		return nil, err
 	}
 	return r, nil
@@ -234,7 +235,7 @@ func Login(req *pb.LoginReq) (int64, error) {
 		//defer conn.Close()
 		c := pb.NewFabricServiceClient(conn)
 		// Contact the server and print out its response.
-		ctx, cancel := context.WithTimeout(context.Background(), time.Second*5)
+		ctx, cancel := context.WithTimeout(context.Background(), time.Second*10)
 		defer cancel()
 		r, err := c.Login(ctx, &pb.LoginReq{Username: req.Username})
 		if err != nil {

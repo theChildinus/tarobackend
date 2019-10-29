@@ -15,7 +15,7 @@ func init() {
 		AllowCredentials: true,
 	}))
 
-	beego.Router("/", &controllers.MainController{}, "*:Index")
+	beego.Router("/index", &controllers.MainController{}, "*:Index")
 	beego.Router("resource/create", &controllers.ResourceController{}, "post:Create")
 	beego.Router("resource/list", &controllers.ResourceController{}, "*:List")
 	beego.Router("resource/deleteOne", &controllers.ResourceController{}, "post:DeleteOne")
@@ -33,7 +33,7 @@ func init() {
 	beego.Router("user/update", &controllers.UserController{}, "post:Update")
 	beego.Router("user/listNameAndRole", &controllers.UserController{}, "post:ListNameAndRole")
 	beego.Router("user/register", &controllers.UserController{}, "post:Register")
-	beego.Router("user/downloadCard", &controllers.UserController{}, "post:Download")
+	beego.Router("user/downloadCert", &controllers.UserController{}, "post:Download")
 	beego.Router("user/login", &controllers.UserController{}, "post:Login")
 
 	beego.Router("enum/getValue", &controllers.EnumController{}, "*:GetValue")
