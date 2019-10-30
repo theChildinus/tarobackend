@@ -1,6 +1,6 @@
 version: '3.1'
 services:
-  db:
+  mysql:
     container_name: mysql5_7
     command: --default-authentication-plugin=mysql_native_password
     image: mysql:5.7
@@ -10,3 +10,59 @@ services:
       - ./dbdata:/var/lib/mysql
     environment:
       MYSQL_ROOT_PASSWORD: 123456
+    networks:
+      - backend
+  nginx:
+    container_name: nginx
+    image: nginx:latest
+    ports:
+      - 443:443
+    volumes:
+      - ./dist:/usr/share/nginx/html
+      - ./conf/nginx.conf:/etc/nginx/nginx.conf
+      - ./conf/www.taro.com_chain.crt:/etc/nginx/www.taro.com_chain.crt
+      - ./conf/www.taro.com_key.key:/etc/nginx/www.taro.com_key.key
+    networks:
+      - backend
+  goweb:
+    container_name: goweb
+    image: golang:latest
+    volumes:
+      - ./:/go/src
+    command: sh -c 'cd /go/src && ./main'
+    depends_on:
+      - mysql
+    networks:
+      - backend
+    stdin_open: true
+    tty: true
+  fabric-service:
+    container_name: fabric-service
+    image: openjdk:latest
+    ports:
+      - 50051:50051
+    volumes:
+      - ./:/home/
+    networks:
+      - backend
+    command: sh -c 'cd home && java -cp fabric-gateway-java-1.4.0-SNAPSHOT-jar-with-dependencies.jar org.kong.FabricService'
+    stdin_open: true
+    tty: true
+  ca.example.com:
+    image: hyperledger/fabric-ca
+    environment:
+      - FABRIC_CA_HOME=/etc/hyperledger/fabric-ca-server
+      - FABRIC_CA_SERVER_CA_NAME=ca.example.com
+      - FABRIC_CA_SERVER_CA_CERTFILE=/etc/hyperledger/fabric-ca-server-config/ca.org1.example.com-cert.pem
+      - FABRIC_CA_SERVER_CA_KEYFILE=/etc/hyperledger/fabric-ca-server-config/4239aa0dcd76daeeb8ba0cda701851d14504d31aad1b2ddddbac6a57365e497c_sk
+    ports:
+      - "7054:7054"
+    command: sh -c 'fabric-ca-server start -b admin:adminpw'
+    volumes:
+      - ./crypto-config/peerOrganizations/org1.example.com/ca/:/etc/hyperledger/fabric-ca-server-config
+    container_name: ca.example.com
+    networks:
+      - backend
+
+networks:
+  backend:

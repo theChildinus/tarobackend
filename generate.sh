@@ -26,3 +26,8 @@ curl -k --header "Content-Type: application/json charset=UTF-8" \
 
 # xorm 自动生成 model代码
 xorm reverse mysql root:123456@/taro?charset=utf8 templates/goxorm
+
+# 依赖包会自动下载到 $GOPATH/pkg/mod，多个项目可以共享缓存的 mod
+go mod download
+# 从 mod 中拷贝到项目的 vendor目录下
+go mod vendor

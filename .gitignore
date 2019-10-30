@@ -4,9 +4,11 @@
 *.swp
 *.swo
 beego.iml
-./rbac_model.conf
-./rbac_policy.csv
 ./conf/www.taro.com_chain.crt
 ./conf/www.taro.com_key.key
 /dbdata
 /test
+/dist
+/card
+/vendor
+main
