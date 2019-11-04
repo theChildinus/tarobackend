@@ -22,6 +22,8 @@ services:
       - ./conf/nginx.conf:/etc/nginx/nginx.conf
       - ./conf/www.taro.com_chain.crt:/etc/nginx/www.taro.com_chain.crt
       - ./conf/www.taro.com_key.key:/etc/nginx/www.taro.com_key.key
+    depends_on:
+      - goweb
     networks:
       - backend
   goweb:
@@ -31,13 +33,14 @@ services:
       - ./:/go/src
     command: sh -c 'cd /go/src && ./main'
     depends_on:
+      - fabric_service
       - mysql
     networks:
       - backend
     stdin_open: true
     tty: true
-  fabric-service:
-    container_name: fabric-service
+  fabric_service:
+    container_name: fabric_service
     image: openjdk:latest
     ports:
       - 50051:50051

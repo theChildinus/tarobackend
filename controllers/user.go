@@ -2,6 +2,7 @@ package controllers
 
 import (
 	"encoding/json"
+	"fmt"
 	"github.com/astaxie/beego"
 	"github.com/astaxie/beego/logs"
 	"tarobackend/models"
@@ -174,6 +175,7 @@ func (c *UserController) Download() {
 func (c *UserController) Login() {
 	var req pb.LoginReq
 	var err error
+	fmt.Println("requestBody: " + string(c.Ctx.Input.RequestBody))
 	err = json.Unmarshal(c.Ctx.Input.RequestBody, &req)
 	if err != nil {
 		utils.BuildJsonResp(c, "Error", "Json Parse Error")
@@ -186,12 +188,16 @@ func (c *UserController) Login() {
 		utils.BuildJsonResp(c, "Error", "User Login Error")
 		return
 	}
+	fmt.Println("Code: ", code)
 	if code == 0 {
 		logs.Info("Login " + req.Username + " Success")
 		utils.BuildJsonResp(c, "Normal", "Login "+req.Username+" Success")
+	} else if code != -1 {
+		c.Data["json"] = pb.LoginResp{Code: code}
+		c.ServeJSON()
 	} else {
-		logs.Info("Login " + req.Username + " Failed")
-		utils.BuildJsonResp(c, "Error", "Login "+req.Username+" Failed")
+		logs.Error("Login " + req.Username + " Failed")
+		utils.BuildJsonResp(c, "Error", "Login " + req.Username + " Failed")
 	}
 	return
 }

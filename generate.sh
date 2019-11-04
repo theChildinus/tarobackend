@@ -31,3 +31,9 @@ xorm reverse mysql root:123456@/taro?charset=utf8 templates/goxorm
 go mod download
 # 从 mod 中拷贝到项目的 vendor目录下
 go mod vendor
+
+# 从证书中提取公钥
+openssl x509 -in zhao.crt -pubkey -nocert -out zhao_pub.pem
+
+# 公钥格式转换
+openssl pkcs8 -topk8 -nocrypt -in zhao.pem -out zhao2.pem

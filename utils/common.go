@@ -10,13 +10,13 @@ type Page struct {
 }
 
 type NormalResp struct {
-	Code   int
-	NorMsg string
+	Code   int `json:"code"`
+	NorMsg string `json:"normsg"`
 }
 
 type ErrorResp struct {
-	Code   int
-	ErrMsg string
+	Code   int `json:"code"`
+	ErrMsg string `json:"errrmsg"`
 }
 
 func BuildJsonResp(c interface{}, msgType, msg string) {

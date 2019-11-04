@@ -25,9 +25,9 @@ message DownloadResp {
 }
 
 message LoginReq {
-    int64 userid = 1;
-    string username = 2;
-    string userhash = 3;
+    string username = 1;
+    int64 userrand = 2;
+    string usersign = 3;
 }
 
 message LoginResp {

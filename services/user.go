@@ -8,12 +8,15 @@ import (
 	"github.com/astaxie/beego/logs"
 	"golang.org/x/net/context"
 	"google.golang.org/grpc"
+	"math/rand"
 	"strings"
 	"tarobackend/models"
 	pb "tarobackend/proto"
 	"tarobackend/utils"
 	"time"
 )
+
+var curRandom int64
 
 type UserReq struct {
 	PageIndex  int64  `json:"page_index"`
@@ -213,37 +216,37 @@ func DownloadCert(req *pb.DownloadReq) (*pb.DownloadResp, error) {
 }
 
 func Login(req *pb.LoginReq) (int64, error) {
-	if len(req.Userhash) == 0 {
-		logs.Error("Login: User Hash Empty")
-		return -1, nil
-	}
 	fromdb := new(models.TaroUser)
 	engine := utils.Engine_mysql
 	has, err := engine.Table("taro_user").
 		Where("user_name = ?", req.Username).Get(fromdb)
 	if err != nil {
-		logs.Error("Login: User Hash Get Error")
+		logs.Error("Login: User Info Get Error")
 		return -1, err
 	}
-	if has && len(fromdb.UserHash) != 0 && fromdb.UserHash == req.Userhash {
-		// Set up a connection to the server.
-		conn, err := grpc.Dial(beego.AppConfig.String("fabric_service"), grpc.WithInsecure())
-		if err != nil {
-			logs.Error("Login: did not connect: %v", err)
-			return -1, err
-		}
-		//defer conn.Close()
-		c := pb.NewFabricServiceClient(conn)
-		// Contact the server and print out its response.
-		ctx, cancel := context.WithTimeout(context.Background(), time.Second*10)
-		defer cancel()
-		r, err := c.Login(ctx, &pb.LoginReq{Username: req.Username})
-		if err != nil {
-			logs.Error("Login: could not Download: %v", err)
-			return -1, err
-		}
-		return r.GetCode(), nil
-	} else {
-		return -1, nil
+	if !has {
+		logs.Error("Login: User Doesn't Exist")
+		return -1, err
 	}
+	if len(req.Usersign) == 0 || req.Userrand == 0 {
+		return rand.Int63(), nil
+	}
+
+	// Set up a connection to the server.
+	conn, err := grpc.Dial(beego.AppConfig.String("fabric_service"), grpc.WithInsecure())
+	if err != nil {
+		logs.Error("DownloadCert: did not connect: %v", err)
+		return -1, err
+	}
+	//defer conn.Close()
+	c := pb.NewFabricServiceClient(conn)
+	// Contact the server and print out its response.
+	ctx, cancel := context.WithTimeout(context.Background(), time.Second*10)
+	defer cancel()
+	r, err := c.Login(ctx, &pb.LoginReq{Username: req.Username, Userrand: req.Userrand, Usersign: req.Usersign})
+	if err != nil {
+		logs.Error("DownloadCert: could not Download: %v", err)
+		return -1, err
+	}
+	return r.Code, nil
 }
