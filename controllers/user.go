@@ -188,7 +188,6 @@ func (c *UserController) Login() {
 		utils.BuildJsonResp(c, "Error", "User Login Error")
 		return
 	}
-	fmt.Println("Code: ", code)
 	if code == 0 {
 		logs.Info("Login " + req.Username + " Success")
 		utils.BuildJsonResp(c, "Normal", "Login "+req.Username+" Success")

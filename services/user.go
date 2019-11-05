@@ -9,6 +9,7 @@ import (
 	"golang.org/x/net/context"
 	"google.golang.org/grpc"
 	"math/rand"
+	"strconv"
 	"strings"
 	"tarobackend/models"
 	pb "tarobackend/proto"
@@ -201,17 +202,6 @@ func DownloadCert(req *pb.DownloadReq) (*pb.DownloadResp, error) {
 		return nil, errors.New("DownloadCert: Cert is Empty")
 	}
 
-	md5Inst := md5.New()
-	md5Inst.Write([]byte(r.Cert))
-	md5Sum := md5Inst.Sum([]byte(""))
-	engine := utils.Engine_mysql
-	user := new(models.TaroUser)
-	user.UserHash = hex.EncodeToString(md5Sum)
-	_, err = engine.ID(req.Userid).Update(user)
-	if err != nil {
-		logs.Error("DownloadCert: User Hash Update Error")
-		return nil, err
-	}
 	return r, nil
 }
 
@@ -229,7 +219,21 @@ func Login(req *pb.LoginReq) (int64, error) {
 		return -1, err
 	}
 	if len(req.Usersign) == 0 || req.Userrand == 0 {
-		return rand.Int63(), nil
+		randnum := rand.Int63();
+		md5Inst := md5.New()
+		nameWithNum := req.Username + strconv.FormatInt(randnum, 10)
+		md5Inst.Write([]byte(nameWithNum))
+		md5Sum := md5Inst.Sum([]byte(""))
+		engine := utils.Engine_mysql
+		user := new(models.TaroUser)
+		user.UserHash = hex.EncodeToString(md5Sum)
+		// fmt.Println("namewithNum: ", nameWithNum, "userhash: ", user.UserHash)
+		_, err = engine.Where("user_name = ?", req.Username).Update(user)
+		if err != nil {
+			logs.Error("Login: User Hash Update Error")
+			return -1, err
+		}
+		return randnum, nil
 	}
 
 	// Set up a connection to the server.

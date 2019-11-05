@@ -11,7 +11,7 @@
  Target Server Version : 50727
  File Encoding         : 65001
 
- Date: 23/10/2019 15:44:54
+ Date: 05/11/2019 11:39:27
 */
 
 SET NAMES utf8mb4;
@@ -47,17 +47,18 @@ CREATE TABLE `taro_policy`  (
   `policy_act` varchar(255) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL COMMENT '策略动作',
   `policy_ctime` datetime(0) NULL DEFAULT NULL COMMENT '创建时间',
   PRIMARY KEY (`policy_id`) USING BTREE
-) ENGINE = InnoDB AUTO_INCREMENT = 12 CHARACTER SET = utf8 COLLATE = utf8_general_ci ROW_FORMAT = Dynamic;
+) ENGINE = InnoDB AUTO_INCREMENT = 13 CHARACTER SET = utf8 COLLATE = utf8_general_ci ROW_FORMAT = Dynamic;
 
 -- ----------------------------
 -- Records of taro_policy
 -- ----------------------------
-INSERT INTO `taro_policy` VALUES (2, 'yang', 'data2', 'write', '2019-10-11 21:24:22');
+INSERT INTO `taro_policy` VALUES (2, 'kong', 'data2', 'write', '2019-10-11 21:24:22');
 INSERT INTO `taro_policy` VALUES (3, 'kong', 'data2', 'exec', '2019-10-11 21:25:02');
 INSERT INTO `taro_policy` VALUES (4, 'zhao', 'data1', 'read', '2019-10-11 21:25:54');
 INSERT INTO `taro_policy` VALUES (5, 'zhao', 'data2', 'exec', '2019-10-11 21:26:07');
 INSERT INTO `taro_policy` VALUES (6, '管理员', 'data3', 'upload', '2019-10-11 21:26:32');
 INSERT INTO `taro_policy` VALUES (8, '管理员', 'data4', 'exec', '2019-10-14 10:43:45');
+INSERT INTO `taro_policy` VALUES (12, 'abddd', 'data1', 'read', '2019-10-23 17:54:43');
 
 -- ----------------------------
 -- Table structure for taro_resource
@@ -129,12 +130,12 @@ CREATE TABLE `taro_user`  (
 -- ----------------------------
 -- Records of taro_user
 -- ----------------------------
-INSERT INTO `taro_user` VALUES (1, 'zhao', '管理员', 'A部门', '111111', '655565565@163.com', '123123123', 1, '317fd62b83164a6d0cd2b27808941da2');
-INSERT INTO `taro_user` VALUES (2, 'kong', '经理', 'A部门', '123131231', 'df@qq.com', '12312312', 1, '9a53066fdbc99967e9cbedd845745984');
-INSERT INTO `taro_user` VALUES (3, 'yang', '经理', 'B部门', '1231', 'dfdf@qq.com', '12312312', 0, NULL);
-INSERT INTO `taro_user` VALUES (4, 'zzzz', '员工', 'A部门', '1231adfasdf', 'dfdf@qq.com', '12312312', 0, NULL);
-INSERT INTO `taro_user` VALUES (5, 'adsfasdf', '第三方团队', 'A部门', '1231adfasdf', 'dfdf@qq.com', '12312312', 0, NULL);
-INSERT INTO `taro_user` VALUES (6, 'ggggggg', '经理', 'C部门', '1231adfasdf', 'dfdf@qq.com', '12312312', 1, NULL);
+INSERT INTO `taro_user` VALUES (1, 'zhao', '管理员', 'A部门', '111111', '655565565@163.com', '123123123', 1, '895c38fbbfff4d6c6295c3618fefeeea');
+INSERT INTO `taro_user` VALUES (2, 'kong', '经理', 'A部门', '123131231', 'df@qq.com', '12312312', 0, '222be99c5d078f76c4d31ff9980fcc7d');
+INSERT INTO `taro_user` VALUES (3, 'yang', '经理', 'B部门', '1231', 'dfdf@qq.com', '12312312', 0, '');
+INSERT INTO `taro_user` VALUES (4, 'zzzz', '员工', 'A部门', '1231adfasdf', 'dfdf@qq.com', '12312312', 0, '');
+INSERT INTO `taro_user` VALUES (5, 'adsfasdf', '第三方团队', 'A部门', '1231adfasdf', 'dfdf@qq.com', '12312312', 0, '');
+INSERT INTO `taro_user` VALUES (6, 'ggggggg', '经理', 'C部门', '1231adfasdf', 'dfdf@qq.com', '12312312', 0, '');
 INSERT INTO `taro_user` VALUES (14, 'abddd', '员工', '第三方团队2', 'adfad', '11233434322@qq.com', '123124ddd', 0, '');
 INSERT INTO `taro_user` VALUES (15, 'abdddaaaa', '员工', 'B部门', 'adfad', '11233434322@qq.com', '123124ddd', 0, '');
 
