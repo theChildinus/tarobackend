@@ -12,11 +12,12 @@ services:
       MYSQL_ROOT_PASSWORD: 123456
     networks:
       - backend
+
   nginx:
     container_name: nginx
     image: nginx:latest
     ports:
-      - 443:443
+      - 4433:4433
     volumes:
       - ./dist:/usr/share/nginx/html
       - ./conf/nginx.conf:/etc/nginx/nginx.conf
@@ -26,6 +27,7 @@ services:
       - goweb
     networks:
       - backend
+
   goweb:
     container_name: goweb
     image: golang:latest
@@ -35,10 +37,13 @@ services:
     depends_on:
       - fabric_service
       - mysql
+    environment:
+      GOPROXY: https://goproxy.io
     networks:
       - backend
     stdin_open: true
     tty: true
+
   fabric_service:
     container_name: fabric_service
     image: openjdk:latest
@@ -51,6 +56,7 @@ services:
     command: sh -c 'cd home && java -cp fabric-gateway-java-1.4.0-SNAPSHOT-jar-with-dependencies.jar org.kong.FabricService'
     stdin_open: true
     tty: true
+
   ca.example.com:
     image: hyperledger/fabric-ca
     environment:
