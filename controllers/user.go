@@ -200,3 +200,28 @@ func (c *UserController) Login() {
 	}
 	return
 }
+
+func (c *UserController) Revoke() {
+	var req pb.RevokeReq
+	var err error
+	err = json.Unmarshal(c.Ctx.Input.RequestBody, &req)
+	if err != nil {
+		utils.BuildJsonResp(c, "Error", "Json Parse Error")
+		return
+	}
+
+	code, err := services.RevokeUser(&req)
+	if err != nil {
+		logs.Error("User Revoke Error", err.Error())
+		utils.BuildJsonResp(c, "Error", "User Revoke Error")
+		return
+	}
+	if code == 0 {
+		logs.Info("Revoke " + req.Username + " Success")
+		utils.BuildJsonResp(c, "Normal", "Revoke "+req.Username+" Success")
+	} else {
+		logs.Error("Revoke " + req.Username + " Failed")
+		utils.BuildJsonResp(c, "Error", "Revoke " + req.Username + " Failed")
+	}
+	return
+}

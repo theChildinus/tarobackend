@@ -35,6 +35,7 @@ func init() {
 	beego.Router("user/register", &controllers.UserController{}, "post:Register")
 	beego.Router("user/downloadCert", &controllers.UserController{}, "post:Download")
 	beego.Router("user/login", &controllers.UserController{}, "post:Login")
+	beego.Router("user/revoke", &controllers.UserController{}, "post:Revoke")
 
 	beego.Router("enum/getValue", &controllers.EnumController{}, "*:GetValue")
 	beego.Router("enum/putValue", &controllers.EnumController{}, "post:PutValue")

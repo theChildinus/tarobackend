@@ -34,8 +34,18 @@ message LoginResp {
     int64 code = 1;
 }
 
+message RevokeReq {
+    int64 userid = 1;
+    string username = 2;
+}
+
+message RevokeResp {
+    int64 code = 1;
+}
+
 service FabricService {
     rpc Register(RegisterReq) returns (RegisterResp) {}
     rpc Download(DownloadReq) returns (DownloadResp) {}
     rpc Login(LoginReq) returns (LoginResp) {}
+    rpc Revoke(RevokeReq) returns (RevokeResp) {}
 }

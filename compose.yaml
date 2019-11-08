@@ -53,7 +53,7 @@ services:
       - ./:/home/
     networks:
       - backend
-    command: sh -c 'cd home && java -cp fabric-gateway-java-1.4.0-SNAPSHOT-jar-with-dependencies.jar org.kong.FabricService'
+    command: sh -c 'cd home && java -cp fabric-service-client-1.0-jar-with-dependencies.jar FabricService'
     stdin_open: true
     tty: true
 

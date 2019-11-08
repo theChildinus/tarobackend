@@ -254,3 +254,33 @@ func Login(req *pb.LoginReq) (int64, error) {
 	}
 	return r.Code, nil
 }
+
+func RevokeUser(req *pb.RevokeReq) (int64, error) {
+	// TODO Register User Id/Name in UserTable？
+	// Set up a connection to the server.
+	conn, err := grpc.Dial(beego.AppConfig.String("fabric_service"), grpc.WithInsecure())
+	if err != nil {
+		logs.Error("RevokeUser: did not connect: %v", err)
+		return -1, err
+	}
+	//defer conn.Close()
+	c := pb.NewFabricServiceClient(conn)
+	// Contact the server and print out its response.
+	ctx, cancel := context.WithTimeout(context.Background(), time.Second*10)
+	defer cancel()
+	r, err := c.Revoke(ctx, &pb.RevokeReq{Username: req.Username})
+	if err != nil {
+		logs.Error("RevokeUser: could not Revoke: %v", err)
+		return -1, err
+	}
+	if r.GetCode() == 0 {
+		user := models.TaroUser{UserStatus: 0, UserHash: ""}
+		engine := utils.Engine_mysql
+		_, err = engine.ID(req.Userid).Cols("user_status", "user_hash").Update(&user)
+		if err != nil {
+			logs.Error("RevokeUser: User Status Update Error")
+			return -1, err
+		}
+	}
+	return r.GetCode(), nil
+}
