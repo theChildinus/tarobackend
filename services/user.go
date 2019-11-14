@@ -22,6 +22,7 @@ var curRandom int64
 type UserReq struct {
 	PageIndex  int64  `json:"page_index"`
 	PageSize   int64  `json:"page_size"`
+	SearchType string `json:"search_type"`
 	SearchName string `json:"search_name"`
 }
 
@@ -43,12 +44,14 @@ func ListUser(req *UserReq) ([]models.TaroUser, int64, error) {
 		count int64
 	)
 	m := new(models.TaroUser)
-	if len(req.SearchName) != 0 {
+	if len(req.SearchType) != 0 {
 		err = engine.Table("taro_user").
-			Where("user_name = ?", req.SearchName).
+			Where("user_name like ? ", "%"+req.SearchName+"%").
+			And("user_role = ?", req.SearchType).
 			Limit(int(req.PageSize), int((req.PageIndex-1)*req.PageSize)).
 			Find(&users)
-		count, _ = engine.Where("user_name = ?", req.SearchName).Count(m)
+		count, _ = engine.Where("user_name like ? ", "%"+req.SearchName+"%").
+			And("user_role = ?", req.SearchType).Count(m)
 	} else {
 		err = engine.Table("taro_user").
 			Limit(int(req.PageSize), int((req.PageIndex-1)*req.PageSize)).

@@ -2,7 +2,6 @@ package controllers
 
 import (
 	"encoding/json"
-	"fmt"
 	"github.com/astaxie/beego"
 	"github.com/astaxie/beego/logs"
 	"tarobackend/models"
@@ -175,7 +174,7 @@ func (c *UserController) Download() {
 func (c *UserController) Login() {
 	var req pb.LoginReq
 	var err error
-	fmt.Println("requestBody: " + string(c.Ctx.Input.RequestBody))
+	// fmt.Println("requestBody: " + string(c.Ctx.Input.RequestBody))
 	err = json.Unmarshal(c.Ctx.Input.RequestBody, &req)
 	if err != nil {
 		utils.BuildJsonResp(c, "Error", "Json Parse Error")
