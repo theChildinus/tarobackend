@@ -287,3 +287,22 @@ func RevokeUser(req *pb.RevokeReq) (int64, error) {
 	}
 	return r.GetCode(), nil
 }
+
+func VerifyCert(req *pb.VerifyCertReq) (int64, error) {
+	conn, err := grpc.Dial(beego.AppConfig.String("fabric_service"), grpc.WithInsecure())
+	if err != nil {
+		logs.Error("VerifyCert: did not connect: %v", err)
+		return -1, err
+	}
+	//defer conn.Close()
+	c := pb.NewFabricServiceClient(conn)
+	// Contact the server and print out its response.
+	ctx, cancel := context.WithTimeout(context.Background(), time.Second*10)
+	defer cancel()
+	r, err := c.VerifyCert(ctx, &pb.VerifyCertReq{Username: req.Username, Certcontent:req.Certcontent})
+	if err != nil {
+		logs.Error("VerifyCert: could not Verify: %v", err)
+		return -1, err
+	}
+	return r.GetCode(), nil
+}

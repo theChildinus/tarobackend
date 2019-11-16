@@ -43,9 +43,19 @@ message RevokeResp {
     int64 code = 1;
 }
 
+message VerifyCertReq {
+    string username = 1;
+    string certcontent = 2;
+}
+
+message VerifyCertResp {
+    int64 code = 1;
+}
+
 service FabricService {
     rpc Register(RegisterReq) returns (RegisterResp) {}
     rpc Download(DownloadReq) returns (DownloadResp) {}
     rpc Login(LoginReq) returns (LoginResp) {}
     rpc Revoke(RevokeReq) returns (RevokeResp) {}
+    rpc VerifyCert(VerifyCertReq) returns (VerifyCertResp) {}
 }

@@ -224,3 +224,27 @@ func (c *UserController) Revoke() {
 	}
 	return
 }
+
+func (c *UserController) VerifyCert() {
+	var req pb.VerifyCertReq
+	var err error
+	err = json.Unmarshal(c.Ctx.Input.RequestBody, &req)
+	if err != nil {
+		utils.BuildJsonResp(c, "Error", "Json Parse Error")
+		return
+	}
+	code, err := services.VerifyCert(&req)
+	if err != nil {
+		logs.Error("VerifyCert Error", err.Error())
+		utils.BuildJsonResp(c, "Error", "VerifyCert Error")
+		return
+	}
+	if code == 0 {
+		logs.Info("VerifyCert " + req.Username + " Success")
+		utils.BuildJsonResp(c, "Normal", "VerifyCert "+req.Username+" Success")
+	} else {
+		logs.Info("VerifyCert " + req.Username + " Failed")
+		utils.BuildJsonResp(c, "Error", "VerifyCert "+req.Username+" Failed")
+	}
+	return
+}
