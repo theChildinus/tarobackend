@@ -11,7 +11,7 @@
  Target Server Version : 50727
  File Encoding         : 65001
 
- Date: 14/11/2019 17:24:05
+ Date: 21/11/2019 17:07:47
 */
 
 SET NAMES utf8mb4;
@@ -34,7 +34,31 @@ CREATE TABLE `taro_enum`  (
 INSERT INTO `taro_enum` VALUES (1, 'user_role', '管理员##经理##员工##第三方团队');
 INSERT INTO `taro_enum` VALUES (2, 'resource_type', '报表##工具##态势图##光频单元##微波单元');
 INSERT INTO `taro_enum` VALUES (3, 'policy_act', 'read##write##exec##upload');
-INSERT INTO `taro_enum` VALUES (4, 'user_organization', '[{\"orgId\":33},{\"id\":24,\"label\":\"顶级部门1\",\"value\":\"顶级部门1\",\"isEdit\":false,\"children\":[{\"id\":27,\"label\":\"子部门1-1\",\"value\":\"子部门1-1\",\"isEdit\":false,\"children\":[{\"id\":28,\"label\":\"子部门1-1-1\",\"value\":\"子部门1-1-1\",\"isEdit\":false}]}]},{\"id\":25,\"label\":\"顶级部门2\",\"value\":\"顶级部门2\",\"isEdit\":false,\"children\":[{\"id\":29,\"label\":\"子部门2-1\",\"value\":\"子部门2-1\",\"isEdit\":false}]},{\"id\":26,\"label\":\"顶级部门3\",\"value\":\"顶级部门3\",\"isEdit\":false,\"children\":[{\"id\":30,\"label\":\"子部门3-1\",\"value\":\"子部门3-1\",\"isEdit\":false,\"children\":[{\"id\":32,\"label\":\"子部门3-1-1\",\"value\":\"子部门3-1-1\",\"isEdit\":false}]}]},{\"id\":27,\"label\":\"顶级部门4\",\"value\":\"顶级部门4\",\"isEdit\":false,\"children\":[{\"id\":31,\"label\":\"子部门4-1\",\"value\":\"子部门4-1\",\"isEdit\":false}]}]');
+INSERT INTO `taro_enum` VALUES (4, 'user_organization', '[{\"orgId\":34},{\"id\":24,\"label\":\"顶级部门1\",\"value\":\"顶级部门1\",\"isEdit\":false,\"children\":[{\"id\":27,\"label\":\"子部门1-1\",\"value\":\"子部门1-1\",\"isEdit\":false,\"children\":[{\"id\":28,\"label\":\"子部门1-1-1\",\"value\":\"子部门1-1-1\",\"isEdit\":false,\"children\":[{\"id\":33,\"label\":\"子部门1-1-1-1\",\"value\":\"子部门1-1-1-1\",\"isEdit\":false}]}]}]},{\"id\":25,\"label\":\"顶级部门2\",\"value\":\"顶级部门2\",\"isEdit\":false,\"children\":[{\"id\":29,\"label\":\"子部门2-1\",\"value\":\"子部门2-1\",\"isEdit\":false}]},{\"id\":26,\"label\":\"顶级部门3\",\"value\":\"顶级部门3\",\"isEdit\":false,\"children\":[{\"id\":30,\"label\":\"子部门3-1\",\"value\":\"子部门3-1\",\"isEdit\":false,\"children\":[{\"id\":32,\"label\":\"子部门3-1-1\",\"value\":\"子部门3-1-1\",\"isEdit\":false}]}]},{\"id\":27,\"label\":\"顶级部门4\",\"value\":\"顶级部门4\",\"isEdit\":false,\"children\":[{\"id\":31,\"label\":\"子部门4-1\",\"value\":\"子部门4-1\",\"isEdit\":false}]}]');
+
+-- ----------------------------
+-- Table structure for taro_identity
+-- ----------------------------
+DROP TABLE IF EXISTS `taro_identity`;
+CREATE TABLE `taro_identity`  (
+  `identity_id` int(1) UNSIGNED ZEROFILL NOT NULL AUTO_INCREMENT COMMENT 'Fabric 注册Id',
+  `identity_name` varchar(255) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL COMMENT 'Fabric 身份名',
+  `identity_secret` varchar(255) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL COMMENT 'Fabric 身份密码',
+  `identity_type` varchar(255) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL COMMENT 'Fabric 身份类型',
+  `identity_affiliation` varchar(255) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL COMMENT 'Fabric 身份从属关系',
+  `identity_attrs` varchar(1024) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL COMMENT 'Fabric 身份属性',
+  `identity_ctime` datetime(0) NULL DEFAULT NULL COMMENT 'Fabric 身份创建时间',
+  `identity_status` int(1) NULL DEFAULT NULL COMMENT 'Fabric 身份状态',
+  PRIMARY KEY (`identity_id`) USING BTREE
+) ENGINE = InnoDB AUTO_INCREMENT = 5 CHARACTER SET = utf8 COLLATE = utf8_general_ci ROW_FORMAT = Dynamic;
+
+-- ----------------------------
+-- Records of taro_identity
+-- ----------------------------
+INSERT INTO `taro_identity` VALUES (1, 'user1', 'user1pw', 'client', 'org2', 'app1Admin=true:ecert,email=user1@gmail.com', '2019-11-21 15:00:43', 0);
+INSERT INTO `taro_identity` VALUES (2, 'peer1', 'peer1pw', 'peer', 'org1', 'email=peer1@gmail.com', '2019-11-21 16:58:40', 0);
+INSERT INTO `taro_identity` VALUES (3, 'order1', 'order1pw', 'order', 'org1', '', '2019-11-21 16:59:19', 0);
+INSERT INTO `taro_identity` VALUES (4, 'peer2', 'peer2pw', 'peer', 'org1', '', '2019-11-21 16:59:45', 0);
 
 -- ----------------------------
 -- Table structure for taro_policy
@@ -126,19 +150,20 @@ CREATE TABLE `taro_user`  (
   `user_status` int(1) NULL DEFAULT NULL COMMENT '用户状态',
   `user_hash` varchar(255) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL COMMENT '用户哈希',
   PRIMARY KEY (`user_id`) USING BTREE
-) ENGINE = InnoDB AUTO_INCREMENT = 17 CHARACTER SET = utf8 COLLATE = utf8_general_ci ROW_FORMAT = Dynamic;
+) ENGINE = InnoDB AUTO_INCREMENT = 18 CHARACTER SET = utf8 COLLATE = utf8_general_ci ROW_FORMAT = Dynamic;
 
 -- ----------------------------
 -- Records of taro_user
 -- ----------------------------
-INSERT INTO `taro_user` VALUES (1, 'zhao', '管理员', '顶级部门1/子部门1-1/子部门1-1-1', '111111', '655565565@163.com', '123123123', 1, '');
-INSERT INTO `taro_user` VALUES (2, 'kong', '经理', '顶级部门2/子部门2-1', '123131231', 'df@qq.com', '12312312', 0, '');
-INSERT INTO `taro_user` VALUES (3, 'yang', '经理', '顶级部门3/子部门3-1/子部门3-1-1', '1231', 'dfdf@qq.com', '12312312', 1, 'a3576333ac362536a3ac7233e53b6175');
+INSERT INTO `taro_user` VALUES (1, 'zhao', '管理员', '顶级部门1/子部门1-1/子部门1-1-1', '111111', '655565565@163.com', '123123123', 1, '08d0698325c3994259da769bde806ebc');
+INSERT INTO `taro_user` VALUES (2, 'kong', '经理', '顶级部门2/子部门2-1', '123131231', 'df@qq.com', '12312312', 1, 'e71d5a741e58b9379ed23031c3f94d22');
+INSERT INTO `taro_user` VALUES (3, 'yang', '经理', '顶级部门3/子部门3-1/子部门3-1-1', '1231', 'dfdf@qq.com', '12312312', 0, '');
 INSERT INTO `taro_user` VALUES (4, 'zzzz', '员工', '顶级部门4/子部门4-1', '1231adfasdf', 'dfdf@qq.com', '12312312', 0, '');
 INSERT INTO `taro_user` VALUES (5, 'adsfasdf', '第三方团队', '顶级部门3/子部门3-1/子部门3-1-1', '1231adfasdf', 'dfdf@qq.com', '12312312', 0, '');
 INSERT INTO `taro_user` VALUES (6, 'ggggggg', '经理', '顶级部门2/子部门2-1', '1231adfasdf', 'dfdf@qq.com', '12312312', 0, '');
 INSERT INTO `taro_user` VALUES (14, 'abddd', '员工', '顶级部门1/子部门1-1/子部门1-1-1', 'adfad', '11233434322@qq.com', '123124ddd', 0, '');
 INSERT INTO `taro_user` VALUES (15, 'abdddaaaa', '员工', '顶级部门2/子部门2-1', 'adfad', '11233434322@qq.com', '123124ddd', 0, '');
 INSERT INTO `taro_user` VALUES (16, 'adfasdfd', '员工', '顶级部门4/子部门4-1', 'dfdfdf', '1123131@123.com', '544342341', 0, '');
+INSERT INTO `taro_user` VALUES (17, 'test9', '员工', '顶级部门4/子部门4-1', 'dfadf', '123124323@qq.com', '1231243432', 0, '75cded9e84623b344159aaab0aa8e7fd');
 
 SET FOREIGN_KEY_CHECKS = 1;

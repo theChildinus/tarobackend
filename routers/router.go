@@ -38,6 +38,11 @@ func init() {
 	beego.Router("user/revoke", &controllers.UserController{}, "post:Revoke")
 	beego.Router("user/verifyCert", &controllers.UserController{}, "post:VerifyCert")
 
+	beego.Router("identity/create", &controllers.IdentityController{}, "post:Create")
+	beego.Router("identity/list", &controllers.IdentityController{}, "*:List")
+	beego.Router("identity/deleteOne", &controllers.IdentityController{}, "post:DeleteOne")
+	beego.Router("identity/update", &controllers.IdentityController{}, "post:Update")
+
 	beego.Router("enum/getValue", &controllers.EnumController{}, "*:GetValue")
 	beego.Router("enum/putValue", &controllers.EnumController{}, "post:PutValue")
 
