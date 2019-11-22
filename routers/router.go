@@ -42,6 +42,9 @@ func init() {
 	beego.Router("identity/list", &controllers.IdentityController{}, "*:List")
 	beego.Router("identity/deleteOne", &controllers.IdentityController{}, "post:DeleteOne")
 	beego.Router("identity/update", &controllers.IdentityController{}, "post:Update")
+	beego.Router("identity/register", &controllers.IdentityController{}, "post:Register")
+	beego.Router("identity/enroll", &controllers.IdentityController{}, "post:Enroll")
+	beego.Router("identity/revoke", &controllers.IdentityController{}, "post:Revoke")
 
 	beego.Router("enum/getValue", &controllers.EnumController{}, "*:GetValue")
 	beego.Router("enum/putValue", &controllers.EnumController{}, "post:PutValue")

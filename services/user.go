@@ -134,8 +134,8 @@ func ListUserNameAndRole() ([]string, int64, error) {
 	engine := utils.Engine_mysql
 	var (
 		names, roles []string
-		err error
-		count int64
+		err          error
+		count        int64
 	)
 	err = engine.Table("taro_user").Select("user_name").Find(&names)
 	if err != nil {
@@ -166,7 +166,7 @@ func RegisterUser(req *pb.RegisterReq) (int64, error) {
 	// Contact the server and print out its response.
 	ctx, cancel := context.WithTimeout(context.Background(), time.Second*10)
 	defer cancel()
-	r, err := c.Register(ctx, &pb.RegisterReq{Username: req.Username})
+	r, err := c.Register(ctx, &pb.RegisterReq{Name: req.Name, Type: "user"})
 	if err != nil {
 		logs.Error("RegisterUser: could not Register: %v", err)
 		return -1, err
@@ -174,7 +174,7 @@ func RegisterUser(req *pb.RegisterReq) (int64, error) {
 	if r.GetCode() == 0 {
 		user := models.TaroUser{UserStatus: 1}
 		engine := utils.Engine_mysql
-		_, err = engine.ID(req.Userid).Update(&user)
+		_, err = engine.ID(req.Id).Update(&user)
 		if err != nil {
 			logs.Error("RegisterUser: User Status Update Error")
 			return -1, err
@@ -195,7 +195,7 @@ func DownloadCert(req *pb.DownloadReq) (*pb.DownloadResp, error) {
 	// Contact the server and print out its response.
 	ctx, cancel := context.WithTimeout(context.Background(), time.Second*10)
 	defer cancel()
-	r, err := c.Download(ctx, &pb.DownloadReq{Username: req.Username})
+	r, err := c.Download(ctx, &pb.DownloadReq{Name: req.Name, Type: "user"})
 	if err != nil {
 		logs.Error("DownloadCert: could not Download: %v", err)
 		return nil, err
@@ -212,7 +212,7 @@ func Login(req *pb.LoginReq) (int64, error) {
 	fromdb := new(models.TaroUser)
 	engine := utils.Engine_mysql
 	has, err := engine.Table("taro_user").
-		Where("user_name = ?", req.Username).Get(fromdb)
+		Where("user_name = ?", req.Name).Get(fromdb)
 	if err != nil {
 		logs.Error("Login: User Info Get Error")
 		return -1, err
@@ -221,17 +221,17 @@ func Login(req *pb.LoginReq) (int64, error) {
 		logs.Error("Login: User Doesn't Exist")
 		return -1, err
 	}
-	if len(req.Usersign) == 0 || req.Userrand == 0 {
-		randnum := rand.Int63();
+	if len(req.Sign) == 0 || req.Rand == 0 {
+		randnum := rand.Int63()
 		md5Inst := md5.New()
-		nameWithNum := req.Username + strconv.FormatInt(randnum, 10)
+		nameWithNum := req.Name + strconv.FormatInt(randnum, 10)
 		md5Inst.Write([]byte(nameWithNum))
 		md5Sum := md5Inst.Sum([]byte(""))
 		engine := utils.Engine_mysql
 		user := new(models.TaroUser)
 		user.UserHash = hex.EncodeToString(md5Sum)
 		// fmt.Println("namewithNum: ", nameWithNum, "userhash: ", user.UserHash)
-		_, err = engine.Where("user_name = ?", req.Username).Update(user)
+		_, err = engine.Where("user_name = ?", req.Name).Update(user)
 		if err != nil {
 			logs.Error("Login: User Hash Update Error")
 			return -1, err
@@ -242,7 +242,7 @@ func Login(req *pb.LoginReq) (int64, error) {
 	// Set up a connection to the server.
 	conn, err := grpc.Dial(beego.AppConfig.String("fabric_service"), grpc.WithInsecure())
 	if err != nil {
-		logs.Error("DownloadCert: did not connect: %v", err)
+		logs.Error("Login: did not connect: %v", err)
 		return -1, err
 	}
 	//defer conn.Close()
@@ -250,9 +250,9 @@ func Login(req *pb.LoginReq) (int64, error) {
 	// Contact the server and print out its response.
 	ctx, cancel := context.WithTimeout(context.Background(), time.Second*10)
 	defer cancel()
-	r, err := c.Login(ctx, &pb.LoginReq{Username: req.Username, Userrand: req.Userrand, Usersign: req.Usersign})
+	r, err := c.Login(ctx, &pb.LoginReq{Name: req.Name, Rand: req.Rand, Sign: req.Sign, Type: "user"})
 	if err != nil {
-		logs.Error("DownloadCert: could not Download: %v", err)
+		logs.Error("Login: could not Login: %v", err)
 		return -1, err
 	}
 	return r.Code, nil
@@ -271,7 +271,7 @@ func RevokeUser(req *pb.RevokeReq) (int64, error) {
 	// Contact the server and print out its response.
 	ctx, cancel := context.WithTimeout(context.Background(), time.Second*10)
 	defer cancel()
-	r, err := c.Revoke(ctx, &pb.RevokeReq{Username: req.Username})
+	r, err := c.Revoke(ctx, &pb.RevokeReq{Name: req.Name, Type: "user"})
 	if err != nil {
 		logs.Error("RevokeUser: could not Revoke: %v", err)
 		return -1, err
@@ -279,7 +279,7 @@ func RevokeUser(req *pb.RevokeReq) (int64, error) {
 	if r.GetCode() == 0 {
 		user := models.TaroUser{UserStatus: 0, UserHash: ""}
 		engine := utils.Engine_mysql
-		_, err = engine.ID(req.Userid).Cols("user_status", "user_hash").Update(&user)
+		_, err = engine.ID(req.Id).Cols("user_status", "user_hash").Update(&user)
 		if err != nil {
 			logs.Error("RevokeUser: User Status Update Error")
 			return -1, err
@@ -299,7 +299,7 @@ func VerifyCert(req *pb.VerifyCertReq) (int64, error) {
 	// Contact the server and print out its response.
 	ctx, cancel := context.WithTimeout(context.Background(), time.Second*10)
 	defer cancel()
-	r, err := c.VerifyCert(ctx, &pb.VerifyCertReq{Username: req.Username, Certcontent:req.Certcontent})
+	r, err := c.VerifyCert(ctx, &pb.VerifyCertReq{Name: req.Name, Certcontent: req.Certcontent, Type: "user"})
 	if err != nil {
 		logs.Error("VerifyCert: could not Verify: %v", err)
 		return -1, err

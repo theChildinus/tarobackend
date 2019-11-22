@@ -1,9 +1,14 @@
 package services
 
 import (
-"github.com/astaxie/beego/logs"
-"tarobackend/models"
-"tarobackend/utils"
+	"github.com/astaxie/beego"
+	"github.com/astaxie/beego/logs"
+	"golang.org/x/net/context"
+	"google.golang.org/grpc"
+	"tarobackend/models"
+	pb "tarobackend/proto"
+	"tarobackend/utils"
+	"time"
 )
 
 type IdentityReq struct {
@@ -80,4 +85,99 @@ func UpdateIdentity(r *models.TaroIdentity) error {
 		return err
 	}
 	return nil
+}
+
+func RegisterIdentity(req *pb.RegisterReq) (int64, error) {
+	// TODO Register Identity Id/Name in IdentityTable？
+	// Set up a connection to the server.
+	conn, err := grpc.Dial(beego.AppConfig.String("fabric_service"), grpc.WithInsecure())
+	if err != nil {
+		logs.Error("RegisterIdentity: did not connect: %v", err)
+		return -1, err
+	}
+	//defer conn.Close()
+	c := pb.NewFabricServiceClient(conn)
+	// Contact the server and print out its response.
+	ctx, cancel := context.WithTimeout(context.Background(), time.Second*10)
+	defer cancel()
+	r, err := c.Register(ctx, &pb.RegisterReq{
+		Name:        req.Name,
+		Secret:      req.Secret,
+		Type:        req.Type,
+		Affiliation: req.Affiliation,
+		Attrs:       req.Attrs,
+	})
+	if err != nil {
+		logs.Error("RegisterIdentity: could not Register: %v", err)
+		return -1, err
+	}
+	if r.GetCode() == 0 {
+		identity := models.TaroIdentity{IdentityStatus: 1}
+		engine := utils.Engine_mysql
+		_, err = engine.ID(req.Id).Update(&identity)
+		if err != nil {
+			logs.Error("RegisterIdentity: identity Status Update Error")
+			return -1, err
+		}
+	}
+	return r.GetCode(), nil
+}
+
+func EnrollIdentity(req *pb.EnrollReq) (int64, error) {
+	// Set up a connection to the server.
+	conn, err := grpc.Dial(beego.AppConfig.String("fabric_service"), grpc.WithInsecure())
+	if err != nil {
+		logs.Error("EnrollIdentity: did not connect: %v", err)
+		return -1, err
+	}
+	//defer conn.Close()
+	c := pb.NewFabricServiceClient(conn)
+	// Contact the server and print out its response.
+	ctx, cancel := context.WithTimeout(context.Background(), time.Second*10)
+	defer cancel()
+	r, err := c.Enroll(ctx, &pb.EnrollReq{Name: req.Name, Secret: req.Secret, Attrs: req.Attrs, Type: req.Type})
+	if err != nil {
+		logs.Error("EnrollIdentity: could not Enroll: %v", err)
+		return -1, err
+	}
+	if r.GetCode() == 0 {
+		identity := models.TaroIdentity{IdentityStatus: 2}
+		engine := utils.Engine_mysql
+		_, err = engine.ID(req.Id).Update(&identity)
+		if err != nil {
+			logs.Error("EnrollIdentity: Identity Status Update Error")
+			return -1, err
+		}
+	}
+	return r.GetCode(), nil
+}
+
+func RevokeIdentity(req *pb.RevokeReq) (int64, error) {
+	// TODO Register Identity Id/Name in IdentityTable？
+	// Set up a connection to the server.
+	conn, err := grpc.Dial(beego.AppConfig.String("fabric_service"), grpc.WithInsecure())
+	if err != nil {
+		logs.Error("RevokeIdentity: did not connect: %v", err)
+		return -1, err
+	}
+	//defer conn.Close()
+	c := pb.NewFabricServiceClient(conn)
+	// Contact the server and print out its response.
+	ctx, cancel := context.WithTimeout(context.Background(), time.Second*10)
+	defer cancel()
+	r, err := c.Revoke(ctx, &pb.RevokeReq{Name: req.Name, Type: req.Type})
+	if err != nil {
+		logs.Error("RevokeIdentity: could not Revoke: %v", err)
+		return -1, err
+	}
+	if r.GetCode() == 0 {
+		identity := models.TaroIdentity{IdentityStatus: 1}
+		engine := utils.Engine_mysql
+		_, err = engine.ID(req.Id).Update(&identity)
+		if err != nil {
+			logs.Error("RevokeIdentity: Identity Status Update Error")
+			return -1, err
+		}
+	}
+	return r.GetCode(), nil
 }

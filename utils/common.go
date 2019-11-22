@@ -10,12 +10,12 @@ type Page struct {
 }
 
 type NormalResp struct {
-	Code   int `json:"code"`
+	Code   int    `json:"code"`
 	NorMsg string `json:"normsg"`
 }
 
 type ErrorResp struct {
-	Code   int `json:"code"`
+	Code   int    `json:"code"`
 	ErrMsg string `json:"errrmsg"`
 }
 

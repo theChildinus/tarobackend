@@ -5,6 +5,7 @@ import (
 	"github.com/astaxie/beego"
 	"github.com/astaxie/beego/logs"
 	"tarobackend/models"
+	pb "tarobackend/proto"
 	"tarobackend/services"
 	"tarobackend/utils"
 	"time"
@@ -90,5 +91,78 @@ func (c *IdentityController) Update() {
 		return
 	}
 	utils.BuildJsonResp(c, "Normal", "Update Identity Success")
+	return
+}
+
+func (c *IdentityController) Register() {
+	var req pb.RegisterReq
+	var err error
+	err = json.Unmarshal(c.Ctx.Input.RequestBody, &req)
+	if err != nil {
+		utils.BuildJsonResp(c, "Error", "Json Parse Error")
+		return
+	}
+	code, err := services.RegisterIdentity(&req)
+	if err != nil {
+		logs.Error("Regist Error", err.Error())
+		utils.BuildJsonResp(c, "Error", "Regist Error")
+		return
+	}
+	if code == 0 {
+		logs.Info("Regist " + req.Name + " Success")
+		utils.BuildJsonResp(c, "Normal", "Regist "+req.Name+" Success")
+	} else {
+		logs.Info("Regist " + req.Name + " Failed")
+		utils.BuildJsonResp(c, "Error", "Regist "+req.Name+" Failed")
+	}
+	return
+}
+
+func (c *IdentityController) Enroll() {
+	var req pb.EnrollReq
+	var err error
+	err = json.Unmarshal(c.Ctx.Input.RequestBody, &req)
+	if err != nil {
+		utils.BuildJsonResp(c, "Error", "Json Parse Error")
+		return
+	}
+	code, err := services.EnrollIdentity(&req)
+	if err != nil {
+		logs.Error("Enroll Error", err.Error())
+		utils.BuildJsonResp(c, "Error", "Enroll Error")
+		return
+	}
+	if code == 0 {
+		logs.Info("Enroll " + req.Name + " Success")
+		utils.BuildJsonResp(c, "Normal", "Enroll "+req.Name+" Success")
+	} else {
+		logs.Info("Enroll " + req.Name + " Failed")
+		utils.BuildJsonResp(c, "Error", "Enroll "+req.Name+" Failed")
+	}
+	return
+}
+
+func (c *IdentityController) Revoke() {
+	var req pb.RevokeReq
+	var err error
+	err = json.Unmarshal(c.Ctx.Input.RequestBody, &req)
+	if err != nil {
+		utils.BuildJsonResp(c, "Error", "Json Parse Error")
+		return
+	}
+
+	code, err := services.RevokeIdentity(&req)
+	if err != nil {
+		logs.Error("User Revoke Error", err.Error())
+		utils.BuildJsonResp(c, "Error", "User Revoke Error")
+		return
+	}
+	if code == 0 {
+		logs.Info("Revoke " + req.Name + " Success")
+		utils.BuildJsonResp(c, "Normal", "Revoke "+req.Name+" Success")
+	} else {
+		logs.Error("Revoke " + req.Name + " Failed")
+		utils.BuildJsonResp(c, "Error", "Revoke "+req.Name+" Failed")
+	}
 	return
 }

@@ -7,17 +7,34 @@ option java_outer_classname = "RegisterProto";
 package proto;
 
 message RegisterReq {
-    int64 userid = 1;
-    string username = 2;
+    int64 id = 1;
+    string name = 2;
+    string secret = 3;
+    string type = 4;
+    string affiliation = 5;
+    string attrs = 6;
 }
 
 message RegisterResp {
     int64 code = 1;
 }
 
+message EnrollReq {
+    int64 id = 1;
+    string name = 2;
+    string secret = 3;
+    string type = 4;
+    string attrs = 5;
+}
+
+message EnrollResp {
+    int64 code = 1;
+}
+
 message DownloadReq {
-    int64 userid = 1;
-    string username = 2;
+    int64 id = 1;
+    string name = 2;
+    string type = 3;
 }
 
 message DownloadResp {
@@ -25,9 +42,10 @@ message DownloadResp {
 }
 
 message LoginReq {
-    string username = 1;
-    int64 userrand = 2;
-    string usersign = 3;
+    string name = 1;
+    int64 rand = 2;
+    string sign = 3;
+    string type = 4;
 }
 
 message LoginResp {
@@ -35,8 +53,9 @@ message LoginResp {
 }
 
 message RevokeReq {
-    int64 userid = 1;
-    string username = 2;
+    int64 id = 1;
+    string name = 2;
+    string type = 3;
 }
 
 message RevokeResp {
@@ -44,8 +63,9 @@ message RevokeResp {
 }
 
 message VerifyCertReq {
-    string username = 1;
+    string name = 1;
     string certcontent = 2;
+    string type = 3;
 }
 
 message VerifyCertResp {
@@ -54,6 +74,7 @@ message VerifyCertResp {
 
 service FabricService {
     rpc Register(RegisterReq) returns (RegisterResp) {}
+    rpc Enroll(EnrollReq) returns (EnrollResp) {}
     rpc Download(DownloadReq) returns (DownloadResp) {}
     rpc Login(LoginReq) returns (LoginResp) {}
     rpc Revoke(RevokeReq) returns (RevokeResp) {}

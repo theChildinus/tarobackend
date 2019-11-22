@@ -143,11 +143,11 @@ func (c *UserController) Register() {
 		return
 	}
 	if code == 0 {
-		logs.Info("Regist " + req.Username + " Success")
-		utils.BuildJsonResp(c, "Normal", "Regist "+req.Username+" Success")
+		logs.Info("Regist " + req.Name + " Success")
+		utils.BuildJsonResp(c, "Normal", "Regist "+req.Name+" Success")
 	} else {
-		logs.Info("Regist " + req.Username + " Failed")
-		utils.BuildJsonResp(c, "Error", "Regist "+req.Username+" Failed")
+		logs.Info("Regist " + req.Name + " Failed")
+		utils.BuildJsonResp(c, "Error", "Regist "+req.Name+" Failed")
 	}
 	return
 }
@@ -188,14 +188,14 @@ func (c *UserController) Login() {
 		return
 	}
 	if code == 0 {
-		logs.Info("Login " + req.Username + " Success")
-		utils.BuildJsonResp(c, "Normal", "Login "+req.Username+" Success")
+		logs.Info("Login " + req.Name + " Success")
+		utils.BuildJsonResp(c, "Normal", "Login "+req.Name+" Success")
 	} else if code != -1 {
 		c.Data["json"] = pb.LoginResp{Code: code}
 		c.ServeJSON()
 	} else {
-		logs.Error("Login " + req.Username + " Failed")
-		utils.BuildJsonResp(c, "Error", "Login " + req.Username + " Failed")
+		logs.Error("Login " + req.Name + " Failed")
+		utils.BuildJsonResp(c, "Error", "Login "+req.Name+" Failed")
 	}
 	return
 }
@@ -216,11 +216,11 @@ func (c *UserController) Revoke() {
 		return
 	}
 	if code == 0 {
-		logs.Info("Revoke " + req.Username + " Success")
-		utils.BuildJsonResp(c, "Normal", "Revoke "+req.Username+" Success")
+		logs.Info("Revoke " + req.Name + " Success")
+		utils.BuildJsonResp(c, "Normal", "Revoke "+req.Name+" Success")
 	} else {
-		logs.Error("Revoke " + req.Username + " Failed")
-		utils.BuildJsonResp(c, "Error", "Revoke " + req.Username + " Failed")
+		logs.Error("Revoke " + req.Name + " Failed")
+		utils.BuildJsonResp(c, "Error", "Revoke "+req.Name+" Failed")
 	}
 	return
 }
@@ -240,11 +240,11 @@ func (c *UserController) VerifyCert() {
 		return
 	}
 	if code == 0 {
-		logs.Info("VerifyCert " + req.Username + " Success")
-		utils.BuildJsonResp(c, "Normal", "VerifyCert "+req.Username+" Success")
+		logs.Info("VerifyCert " + req.Name + " Success")
+		utils.BuildJsonResp(c, "Normal", "VerifyCert "+req.Name+" Success")
 	} else {
-		logs.Info("VerifyCert " + req.Username + " Failed")
-		utils.BuildJsonResp(c, "Error", "VerifyCert "+req.Username+" Failed")
+		logs.Info("VerifyCert " + req.Name + " Failed")
+		utils.BuildJsonResp(c, "Error", "VerifyCert "+req.Name+" Failed")
 	}
 	return
 }
