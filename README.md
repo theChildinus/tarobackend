@@ -74,3 +74,8 @@ openssl pkcs8 -topk8 -nocrypt -in zhao.pem -out zhao2.pem
 
 Idea 打开 maven工具，Plugins中选择 `protobuf`，运行 `protobuf:compile` 和 `protobuf:compile-custom`
 
+## 注意事项
+
+1. 外网访问本机端口时，需要在 windows 或 linux 防火墙中添加规则，允许访问。
+2. 工程 fabric-service-client 与 tarobackend 中的 fabric_service.proto 文件的`message` `rpc` 内容要保持一致
+3. 开发环境时，证书等文件产生在 fabric-service-client 的 card 文件夹下，正式环境时，产生在 tarobackend 的 card 文件夹下
