@@ -11,7 +11,7 @@
  Target Server Version : 50727
  File Encoding         : 65001
 
- Date: 21/11/2019 17:07:47
+ Date: 03/12/2019 22:07:51
 */
 
 SET NAMES utf8mb4;
@@ -50,15 +50,16 @@ CREATE TABLE `taro_identity`  (
   `identity_ctime` datetime(0) NULL DEFAULT NULL COMMENT 'Fabric 身份创建时间',
   `identity_status` int(1) NULL DEFAULT NULL COMMENT 'Fabric 身份状态',
   PRIMARY KEY (`identity_id`) USING BTREE
-) ENGINE = InnoDB AUTO_INCREMENT = 5 CHARACTER SET = utf8 COLLATE = utf8_general_ci ROW_FORMAT = Dynamic;
+) ENGINE = InnoDB AUTO_INCREMENT = 6 CHARACTER SET = utf8 COLLATE = utf8_general_ci ROW_FORMAT = Dynamic;
 
 -- ----------------------------
 -- Records of taro_identity
 -- ----------------------------
-INSERT INTO `taro_identity` VALUES (1, 'user1', 'user1pw', 'client', 'org2', 'app1Admin=true:ecert,email=user1@gmail.com', '2019-11-21 15:00:43', 0);
+INSERT INTO `taro_identity` VALUES (1, 'user1', 'user1pw', 'client', 'org2', 'app1Admin=true:ecert,email=user1@gmail.com', '2019-11-21 15:00:43', 1);
 INSERT INTO `taro_identity` VALUES (2, 'peer1', 'peer1pw', 'peer', 'org1', 'email=peer1@gmail.com', '2019-11-21 16:58:40', 0);
 INSERT INTO `taro_identity` VALUES (3, 'order1', 'order1pw', 'order', 'org1', '', '2019-11-21 16:59:19', 0);
 INSERT INTO `taro_identity` VALUES (4, 'peer2', 'peer2pw', 'peer', 'org1', '', '2019-11-21 16:59:45', 0);
+INSERT INTO `taro_identity` VALUES (5, 'order2', 'order2pw', 'order', 'org2', '', '2019-11-22 08:30:53', 0);
 
 -- ----------------------------
 -- Table structure for taro_policy
@@ -69,21 +70,26 @@ CREATE TABLE `taro_policy`  (
   `policy_sub` varchar(255) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL COMMENT '策略主体',
   `policy_obj` varchar(255) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL COMMENT '策略资源',
   `policy_act` varchar(255) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL COMMENT '策略动作',
+  `policy_type` varchar(255) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL COMMENT '策略类型',
   `policy_ctime` datetime(0) NULL DEFAULT NULL COMMENT '创建时间',
   PRIMARY KEY (`policy_id`) USING BTREE
-) ENGINE = InnoDB AUTO_INCREMENT = 14 CHARACTER SET = utf8 COLLATE = utf8_general_ci ROW_FORMAT = Dynamic;
+) ENGINE = InnoDB AUTO_INCREMENT = 18 CHARACTER SET = utf8 COLLATE = utf8_general_ci ROW_FORMAT = Dynamic;
 
 -- ----------------------------
 -- Records of taro_policy
 -- ----------------------------
-INSERT INTO `taro_policy` VALUES (2, 'kong', 'data2', 'write', '2019-10-11 21:24:22');
-INSERT INTO `taro_policy` VALUES (3, 'kong', 'data2', 'exec', '2019-10-11 21:25:02');
-INSERT INTO `taro_policy` VALUES (4, 'zhao', 'data1', 'read', '2019-10-11 21:25:54');
-INSERT INTO `taro_policy` VALUES (5, 'zhao', 'data2', 'exec', '2019-10-11 21:26:07');
-INSERT INTO `taro_policy` VALUES (6, '管理员', 'data3', 'upload', '2019-10-11 21:26:32');
-INSERT INTO `taro_policy` VALUES (8, '管理员', 'data4', 'exec', '2019-10-14 10:43:45');
-INSERT INTO `taro_policy` VALUES (12, 'abddd', 'data1', 'read', '2019-10-23 17:54:43');
-INSERT INTO `taro_policy` VALUES (13, 'adsfasdf', 'data4', 'upload', '2019-11-07 08:22:39');
+INSERT INTO `taro_policy` VALUES (2, 'kong', 'data2', 'write', 'IOT策略', '2019-10-11 21:24:22');
+INSERT INTO `taro_policy` VALUES (3, 'kong', 'data2', 'exec', 'IOT策略', '2019-10-11 21:25:02');
+INSERT INTO `taro_policy` VALUES (4, 'zhao', 'data1', 'read', 'IOT策略', '2019-10-11 21:25:54');
+INSERT INTO `taro_policy` VALUES (5, 'zhao', 'data2', 'exec', 'IOT策略', '2019-10-11 21:26:07');
+INSERT INTO `taro_policy` VALUES (6, '管理员', 'data3', 'upload', 'IOT策略', '2019-10-11 21:26:32');
+INSERT INTO `taro_policy` VALUES (8, '管理员', 'data4', 'exec', 'IOT策略', '2019-10-14 10:43:45');
+INSERT INTO `taro_policy` VALUES (12, 'abddd', 'data1', 'read', 'IOT策略', '2019-10-23 17:54:43');
+INSERT INTO `taro_policy` VALUES (13, 'adsfasdf', 'data4', 'upload', 'IOT策略', '2019-11-07 08:22:39');
+INSERT INTO `taro_policy` VALUES (14, 'Org1.Peer', 'MyPolicy', 'Signature', 'Fabric策略', '2019-12-03 22:06:04');
+INSERT INTO `taro_policy` VALUES (15, 'Org2.Peer', 'MyPolicy', 'Signature', 'Fabric策略', '2019-12-03 22:06:08');
+INSERT INTO `taro_policy` VALUES (16, '/Channel/Application/Writers', 'peer/Propose', 'permit', 'Fabric策略', '2019-12-03 22:06:10');
+INSERT INTO `taro_policy` VALUES (17, '/Channel/Application/Readers', 'event/Block', 'permit', 'Fabric策略', '2019-12-03 22:06:13');
 
 -- ----------------------------
 -- Table structure for taro_resource
@@ -155,8 +161,8 @@ CREATE TABLE `taro_user`  (
 -- ----------------------------
 -- Records of taro_user
 -- ----------------------------
-INSERT INTO `taro_user` VALUES (1, 'zhao', '管理员', '顶级部门1/子部门1-1/子部门1-1-1', '111111', '655565565@163.com', '123123123', 1, '08d0698325c3994259da769bde806ebc');
-INSERT INTO `taro_user` VALUES (2, 'kong', '经理', '顶级部门2/子部门2-1', '123131231', 'df@qq.com', '12312312', 1, 'e71d5a741e58b9379ed23031c3f94d22');
+INSERT INTO `taro_user` VALUES (1, 'zhao', '管理员', '顶级部门1/子部门1-1/子部门1-1-1/子部门1-1-1-1', '111111', '6555@163.com', '123123123', 1, '572dd387618a18b2b0923a86f220e8ee');
+INSERT INTO `taro_user` VALUES (2, 'kong', '经理', '顶级部门2/子部门2-1', '123131231', 'df@qq.com', '12312312', 0, 'e71d5a741e58b9379ed23031c3f94d22');
 INSERT INTO `taro_user` VALUES (3, 'yang', '经理', '顶级部门3/子部门3-1/子部门3-1-1', '1231', 'dfdf@qq.com', '12312312', 0, '');
 INSERT INTO `taro_user` VALUES (4, 'zzzz', '员工', '顶级部门4/子部门4-1', '1231adfasdf', 'dfdf@qq.com', '12312312', 0, '');
 INSERT INTO `taro_user` VALUES (5, 'adsfasdf', '第三方团队', '顶级部门3/子部门3-1/子部门3-1-1', '1231adfasdf', 'dfdf@qq.com', '12312312', 0, '');
