@@ -171,8 +171,8 @@ func (c *UserController) Download() {
 	c.ServeJSON()
 }
 
-func (c *UserController) Login() {
-	var req pb.LoginReq
+func (c *UserController) VerifyIdentity() {
+	var req pb.VerifyIdentityReq
 	var err error
 	// fmt.Println("requestBody: " + string(c.Ctx.Input.RequestBody))
 	err = json.Unmarshal(c.Ctx.Input.RequestBody, &req)
@@ -181,21 +181,21 @@ func (c *UserController) Login() {
 		return
 	}
 
-	code, err := services.Login(&req)
+	code, err := services.VerifyIdentity(&req)
 	if err != nil {
-		logs.Error("User Login Error", err.Error())
-		utils.BuildJsonResp(c, "Error", "User Login Error")
+		logs.Error("User Verify Error", err.Error())
+		utils.BuildJsonResp(c, "Error", "User Verify Error")
 		return
 	}
 	if code == 0 {
-		logs.Info("Login " + req.Name + " Success")
-		utils.BuildJsonResp(c, "Normal", "Login "+req.Name+" Success")
+		logs.Info("VerifyIdentity " + req.Name + " Success")
+		utils.BuildJsonResp(c, "Normal", "VerifyIdentity "+req.Name+" Success")
 	} else if code != -1 {
-		c.Data["json"] = pb.LoginResp{Code: code}
+		c.Data["json"] = pb.VerifyIdentityResp{Code: code}
 		c.ServeJSON()
 	} else {
-		logs.Error("Login " + req.Name + " Failed")
-		utils.BuildJsonResp(c, "Error", "Login "+req.Name+" Failed")
+		logs.Error("VerifyIdentity " + req.Name + " Failed")
+		utils.BuildJsonResp(c, "Error", "VerifyIdentity "+req.Name+" Failed")
 	}
 	return
 }
@@ -245,6 +245,63 @@ func (c *UserController) VerifyCert() {
 	} else {
 		logs.Info("VerifyCert " + req.Name + " Failed")
 		utils.BuildJsonResp(c, "Error", "VerifyCert "+req.Name+" Failed")
+	}
+	return
+}
+
+func (c *UserController) Login() {
+	var req services.LoginReq
+	var err error
+	err = json.Unmarshal(c.Ctx.Input.RequestBody, &req)
+	if err != nil {
+		utils.BuildJsonResp(c, "Error", "Json Parse Error")
+		return
+	}
+	token := c.Ctx.Input.Header("Authorization")
+	code, err := services.Login(&req, token)
+	if err != nil {
+		logs.Error("Login Error", err.Error())
+		utils.BuildJsonResp(c, "Error", "Login Error")
+		return
+	}
+	if code != "0" && code != "-1" {
+		c.Data["json"] = &services.LoginResp{Token:code}
+		c.ServeJSON()
+		return
+	}
+
+	if code == "0" {
+		logs.Info("Login " + req.UserName + " Success")
+		utils.BuildJsonResp(c, "Normal", "Login "+req.UserName+" Success")
+	} else {
+		logs.Info("Login " + req.UserName + " Failed")
+		utils.BuildJsonResp(c, "Error", "Login "+req.UserName+" Failed")
+	}
+	return
+}
+
+func (c *UserController) Logout() {
+	var req services.LogoutReq
+	var err error
+	err = json.Unmarshal(c.Ctx.Input.RequestBody, &req)
+	if err != nil {
+		utils.BuildJsonResp(c, "Error", "Json Parse Error")
+		return
+	}
+
+	token := c.Ctx.Input.Header("Authorization")
+	code, err := services.Logout(&req, token)
+	if err != nil {
+		logs.Error("Logout Error", err.Error())
+		utils.BuildJsonResp(c, "Error", "Logout Error")
+		return
+	}
+	if code == 0 {
+		logs.Info("Logout " + req.UserName + " Success")
+		utils.BuildJsonResp(c, "Normal", "Logout "+req.UserName+" Success")
+	} else {
+		logs.Info("Logout " + req.UserName + " Failed")
+		utils.BuildJsonResp(c, "Error", "Logout "+req.UserName+" Failed")
 	}
 	return
 }

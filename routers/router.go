@@ -34,9 +34,11 @@ func init() {
 	beego.Router("user/listNameAndRole", &controllers.UserController{}, "post:ListNameAndRole")
 	beego.Router("user/register", &controllers.UserController{}, "post:Register")
 	beego.Router("user/downloadCert", &controllers.UserController{}, "post:Download")
-	beego.Router("user/login", &controllers.UserController{}, "post:Login")
+	beego.Router("user/verifyIdentity", &controllers.UserController{}, "post:VerifyIdentity")
 	beego.Router("user/revoke", &controllers.UserController{}, "post:Revoke")
 	beego.Router("user/verifyCert", &controllers.UserController{}, "post:VerifyCert")
+	beego.Router("user/login", &controllers.UserController{}, "post:Login")
+	beego.Router("user/logout", &controllers.UserController{}, "post:Logout")
 
 	beego.Router("identity/create", &controllers.IdentityController{}, "post:Create")
 	beego.Router("identity/list", &controllers.IdentityController{}, "*:List")

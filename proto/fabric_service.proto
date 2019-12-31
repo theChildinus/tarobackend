@@ -41,14 +41,14 @@ message DownloadResp {
     string cert = 1;
 }
 
-message LoginReq {
+message VerifyIdentityReq {
     string name = 1;
     int64 rand = 2;
     string sign = 3;
     string type = 4;
 }
 
-message LoginResp {
+message VerifyIdentityResp {
     int64 code = 1;
 }
 
@@ -76,7 +76,7 @@ service FabricService {
     rpc Register(RegisterReq) returns (RegisterResp) {}
     rpc Enroll(EnrollReq) returns (EnrollResp) {}
     rpc Download(DownloadReq) returns (DownloadResp) {}
-    rpc Login(LoginReq) returns (LoginResp) {}
+    rpc VerifyIdentity(VerifyIdentityReq) returns (VerifyIdentityResp) {}
     rpc Revoke(RevokeReq) returns (RevokeResp) {}
     rpc VerifyCert(VerifyCertReq) returns (VerifyCertResp) {}
 }

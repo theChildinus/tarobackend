@@ -38,7 +38,7 @@ services:
       - fabric_service
       - mysql
     environment:
-      GOPROXY: https://goproxy.io
+      GOPROXY: https://mirrors.aliyun.com/goproxy/
     networks:
       - backend
     stdin_open: true

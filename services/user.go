@@ -2,10 +2,13 @@ package services
 
 import (
 	"crypto/md5"
+	"encoding/base64"
 	"encoding/hex"
 	"errors"
+	"fmt"
 	"github.com/astaxie/beego"
 	"github.com/astaxie/beego/logs"
+	"github.com/dgrijalva/jwt-go"
 	"golang.org/x/net/context"
 	"google.golang.org/grpc"
 	"math/rand"
@@ -35,6 +38,21 @@ type UserNameAndRoleResp struct {
 	List  []string `json:"list"`
 	Count int64    `json:"count"`
 }
+
+type LoginReq struct {
+	UserName string `json:"name"`
+	UserSecret string `json:"secret"`
+}
+
+type LoginResp struct {
+	Token string `json:"token"`
+}
+
+type LogoutReq struct {
+	UserName string `json:"name"`
+}
+
+var tokenMap = make(map[string]string, 10)
 
 func ListUser(req *UserReq) ([]models.TaroUser, int64, error) {
 	engine := utils.Engine_mysql
@@ -208,17 +226,17 @@ func DownloadCert(req *pb.DownloadReq) (*pb.DownloadResp, error) {
 	return r, nil
 }
 
-func Login(req *pb.LoginReq) (int64, error) {
+func VerifyIdentity(req *pb.VerifyIdentityReq) (int64, error) {
 	fromdb := new(models.TaroUser)
 	engine := utils.Engine_mysql
 	has, err := engine.Table("taro_user").
 		Where("user_name = ?", req.Name).Get(fromdb)
 	if err != nil {
-		logs.Error("Login: User Info Get Error")
+		logs.Error("VerifyIdentity: User Info Get Error")
 		return -1, err
 	}
 	if !has {
-		logs.Error("Login: User Doesn't Exist")
+		logs.Error("VerifyIdentity: User Doesn't Exist")
 		return -1, err
 	}
 	if len(req.Sign) == 0 || req.Rand == 0 {
@@ -233,7 +251,7 @@ func Login(req *pb.LoginReq) (int64, error) {
 		// fmt.Println("namewithNum: ", nameWithNum, "userhash: ", user.UserHash)
 		_, err = engine.Where("user_name = ?", req.Name).Update(user)
 		if err != nil {
-			logs.Error("Login: User Hash Update Error")
+			logs.Error("VerifyIdentity: User Hash Update Error")
 			return -1, err
 		}
 		return randnum, nil
@@ -242,7 +260,7 @@ func Login(req *pb.LoginReq) (int64, error) {
 	// Set up a connection to the server.
 	conn, err := grpc.Dial(beego.AppConfig.String("fabric_service"), grpc.WithInsecure())
 	if err != nil {
-		logs.Error("Login: did not connect: %v", err)
+		logs.Error("VerifyIdentity: did not connect: %v", err)
 		return -1, err
 	}
 	//defer conn.Close()
@@ -250,9 +268,9 @@ func Login(req *pb.LoginReq) (int64, error) {
 	// Contact the server and print out its response.
 	ctx, cancel := context.WithTimeout(context.Background(), time.Second*10)
 	defer cancel()
-	r, err := c.Login(ctx, &pb.LoginReq{Name: req.Name, Rand: req.Rand, Sign: req.Sign, Type: "user"})
+	r, err := c.VerifyIdentity(ctx, &pb.VerifyIdentityReq{Name: req.Name, Rand: req.Rand, Sign: req.Sign, Type: "user"})
 	if err != nil {
-		logs.Error("Login: could not Login: %v", err)
+		logs.Error("VerifyIdentity: could not verify: %v", err)
 		return -1, err
 	}
 	return r.Code, nil
@@ -305,4 +323,45 @@ func VerifyCert(req *pb.VerifyCertReq) (int64, error) {
 		return -1, err
 	}
 	return r.GetCode(), nil
+}
+
+func Login(req *LoginReq, Token string) (string, error) {
+
+	// Create a new token object, specifying signing method and the claims
+	// you would like it to contain.
+	if len(req.UserSecret) != 0 && len(Token) == 0 {
+		// verify UserSecret
+		token := jwt.NewWithClaims(jwt.SigningMethodHS256, jwt.MapClaims{
+			"foo": "bar",
+			"nbf": time.Now().Unix(),
+		})
+
+		// Sign and get the complete encoded token as a string using the secret
+		bytes, _ := base64.StdEncoding.DecodeString(req.UserSecret)
+		if tokenString, err := token.SignedString(bytes); err == nil {
+			tokenMap[req.UserName] = tokenString
+			fmt.Println(tokenString, err)
+			return tokenString, nil
+		} else {
+			return "", err
+		}
+	} else if len(Token) != 0 {
+		if t, ok := tokenMap[req.UserName]; ok {
+			if t == Token {
+				return "0", nil
+			} else {
+				return "-1", nil
+			}
+		}
+	}
+	return "", nil
+}
+
+func Logout(req *LogoutReq, token string) (int64, error) {
+	// verify token
+	// delete in tokenMap
+	if tokenMap[req.UserName] == token {
+		delete(tokenMap, req.UserName)
+	}
+	return 0, nil
 }
