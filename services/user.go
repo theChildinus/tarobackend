@@ -12,7 +12,6 @@ import (
 	"golang.org/x/net/context"
 	"google.golang.org/grpc"
 	"math/rand"
-	"strconv"
 	"strings"
 	"tarobackend/models"
 	pb "tarobackend/proto"
@@ -241,19 +240,6 @@ func VerifyIdentity(req *pb.VerifyIdentityReq) (int64, error) {
 	}
 	if len(req.Sign) == 0 || req.Rand == 0 {
 		randnum := rand.Int63()
-		md5Inst := md5.New()
-		nameWithNum := req.Name + strconv.FormatInt(randnum, 10)
-		md5Inst.Write([]byte(nameWithNum))
-		md5Sum := md5Inst.Sum([]byte(""))
-		engine := utils.Engine_mysql
-		user := new(models.TaroUser)
-		user.UserHash = hex.EncodeToString(md5Sum)
-		// fmt.Println("namewithNum: ", nameWithNum, "userhash: ", user.UserHash)
-		_, err = engine.Where("user_name = ?", req.Name).Update(user)
-		if err != nil {
-			logs.Error("VerifyIdentity: User Hash Update Error")
-			return -1, err
-		}
 		return randnum, nil
 	}
 
@@ -272,6 +258,21 @@ func VerifyIdentity(req *pb.VerifyIdentityReq) (int64, error) {
 	if err != nil {
 		logs.Error("VerifyIdentity: could not verify: %v", err)
 		return -1, err
+	}
+	if r.Code == 0 {
+		md5Inst := md5.New()
+		bytes, _ := base64.StdEncoding.DecodeString(req.Sign)
+		md5Inst.Write(bytes)
+		md5Sum := md5Inst.Sum([]byte(""))
+		engine := utils.Engine_mysql
+		user := new(models.TaroUser)
+		user.UserHash = hex.EncodeToString(md5Sum)
+		// fmt.Println("namewithNum: ", nameWithNum, "userhash: ", user.UserHash)
+		_, err = engine.Where("user_name = ?", req.Name).Update(user)
+		if err != nil {
+			logs.Error("VerifyIdentity: User Hash Update Error")
+			return -1, err
+		}
 	}
 	return r.Code, nil
 }
