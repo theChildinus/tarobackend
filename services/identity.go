@@ -1,10 +1,16 @@
 package services
 
 import (
+	"fmt"
 	"github.com/astaxie/beego"
 	"github.com/astaxie/beego/logs"
+	"github.com/pkg/sftp"
+	"golang.org/x/crypto/ssh"
 	"golang.org/x/net/context"
 	"google.golang.org/grpc"
+	"net"
+	"os"
+	"path"
 	"tarobackend/models"
 	pb "tarobackend/proto"
 	"tarobackend/utils"
@@ -180,4 +186,95 @@ func RevokeIdentity(req *pb.RevokeReq) (int64, error) {
 		}
 	}
 	return r.GetCode(), nil
+}
+
+func InstallIdentity(req *pb.InstallReq) (int64, error) {
+	sftpClient, err := connect(req.User, req.Pw, req.Ip, 22)
+	if err != nil {
+		logs.Error("InstallIdentity: Connect Error: %v", err)
+		return -1, err
+	}
+	defer sftpClient.Close()
+	certFilePath := "./card/" + req.Name + "/" + req.Name + ".crt"
+	skFilePath :=  "./card/" + req.Name + "/" + req.Name + ".pem"
+
+	fmt.Println("cert: " + certFilePath)
+	fmt.Println("sk: " + skFilePath)
+
+	certFile, err := os.Open(certFilePath)
+	if err != nil {
+		logs.Error("InstallIdentity: Open File" + req.Name + ".crt Failed")
+		return -1, err
+	}
+	defer certFile.Close()
+	skFile, err := os.Open(skFilePath)
+	if err != nil {
+		logs.Error("InstallIdentity: Open File" + req.Name + ".pem Failed")
+	}
+	defer skFile.Close()
+
+	buf := make([]byte, 1024)
+	dstFile, err := sftpClient.Create(path.Join(req.Path, path.Base(certFilePath)))
+	if err != nil {
+		logs.Error("InstallIdentity: Remote CreateFile" + req.Name + ".crt Failed")
+	}
+	for {
+		n, _ := certFile.Read(buf)
+		if n == 0 {
+			break
+		}
+		dstFile.Write(buf)
+	}
+	dstFile, err = sftpClient.Create(path.Join(req.Path, path.Base(skFilePath)))
+	if err != nil {
+		logs.Error("InstallIdentity: Remote CreateFile" + req.Name + ".pem Failed")
+	}
+	for {
+		n, _ := skFile.Read(buf)
+		if n == 0 {
+			break
+		}
+		dstFile.Write(buf)
+	}
+
+	defer dstFile.Close()
+	fmt.Println("copy file to remote server finished!")
+	return 0, nil
+}
+
+func connect(user, password, host string, port int) (*sftp.Client, error) {
+	var (
+		auth         []ssh.AuthMethod
+		addr         string
+		clientConfig *ssh.ClientConfig
+		sshClient    *ssh.Client
+		sftpClient   *sftp.Client
+		err          error
+	)
+	// get auth method
+	auth = make([]ssh.AuthMethod, 0)
+	auth = append(auth, ssh.Password(password))
+
+	clientConfig = &ssh.ClientConfig{
+		User:    user,
+		Auth:    auth,
+		Timeout: 30 * time.Second,
+		HostKeyCallback: func(hostname string, remote net.Addr, key ssh.PublicKey) error {
+			return nil
+		},
+	}
+
+	// connet to ssh
+	addr = fmt.Sprintf("%s:%d", host, port)
+
+	if sshClient, err = ssh.Dial("tcp", addr, clientConfig); err != nil {
+		return nil, err
+	}
+
+	// create sftp client
+	if sftpClient, err = sftp.NewClient(sshClient); err != nil {
+		return nil, err
+	}
+
+	return sftpClient, nil
 }

@@ -72,6 +72,18 @@ message VerifyCertResp {
     int64 code = 1;
 }
 
+message InstallReq {
+    string name = 1;
+    string ip = 2;
+    string user = 3;
+    string pw = 4;
+    string path = 5;
+}
+
+message InstallResp {
+    int64 code = 1;
+}
+
 service FabricService {
     rpc Register(RegisterReq) returns (RegisterResp) {}
     rpc Enroll(EnrollReq) returns (EnrollResp) {}

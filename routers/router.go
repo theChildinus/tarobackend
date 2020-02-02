@@ -26,6 +26,8 @@ func init() {
 	beego.Router("policy/deleteOne", &controllers.PolicyController{}, "post:DeleteOne")
 	beego.Router("policy/update", &controllers.PolicyController{}, "post:Update")
 	beego.Router("policy/check", &controllers.PolicyController{}, "post:Check")
+	beego.Router("policy/roleAllot", &controllers.PolicyController{}, "post:RoleAllot")
+	beego.Router("policy/executable", &controllers.PolicyController{}, "post:Executable")
 
 	beego.Router("user/create", &controllers.UserController{}, "post:Create")
 	beego.Router("user/list", &controllers.UserController{}, "*:List")
@@ -47,6 +49,7 @@ func init() {
 	beego.Router("identity/register", &controllers.IdentityController{}, "post:Register")
 	beego.Router("identity/enroll", &controllers.IdentityController{}, "post:Enroll")
 	beego.Router("identity/revoke", &controllers.IdentityController{}, "post:Revoke")
+	beego.Router("identity/install", &controllers.IdentityController{}, "post:Install")
 
 	beego.Router("enum/getValue", &controllers.EnumController{}, "*:GetValue")
 	beego.Router("enum/putValue", &controllers.EnumController{}, "post:PutValue")

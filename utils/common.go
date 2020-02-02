@@ -16,7 +16,7 @@ type NormalResp struct {
 
 type ErrorResp struct {
 	Code   int    `json:"code"`
-	ErrMsg string `json:"errrmsg"`
+	ErrMsg string `json:"errmsg"`
 }
 
 func BuildJsonResp(c interface{}, msgType, msg string) {

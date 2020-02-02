@@ -166,3 +166,28 @@ func (c *IdentityController) Revoke() {
 	}
 	return
 }
+
+func (c *IdentityController) Install() {
+	var req pb.InstallReq
+	var err error
+	err = json.Unmarshal(c.Ctx.Input.RequestBody, &req)
+	if err != nil {
+		utils.BuildJsonResp(c, "Error", "Json Parse Error")
+		return
+	}
+
+	code, err := services.InstallIdentity(&req)
+	if err != nil {
+		logs.Error("Cert Install Error", err.Error())
+		utils.BuildJsonResp(c, "Error", "Cert Install Error")
+		return
+	}
+	if code == 0 {
+		logs.Info("Install " + req.Name + " Cert Success")
+		utils.BuildJsonResp(c, "Normal", "InstallCert "+req.Name+" Success")
+	} else {
+		logs.Error("Install " + req.Name + " Cert Failed")
+		utils.BuildJsonResp(c, "Error", "InstallCert "+req.Name+" Failed")
+	}
+	return
+}
