@@ -19,8 +19,6 @@ import (
 	"time"
 )
 
-var curRandom int64
-
 type UserReq struct {
 	PageIndex  int64  `json:"page_index"`
 	PageSize   int64  `json:"page_size"`
@@ -40,6 +38,7 @@ type UserNameAndRoleResp struct {
 
 type LoginReq struct {
 	UserName string `json:"name"`
+	UserRole []string `json:"role"`
 	UserSecret string `json:"secret"`
 }
 
@@ -326,43 +325,92 @@ func VerifyCert(req *pb.VerifyCertReq) (int64, error) {
 	return r.GetCode(), nil
 }
 
-func Login(req *LoginReq, Token string) (string, error) {
+func Login(req *LoginReq, tokenStr string) (string, error) {
 
 	// Create a new token object, specifying signing method and the claims
 	// you would like it to contain.
-	if len(req.UserSecret) != 0 && len(Token) == 0 {
+	if len(req.UserSecret) != 0 && len(tokenStr) == 0 {
 		// verify UserSecret
+		conn, err := grpc.Dial(beego.AppConfig.String("fabric_service"), grpc.WithInsecure())
+		if err != nil {
+			logs.Error("Login: did not connect: %v", err)
+			return "-1", err
+		}
+		//defer conn.Close()
+		c := pb.NewFabricServiceClient(conn)
+		// Contact the server and print out its response.
+		ctx, cancel := context.WithTimeout(context.Background(), time.Second*10)
+		defer cancel()
+		// userSecret should be One Time Password
+		r, err := c.VerifyIdentity(ctx,
+			&pb.VerifyIdentityReq{Name: req.UserName, Rand: 123456, Sign: req.UserSecret, Type: "user"})
+		if err != nil {
+			logs.Error("Login: could not verify: %v", err)
+			return "-1", err
+		}
+		if r.Code != 0 {
+			return "-1", nil
+		}
 		token := jwt.NewWithClaims(jwt.SigningMethodHS256, jwt.MapClaims{
-			"foo": "bar",
+			"sub": req.UserName,
 			"nbf": time.Now().Unix(),
 		})
 
 		// Sign and get the complete encoded token as a string using the secret
 		bytes, _ := base64.StdEncoding.DecodeString(req.UserSecret)
 		if tokenString, err := token.SignedString(bytes); err == nil {
-			tokenMap[req.UserName] = tokenString
-			fmt.Println(tokenString, err)
+			tokenMap[req.UserName] = req.UserSecret
+			fmt.Println(tokenString)
 			return tokenString, nil
 		} else {
 			return "", err
 		}
-	} else if len(Token) != 0 {
+	} else if len(tokenStr) != 0 {
 		if t, ok := tokenMap[req.UserName]; ok {
-			if t == Token {
+			claims, err := parseToken(tokenStr, t)
+			if err != nil {
+				return "-1", err
+			}
+			if claims.(jwt.MapClaims)["sub"] == req.UserName {
+				fmt.Println("claims: ", claims.(jwt.MapClaims)["sub"])
 				return "0", nil
 			} else {
+				fmt.Println("")
 				return "-1", nil
 			}
 		}
 	}
-	return "", nil
+	return "-1", nil
 }
 
-func Logout(req *LogoutReq, token string) (int64, error) {
+func Logout(req *LogoutReq, tokenStr string) (int64, error) {
 	// verify token
-	// delete in tokenMap
-	if tokenMap[req.UserName] == token {
-		delete(tokenMap, req.UserName)
+	claims, err := parseToken(tokenStr, tokenMap[req.UserName])
+	if err != nil {
+		return -1, err
 	}
-	return 0, nil
+	if claims.(jwt.MapClaims)["sub"] == req.UserName {
+		delete(tokenMap, req.UserName)
+		return 0, nil
+	} else {
+		return -1, nil
+	}
+}
+
+func parseToken(tokenStr string, secretKey string) (interface{}, error) {
+	bytes, _ := base64.StdEncoding.DecodeString(secretKey)
+	token, err := jwt.Parse(tokenStr, func(token *jwt.Token) (interface{}, error) {
+		// Don't forget to validate the alg is what you expect:
+		if _, ok := token.Method.(*jwt.SigningMethodHMAC); !ok {
+			return nil, fmt.Errorf("Unexpected signing method: %v", token.Header["alg"])
+		}
+
+		// hmacSampleSecret is a []byte containing your secret, e.g. []byte("my_secret_key")
+		return bytes, nil
+	})
+	if claims, ok := token.Claims.(jwt.MapClaims); ok && token.Valid {
+		return claims, nil
+	} else {
+		return nil, err
+	}
 }
