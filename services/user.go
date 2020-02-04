@@ -11,7 +11,9 @@ import (
 	"github.com/dgrijalva/jwt-go"
 	"golang.org/x/net/context"
 	"google.golang.org/grpc"
+	"io"
 	"math/rand"
+	"os"
 	"strings"
 	"tarobackend/models"
 	pb "tarobackend/proto"
@@ -195,8 +197,40 @@ func RegisterUser(req *pb.RegisterReq) (int64, error) {
 			logs.Error("RegisterUser: User Status Update Error")
 			return -1, err
 		}
+
+		if _, err := engine.Id(req.Id).Get(&user); err != nil {
+			return -1, err
+		}
+		// Copy cert&pem file to Secret Device Path
+		srcFileName1 := "./card/" + req.Name + "/" + req.Name + ".crt"
+		srcFileName2 :=  "./card/" + req.Name + "/" + req.Name + ".pem"
+		dstFileName1 := user.UserPath + req.Name + ".crt"
+		dstFileName2 := user.UserPath + req.Name + ".pem"
+		if _, err := CopyFile(dstFileName1, srcFileName1); err != nil {
+			return -1, err
+		}
+		if _, err := CopyFile(dstFileName2, srcFileName2); err != nil {
+			return -1, err
+		}
 	}
 	return r.GetCode(), nil
+}
+
+func CopyFile(dstFileName, srcFileName string) (int64, error) {
+	srcFile, err := os.Open(srcFileName)
+	if err != nil {
+		logs.Error("CopyFile: open file err = %v\n", err)
+		return -1, err
+	}
+	defer srcFile.Close()
+
+	dstFile, err := os.OpenFile(dstFileName, os.O_WRONLY | os.O_CREATE, 0755)
+	if err != nil {
+		logs.Error("CopyFile: open file err = %v\n", err)
+		return -1, err
+	}
+	defer dstFile.Close()
+	return io.Copy(dstFile, srcFile)
 }
 
 func DownloadCert(req *pb.DownloadReq) (*pb.DownloadResp, error) {
