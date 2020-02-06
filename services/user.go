@@ -8,6 +8,7 @@ import (
 	"fmt"
 	"github.com/astaxie/beego"
 	"github.com/astaxie/beego/logs"
+	"github.com/casbin/casbin"
 	"github.com/dgrijalva/jwt-go"
 	"golang.org/x/net/context"
 	"google.golang.org/grpc"
@@ -95,7 +96,13 @@ func CreateUser(r *models.TaroUser) (bool, error) {
 		logs.Error("CreateUser: User InsertOne Failed")
 		return false, errors.New("CreateUser: User InsertOne Failed")
 	}
-	enf := utils.Enforcer
+	casbin_model := "./casbinfiles/rbac_model.conf"
+	casbin_policys := "./casbinfiles/策略1.csv"
+	if ok, err := utils.FileExistAndCreate(casbin_policys); !ok {
+		return false, err
+	}
+	// TODO: How To Add user Role in csvfile
+	enf := casbin.NewEnforcer(casbin_model, casbin_policys)
 	success := enf.AddRoleForUser(r.UserName, r.UserRole)
 	_ = enf.SavePolicy()
 	if !success {
@@ -113,7 +120,12 @@ func DeleteUserById(r *models.TaroUser) (bool, error) {
 		logs.Error("DeleteUserById: Table User Delete Error")
 		return false, err
 	}
-	enf := utils.Enforcer
+	casbin_model := "./casbinfiles/rbac_model.conf"
+	casbin_policys := "./casbinfiles/策略1.csv"
+	if ok, err := utils.FileExistAndCreate(casbin_policys); !ok {
+		return false, err
+	}
+	enf := casbin.NewEnforcer(casbin_model, casbin_policys)
 	success := enf.DeleteRoleForUser(r.UserName, r.UserRole)
 	_ = enf.SavePolicy()
 	if !success {
@@ -134,7 +146,12 @@ func UpdateUser(r *models.TaroUser) (bool, error) {
 		return false, err
 	}
 	if has {
-		enf := utils.Enforcer
+		casbin_model := "./casbinfiles/rbac_model.conf"
+		casbin_policys := "./casbinfiles/策略1.csv"
+		if ok, err := utils.FileExistAndCreate(casbin_policys); !ok {
+			return false, err
+		}
+		enf := casbin.NewEnforcer(casbin_model, casbin_policys)
 		ret1 := enf.DeleteRoleForUser(old.UserName, old.UserRole)
 		ret2 := enf.AddRoleForUser(r.UserName, r.UserRole)
 		_ = enf.SavePolicy()

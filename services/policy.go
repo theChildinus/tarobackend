@@ -3,6 +3,7 @@ package services
 import (
 	"errors"
 	"github.com/astaxie/beego/logs"
+	"github.com/casbin/casbin"
 	"tarobackend/models"
 	"tarobackend/utils"
 )
@@ -14,6 +15,7 @@ type PolicyReq struct {
 }
 
 type PolicyCheckReq struct {
+	PolicyName string `json:"policyname"`
 	PolicySub string `json:"policysub"`
 	PolicyObj string `json:"policyobj"`
 	PolicyAct string `json:"policyact"`
@@ -24,6 +26,15 @@ type PolicyCheckReq struct {
 type PolicyResp struct {
 	List  []models.TaroPolicy `json:"list"`
 	Count int64               `json:"count"`
+}
+
+type RoleAllotReq struct {
+	Name string `json:"name"`
+	Role []string `json:"role"`
+}
+
+type ExecutableReq struct {
+	EpcCtx map[string]string `json:"epcCtx"`
 }
 
 func ListPolicy(req *PolicyReq) ([]models.TaroPolicy, int64, error) {
@@ -61,8 +72,12 @@ func CreatePolicy(r *models.TaroPolicy) (bool, error) {
 		logs.Error("CreatePolicy: Table Policy InsertOne Error")
 		return false, err
 	}
-
-	enf := utils.Enforcer
+	casbin_model := "./casbinfiles/rbac_model.conf"
+	casbin_policys := "./casbinfiles/" + r.PolicyName + ".csv"
+	if ok, err := utils.FileExistAndCreate(casbin_policys); !ok {
+		return false, err
+	}
+	enf := casbin.NewEnforcer(casbin_model, casbin_policys)
 	ret := enf.AddPolicy(r.PolicySub, r.PolicyObj, r.PolicyAct)
 	_ = enf.SavePolicy()
 	return ret, nil
@@ -80,7 +95,12 @@ func DeletePolicyById(id int) (bool, error) {
 		return false, err
 	}
 	if has {
-		enf := utils.Enforcer
+		casbin_model := "./casbinfiles/rbac_model.conf"
+		casbin_policys := "./casbinfiles/" + r.PolicyName + ".csv"
+		if ok, err := utils.FileExistAndCreate(casbin_policys); !ok {
+			return false, err
+		}
+		enf := casbin.NewEnforcer(casbin_model, casbin_policys)
 		ret = enf.RemovePolicy(r.PolicySub, r.PolicyObj, r.PolicyAct)
 		_ = enf.SavePolicy()
 	}
@@ -104,7 +124,12 @@ func UpdatePolicy(r *models.TaroPolicy) (bool, error) {
 		return false, err
 	}
 	if has {
-		enf := utils.Enforcer
+		casbin_model := "./casbinfiles/rbac_model.conf"
+		casbin_policys := "./casbinfiles/" + r.PolicyName + ".csv"
+		if ok, err := utils.FileExistAndCreate(casbin_policys); !ok {
+			return false, err
+		}
+		enf := casbin.NewEnforcer(casbin_model, casbin_policys)
 		ret1 := enf.RemovePolicy(old.PolicySub, old.PolicyObj, old.PolicyAct)
 		ret2 := enf.AddPolicy(r.PolicySub, r.PolicyObj, r.PolicyAct)
 		_ = enf.SavePolicy()
@@ -136,7 +161,12 @@ func CheckPolicy(r *PolicyCheckReq) (bool, error) {
 	if has &&
 		r.UserHash == m.UserHash &&
 		(r.PolicySub == m.UserName || r.PolicySub == m.UserRole) {
-		enf := utils.Enforcer
+		casbin_model := "./casbinfiles/rbac_model.conf"
+		casbin_policys := "./casbinfiles/" + r.PolicyName + ".csv"
+		if ok, err := utils.FileExistAndCreate(casbin_policys); !ok {
+			return false, err
+		}
+		enf := casbin.NewEnforcer(casbin_model, casbin_policys)
 		ret := enf.Enforce(r.PolicySub, r.PolicyObj, r.PolicyAct)
 		return ret, nil
 	} else {

@@ -11,7 +11,7 @@
  Target Server Version : 50727
  File Encoding         : 65001
 
- Date: 02/02/2020 20:57:40
+ Date: 06/02/2020 16:23:25
 */
 
 SET NAMES utf8mb4;
@@ -71,27 +71,27 @@ INSERT INTO `taro_identity` VALUES (6, 'user1', 'user1pw', 'client', 'org2', 'ap
 DROP TABLE IF EXISTS `taro_policy`;
 CREATE TABLE `taro_policy`  (
   `policy_id` int(1) UNSIGNED ZEROFILL NOT NULL AUTO_INCREMENT COMMENT '策略id',
-  `policy_sub` varchar(255) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL COMMENT '策略主体',
-  `policy_obj` varchar(255) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL COMMENT '策略资源',
-  `policy_act` varchar(255) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL COMMENT '策略动作',
-  `policy_type` varchar(255) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL COMMENT '策略类型',
+  `policy_name` varchar(255) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL COMMENT '策略名称',
+  `policy_sub` varchar(255) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL COMMENT '策略规则主体',
+  `policy_obj` varchar(255) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL COMMENT '策略规则资源',
+  `policy_act` varchar(255) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL COMMENT '策略规则动作',
   `policy_ctime` datetime(0) NULL DEFAULT NULL COMMENT '创建时间',
   PRIMARY KEY (`policy_id`) USING BTREE
-) ENGINE = InnoDB AUTO_INCREMENT = 22 CHARACTER SET = utf8 COLLATE = utf8_general_ci ROW_FORMAT = Dynamic;
+) ENGINE = InnoDB AUTO_INCREMENT = 23 CHARACTER SET = utf8 COLLATE = utf8_general_ci ROW_FORMAT = Dynamic;
 
 -- ----------------------------
 -- Records of taro_policy
 -- ----------------------------
-INSERT INTO `taro_policy` VALUES (2, 'kong', 'data2', 'write', 'IOT策略', '2019-10-11 21:24:22');
-INSERT INTO `taro_policy` VALUES (3, 'kong', 'data2', 'exec', 'IOT策略', '2019-10-11 21:25:02');
-INSERT INTO `taro_policy` VALUES (4, 'zhao', 'data1', 'read', 'IOT策略', '2019-10-11 21:25:54');
-INSERT INTO `taro_policy` VALUES (5, 'zhao', 'data2', 'exec', 'IOT策略', '2019-10-11 21:26:07');
-INSERT INTO `taro_policy` VALUES (6, '管理员', 'data3', 'upload', 'IOT策略', '2019-10-11 21:26:32');
-INSERT INTO `taro_policy` VALUES (7, 'Org1MSP.admin', 'Org1MSP', 'read', 'Fabric策略', '2020-01-01 15:01:02');
-INSERT INTO `taro_policy` VALUES (8, 'Org1MSP.peer', 'Org1MSP', 'read', 'Fabric策略', '2020-01-01 15:01:45');
-INSERT INTO `taro_policy` VALUES (15, '管理员', 'data4', 'exec', 'IOT策略', '2019-10-14 10:43:45');
-INSERT INTO `taro_policy` VALUES (20, 'kong', 'start', 'sub', 'IOT策略', '2020-01-01 09:19:06');
-INSERT INTO `taro_policy` VALUES (21, 'yang', 'start', 'pub', 'IOT策略', '2020-01-01 09:19:11');
+INSERT INTO `taro_policy` VALUES (2, '策略1', 'kong', 'data2', 'write', '2019-10-11 21:24:22');
+INSERT INTO `taro_policy` VALUES (3, '策略1', 'kong', 'data2', 'exec', '2019-10-11 21:25:02');
+INSERT INTO `taro_policy` VALUES (4, '策略1', 'zhao', 'data1', 'read', '2019-10-11 21:25:54');
+INSERT INTO `taro_policy` VALUES (6, '策略1', '管理员', 'data3', 'upload', '2019-10-11 21:26:32');
+INSERT INTO `taro_policy` VALUES (7, '策略2', 'Org1MSP.admin', 'Org1MSP', 'read', '2020-01-01 15:01:02');
+INSERT INTO `taro_policy` VALUES (8, '策略2', 'Org1MSP.peer', 'Org1MSP', 'read', '2020-01-01 15:01:45');
+INSERT INTO `taro_policy` VALUES (15, '策略1', '管理员', 'data4', 'exec', '2019-10-14 10:43:45');
+INSERT INTO `taro_policy` VALUES (20, '策略1', 'kong', 'start', 'sub', '2020-01-01 09:19:06');
+INSERT INTO `taro_policy` VALUES (21, '策略1', 'yang', 'start', 'pub', '2020-01-01 09:19:11');
+INSERT INTO `taro_policy` VALUES (22, '策略1', 'ggggggg', 'wewewew', 'read', '2020-02-06 15:52:31');
 
 -- ----------------------------
 -- Table structure for taro_resource
@@ -166,7 +166,7 @@ CREATE TABLE `taro_user`  (
 INSERT INTO `taro_user` VALUES (1, 'zhao', '管理员', '顶级部门1/子部门1-1/子部门1-1-1/子部门1-1-1-1', '111111', '6555@163.com', '123123123', 1, '3d5557a4b09c67bbc0019cc809d26da6', 'D:\\goProjects\\tarobackend\\card\\zhao');
 INSERT INTO `taro_user` VALUES (2, 'kong', '经理,第三方团队', '顶级部门3/子部门3-1', '123131231', 'df@qq.com', '12312312', 1, '575c776ac08615a4949a6e35d4b73896', 'D:\\goProjects\\tarobackend\\card\\kong');
 INSERT INTO `taro_user` VALUES (3, 'yang', '经理', '顶级部门2/子部门2-1', '1231', 'dfdf@qq.com', '12312312', 1, '', 'D:\\goProjects\\tarobackend\\card\\yang');
-INSERT INTO `taro_user` VALUES (4, 'zzzz', '员工', '顶级部门4/子部门4-1', '1231adfasdf', 'dfdf@qq.com', '12312312', 0, '', 'D:\\goProjects\\tarobackend\\card\\yang');
+INSERT INTO `taro_user` VALUES (4, 'zzzz', '员工', '顶/级/部/门/4///子/部/门/4/-/1', '1231adfasdf', 'dfdf@qq.com', '12312312', 0, '', 'D:\\goProjects\\tarobackend\\card\\');
 INSERT INTO `taro_user` VALUES (5, 'adsfasdf', '第三方团队', '顶级部门3/子部门3-1/子部门3-1-1', '1231adfasdf', 'dfdf@qq.com', '12312312', 0, '', 'D:\\goProjects\\tarobackend\\card\\yang');
 INSERT INTO `taro_user` VALUES (6, 'ggggggg', '经理', '顶级部门2/子部门2-1', '1231adfasdf', 'dfdf@qq.com', '12312312', 0, '', 'D:\\goProjects\\tarobackend\\card\\yang');
 INSERT INTO `taro_user` VALUES (14, 'abddd', '员工', '顶级部门1/子部门1-1/子部门1-1-1', 'adfad', '11233434322@qq.com', '123124ddd', 0, '', 'D:\\goProjects\\tarobackend\\card\\yang');

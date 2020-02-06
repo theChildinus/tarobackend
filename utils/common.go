@@ -1,6 +1,7 @@
 package utils
 
 import (
+	"os"
 	"reflect"
 )
 
@@ -29,4 +30,18 @@ func BuildJsonResp(c interface{}, msgType, msg string) {
 		e.Elem().FieldByName("Data").SetMapIndex(reflect.ValueOf("json"), reflect.ValueOf(er))
 	}
 	e.MethodByName("ServeJSON").CallSlice([]reflect.Value{reflect.ValueOf([]bool{})})
+}
+
+func FileExistAndCreate(path string) (bool, error) {
+	if _, err := os.Stat(path); err == nil {
+		return true, nil
+	} else if os.IsNotExist(err) {
+		if _, err := os.Create(path); err != nil {
+			return false, err
+		} else {
+			return true, nil
+		}
+	} else {
+		return false, nil
+	}
 }
