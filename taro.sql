@@ -11,7 +11,7 @@
  Target Server Version : 50727
  File Encoding         : 65001
 
- Date: 06/02/2020 16:23:25
+ Date: 07/02/2020 16:40:10
 */
 
 SET NAMES utf8mb4;
@@ -26,7 +26,7 @@ CREATE TABLE `taro_enum`  (
   `enum_key` varchar(255) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL,
   `enum_value` varchar(8192) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL,
   PRIMARY KEY (`enum_id`) USING BTREE
-) ENGINE = InnoDB AUTO_INCREMENT = 5 CHARACTER SET = utf8 COLLATE = utf8_general_ci ROW_FORMAT = Dynamic;
+) ENGINE = InnoDB AUTO_INCREMENT = 6 CHARACTER SET = utf8 COLLATE = utf8_general_ci ROW_FORMAT = Dynamic;
 
 -- ----------------------------
 -- Records of taro_enum
@@ -34,7 +34,8 @@ CREATE TABLE `taro_enum`  (
 INSERT INTO `taro_enum` VALUES (1, 'user_role', '管理员##经理##员工##第三方团队##发布者##订阅者');
 INSERT INTO `taro_enum` VALUES (2, 'resource_type', '主题##报表##工具##态势图##Peer节点##Order节点');
 INSERT INTO `taro_enum` VALUES (3, 'policy_act', 'read##write##exec##upload##sub##pub');
-INSERT INTO `taro_enum` VALUES (4, 'user_organization', '[{\"orgId\":34},{\"id\":24,\"label\":\"顶级部门1\",\"value\":\"顶级部门1\",\"isEdit\":false,\"children\":[{\"id\":27,\"label\":\"子部门1-1\",\"value\":\"子部门1-1\",\"isEdit\":false,\"children\":[{\"id\":28,\"label\":\"子部门1-1-1\",\"value\":\"子部门1-1-1\",\"isEdit\":false,\"children\":[{\"id\":33,\"label\":\"子部门1-1-1-1\",\"value\":\"子部门1-1-1-1\",\"isEdit\":false}]}]}]},{\"id\":25,\"label\":\"顶级部门2\",\"value\":\"顶级部门2\",\"isEdit\":false,\"children\":[{\"id\":29,\"label\":\"子部门2-1\",\"value\":\"子部门2-1\",\"isEdit\":false}]},{\"id\":26,\"label\":\"顶级部门3\",\"value\":\"顶级部门3\",\"isEdit\":false,\"children\":[{\"id\":30,\"label\":\"子部门3-1\",\"value\":\"子部门3-1\",\"isEdit\":false,\"children\":[{\"id\":32,\"label\":\"子部门3-1-1\",\"value\":\"子部门3-1-1\",\"isEdit\":false}]}]},{\"id\":27,\"label\":\"顶级部门4\",\"value\":\"顶级部门4\",\"isEdit\":false,\"children\":[{\"id\":31,\"label\":\"子部门4-1\",\"value\":\"子部门4-1\",\"isEdit\":false}]}]');
+INSERT INTO `taro_enum` VALUES (4, 'user_organization', '[{\"orgId\":35},{\"id\":24,\"label\":\"顶级部门1\",\"value\":\"顶级部门1\",\"isEdit\":false,\"children\":[{\"id\":27,\"label\":\"子部门1-1\",\"value\":\"子部门1-1\",\"isEdit\":false,\"children\":[{\"id\":28,\"label\":\"子部门1-1-1\",\"value\":\"子部门1-1-1\",\"isEdit\":false,\"children\":[{\"id\":33,\"label\":\"子部门1-1-1-1\",\"value\":\"子部门1-1-1-1\",\"isEdit\":false}]}]}]},{\"id\":25,\"label\":\"顶级部门2\",\"value\":\"顶级部门2\",\"isEdit\":false,\"children\":[{\"id\":29,\"label\":\"子部门2-1\",\"value\":\"子部门2-1\",\"isEdit\":false}]},{\"id\":26,\"label\":\"顶级部门3\",\"value\":\"顶级部门3\",\"isEdit\":false,\"children\":[{\"id\":30,\"label\":\"子部门3-1\",\"value\":\"子部门3-1\",\"isEdit\":false,\"children\":[{\"id\":32,\"label\":\"子部门3-1-1\",\"value\":\"子部门3-1-1\",\"isEdit\":false}]}]},{\"id\":27,\"label\":\"顶级部门4\",\"value\":\"顶级部门4\",\"isEdit\":false,\"children\":[{\"id\":31,\"label\":\"子部门4-1\",\"value\":\"子部门4-1\",\"isEdit\":false}]},{\"id\":35,\"label\":\"顶级部门5\",\"value\":\"顶级部门5\",\"isEdit\":false,\"children\":[]}]');
+INSERT INTO `taro_enum` VALUES (5, 'policy_tree', '[{\"policyTreeId\":5},{\"id\":1,\"label\":\"策略1\",\"value\":\"策略1\",\"isEdit\":false,\"children\":[]},{\"id\":3,\"label\":\"策略2\",\"value\":\"策略2\",\"isEdit\":false,\"children\":[]},{\"id\":4,\"label\":\"策略3\",\"value\":\"策略3\",\"isEdit\":false,\"children\":[{\"id\":4,\"label\":\"子策略3-1\",\"value\":\"子策略3-1\",\"isEdit\":false}]}]');
 
 -- ----------------------------
 -- Table structure for taro_identity
@@ -77,7 +78,7 @@ CREATE TABLE `taro_policy`  (
   `policy_act` varchar(255) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL COMMENT '策略规则动作',
   `policy_ctime` datetime(0) NULL DEFAULT NULL COMMENT '创建时间',
   PRIMARY KEY (`policy_id`) USING BTREE
-) ENGINE = InnoDB AUTO_INCREMENT = 23 CHARACTER SET = utf8 COLLATE = utf8_general_ci ROW_FORMAT = Dynamic;
+) ENGINE = InnoDB AUTO_INCREMENT = 27 CHARACTER SET = utf8 COLLATE = utf8_general_ci ROW_FORMAT = Dynamic;
 
 -- ----------------------------
 -- Records of taro_policy
@@ -91,7 +92,8 @@ INSERT INTO `taro_policy` VALUES (8, '策略2', 'Org1MSP.peer', 'Org1MSP', 'read
 INSERT INTO `taro_policy` VALUES (15, '策略1', '管理员', 'data4', 'exec', '2019-10-14 10:43:45');
 INSERT INTO `taro_policy` VALUES (20, '策略1', 'kong', 'start', 'sub', '2020-01-01 09:19:06');
 INSERT INTO `taro_policy` VALUES (21, '策略1', 'yang', 'start', 'pub', '2020-01-01 09:19:11');
-INSERT INTO `taro_policy` VALUES (22, '策略1', 'ggggggg', 'wewewew', 'read', '2020-02-06 15:52:31');
+INSERT INTO `taro_policy` VALUES (23, '策略3', 'zhao', '444444', 'read', '2020-02-06 17:10:03');
+INSERT INTO `taro_policy` VALUES (24, '策略3', 'zhao', '2222', 'read', '2020-02-06 17:10:24');
 
 -- ----------------------------
 -- Table structure for taro_resource
@@ -166,7 +168,7 @@ CREATE TABLE `taro_user`  (
 INSERT INTO `taro_user` VALUES (1, 'zhao', '管理员', '顶级部门1/子部门1-1/子部门1-1-1/子部门1-1-1-1', '111111', '6555@163.com', '123123123', 1, '3d5557a4b09c67bbc0019cc809d26da6', 'D:\\goProjects\\tarobackend\\card\\zhao');
 INSERT INTO `taro_user` VALUES (2, 'kong', '经理,第三方团队', '顶级部门3/子部门3-1', '123131231', 'df@qq.com', '12312312', 1, '575c776ac08615a4949a6e35d4b73896', 'D:\\goProjects\\tarobackend\\card\\kong');
 INSERT INTO `taro_user` VALUES (3, 'yang', '经理', '顶级部门2/子部门2-1', '1231', 'dfdf@qq.com', '12312312', 1, '', 'D:\\goProjects\\tarobackend\\card\\yang');
-INSERT INTO `taro_user` VALUES (4, 'zzzz', '员工', '顶/级/部/门/4///子/部/门/4/-/1', '1231adfasdf', 'dfdf@qq.com', '12312312', 0, '', 'D:\\goProjects\\tarobackend\\card\\');
+INSERT INTO `taro_user` VALUES (4, 'zzzz', '员工', '顶级部门4/子部门4-1', '1231adfasdf', 'dfdf@qq.com', '12312312', 0, '', 'D:\\goProjects\\tarobackend\\card\\');
 INSERT INTO `taro_user` VALUES (5, 'adsfasdf', '第三方团队', '顶级部门3/子部门3-1/子部门3-1-1', '1231adfasdf', 'dfdf@qq.com', '12312312', 0, '', 'D:\\goProjects\\tarobackend\\card\\yang');
 INSERT INTO `taro_user` VALUES (6, 'ggggggg', '经理', '顶级部门2/子部门2-1', '1231adfasdf', 'dfdf@qq.com', '12312312', 0, '', 'D:\\goProjects\\tarobackend\\card\\yang');
 INSERT INTO `taro_user` VALUES (14, 'abddd', '员工', '顶级部门1/子部门1-1/子部门1-1-1', 'adfad', '11233434322@qq.com', '123124ddd', 0, '', 'D:\\goProjects\\tarobackend\\card\\yang');

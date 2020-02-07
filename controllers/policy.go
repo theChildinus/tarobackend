@@ -133,3 +133,11 @@ func (c *PolicyController) Check() {
 
 	return
 }
+
+func (c *PolicyController) RoleAllot() {
+
+}
+
+func (c *PolicyController) Executable() {
+
+}
