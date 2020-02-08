@@ -132,15 +132,26 @@ func UpdatePolicy(r *models.TaroPolicy) (bool, error) {
 	}
 	if has {
 		casbin_model := "./casbinfiles/rbac_model.conf"
-		casbin_policys := "./casbinfiles/" + r.PolicyName + ".csv"
-		if ok, err := utils.FileExistAndCreate(casbin_policys); !ok {
+		casbin_policys_old := "./casbinfiles/" + old.PolicyName + ".csv"
+		casbin_policys_new := "./casbinfiles/" + r.PolicyName + ".csv"
+		if ok, err := utils.FileExistAndCreate(casbin_policys_new); !ok {
 			return false, err
 		}
-		enf := casbin.NewEnforcer(casbin_model, casbin_policys)
-		ret1 := enf.RemovePolicy(old.PolicySub, old.PolicyObj, old.PolicyAct)
-		ret2 := enf.AddPolicy(r.PolicySub, r.PolicyObj, r.PolicyAct)
-		_ = enf.SavePolicy()
-		ret = ret1 && ret2
+		if old.PolicyName == r.PolicyName {
+			enf1 := casbin.NewEnforcer(casbin_model, casbin_policys_new)
+			ret1 := enf1.RemovePolicy(old.PolicySub, old.PolicyObj, old.PolicyAct)
+			ret2 := enf1.AddPolicy(r.PolicySub, r.PolicyObj, r.PolicyAct)
+			_ = enf1.SavePolicy()
+			ret = ret1 && ret2
+		} else {
+			enf1 := casbin.NewEnforcer(casbin_model, casbin_policys_old)
+			enf2 := casbin.NewEnforcer(casbin_model, casbin_policys_new)
+			ret1 := enf1.RemovePolicy(old.PolicySub, old.PolicyObj, old.PolicyAct)
+			ret2 := enf2.AddPolicy(r.PolicySub, r.PolicyObj, r.PolicyAct)
+			_ = enf1.SavePolicy()
+			_ = enf2.SavePolicy()
+			ret = ret1 && ret2
+		}
 	}
 	_, err = engine.ID(r.PolicyId).Update(r)
 	if err != nil {
