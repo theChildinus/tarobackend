@@ -1,9 +1,11 @@
 package services
 
 import (
+	"encoding/json"
 	"errors"
 	"github.com/astaxie/beego/logs"
 	"github.com/casbin/casbin"
+	"strings"
 	"tarobackend/models"
 	"tarobackend/utils"
 )
@@ -31,6 +33,11 @@ type PolicyResp struct {
 type RoleAllotReq struct {
 	Name string `json:"name"`
 	Role []string `json:"role"`
+}
+
+type PolicyModel struct {
+	PolicyName string `json:"policy_name"`
+	ModelType string `json:"model_type"`
 }
 
 type ExecutableReq struct {
@@ -161,11 +168,28 @@ func CheckPolicy(r *PolicyCheckReq) (bool, error) {
 	if has &&
 		r.UserHash == m.UserHash &&
 		(r.PolicySub == m.UserName || r.PolicySub == m.UserRole) {
-		casbin_model := "./casbinfiles/rbac_model.conf"
-		casbin_policys := "./casbinfiles/" + r.PolicyName + ".csv"
-		if ok, err := utils.FileExistAndCreate(casbin_policys); !ok {
+		req := &models.TaroEnum{EnumKey:"policy_model"}
+		enum, err := GetEnumValue(req)
+		if err != nil {
 			return false, err
 		}
+		var pms []PolicyModel
+		if err := json.Unmarshal([]byte(enum.EnumValue), &pms); err != nil {
+			return false, err
+		}
+		model_type := "acl"
+		if strings.Index(r.PolicyName, "#") != -1 {
+			firstStr := strings.Split(r.PolicyName, "#")[0]
+			for _, v := range pms {
+				if v.PolicyName == firstStr {
+					model_type = v.ModelType
+					break
+				}
+			}
+		}
+		casbin_model := "./casbinfiles/" + strings.ToLower(model_type) + "_model.conf"
+		casbin_policys := "./casbinfiles/" + r.PolicyName + ".csv"
+		logs.Info("[CheckPolicy] modelfile:", casbin_model, "policyfile:", casbin_policys)
 		enf := casbin.NewEnforcer(casbin_model, casbin_policys)
 		ret := enf.Enforce(r.PolicySub, r.PolicyObj, r.PolicyAct)
 		return ret, nil
