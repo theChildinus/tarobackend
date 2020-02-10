@@ -29,6 +29,16 @@ type IdentityResp struct {
 	Count int64                 `json:"count"`
 }
 
+type IdentityNamesResp struct {
+	List  []NameOptions `json:"list"`
+	Count int64    `json:"count"`
+}
+
+type NameOptions struct {
+	Value string `json:"value"`
+	Label string `json:"label"`
+}
+
 func ListIdentity(req *IdentityReq) ([]models.TaroIdentity, int64, error) {
 	engine := utils.Engine_mysql
 	var (
@@ -277,4 +287,23 @@ func connect(user, password, host string, port int) (*sftp.Client, error) {
 	}
 
 	return sftpClient, nil
+}
+
+func ListIdentityNames() ([]NameOptions, int64, error) {
+	engine := utils.Engine_mysql
+	var (
+		names []string
+		err error
+	)
+	err = engine.Table("taro_identity").Select("identity_name").Find(&names)
+	if err != nil {
+		logs.Error("ListUserNameAndRole: Table User Find Names Error")
+		return nil, 0, err
+	}
+	var ins []NameOptions
+	for _, v := range names {
+		m := &NameOptions{Value: v, Label: v}
+		ins = append(ins, *m)
+	}
+	return ins, int64(len(ins)), nil
 }

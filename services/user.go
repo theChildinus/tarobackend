@@ -35,7 +35,7 @@ type UserResp struct {
 }
 
 type UserNameAndRoleResp struct {
-	List  []string `json:"list"`
+	List  []NameOptions `json:"list"`
 	Count int64    `json:"count"`
 }
 
@@ -165,7 +165,7 @@ func UpdateUser(r *models.TaroUser) (bool, error) {
 	return ret, nil
 }
 
-func ListUserNameAndRole() ([]string, int64, error) {
+func ListUserNameAndRole() ([]NameOptions, int64, error) {
 	engine := utils.Engine_mysql
 	var (
 		names, roles []string
@@ -185,7 +185,16 @@ func ListUserNameAndRole() ([]string, int64, error) {
 	}
 	roles = strings.Split(ev.EnumValue, "##")
 	count = int64(len(names) + len(roles))
-	return append(names, roles...), count, nil
+	var ins []NameOptions
+	for _, v := range names {
+		m := &NameOptions{Value: v, Label: v}
+		ins = append(ins, *m)
+	}
+	for _, v := range roles {
+		m := &NameOptions{Value: v, Label: v}
+		ins = append(ins, *m)
+	}
+	return ins, count, nil
 }
 
 func RegisterUser(req *pb.RegisterReq) (int64, error) {

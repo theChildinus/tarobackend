@@ -50,6 +50,7 @@ func init() {
 	beego.Router("identity/enroll", &controllers.IdentityController{}, "post:Enroll")
 	beego.Router("identity/revoke", &controllers.IdentityController{}, "post:Revoke")
 	beego.Router("identity/install", &controllers.IdentityController{}, "post:Install")
+	beego.Router("identity/listNames", &controllers.IdentityController{}, "post:ListNames")
 
 	beego.Router("enum/getValue", &controllers.EnumController{}, "*:GetValue")
 	beego.Router("enum/putValue", &controllers.EnumController{}, "post:PutValue")

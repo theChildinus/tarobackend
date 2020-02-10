@@ -11,7 +11,7 @@
  Target Server Version : 50727
  File Encoding         : 65001
 
- Date: 07/02/2020 16:40:10
+ Date: 10/02/2020 17:47:24
 */
 
 SET NAMES utf8mb4;
@@ -26,7 +26,7 @@ CREATE TABLE `taro_enum`  (
   `enum_key` varchar(255) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL,
   `enum_value` varchar(8192) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL,
   PRIMARY KEY (`enum_id`) USING BTREE
-) ENGINE = InnoDB AUTO_INCREMENT = 6 CHARACTER SET = utf8 COLLATE = utf8_general_ci ROW_FORMAT = Dynamic;
+) ENGINE = InnoDB AUTO_INCREMENT = 9 CHARACTER SET = utf8 COLLATE = utf8_general_ci ROW_FORMAT = Dynamic;
 
 -- ----------------------------
 -- Records of taro_enum
@@ -35,7 +35,10 @@ INSERT INTO `taro_enum` VALUES (1, 'user_role', '管理员##经理##员工##第�
 INSERT INTO `taro_enum` VALUES (2, 'resource_type', '主题##报表##工具##态势图##Peer节点##Order节点');
 INSERT INTO `taro_enum` VALUES (3, 'policy_act', 'read##write##exec##upload##sub##pub');
 INSERT INTO `taro_enum` VALUES (4, 'user_organization', '[{\"orgId\":35},{\"id\":24,\"label\":\"顶级部门1\",\"value\":\"顶级部门1\",\"isEdit\":false,\"children\":[{\"id\":27,\"label\":\"子部门1-1\",\"value\":\"子部门1-1\",\"isEdit\":false,\"children\":[{\"id\":28,\"label\":\"子部门1-1-1\",\"value\":\"子部门1-1-1\",\"isEdit\":false,\"children\":[{\"id\":33,\"label\":\"子部门1-1-1-1\",\"value\":\"子部门1-1-1-1\",\"isEdit\":false}]}]}]},{\"id\":25,\"label\":\"顶级部门2\",\"value\":\"顶级部门2\",\"isEdit\":false,\"children\":[{\"id\":29,\"label\":\"子部门2-1\",\"value\":\"子部门2-1\",\"isEdit\":false}]},{\"id\":26,\"label\":\"顶级部门3\",\"value\":\"顶级部门3\",\"isEdit\":false,\"children\":[{\"id\":30,\"label\":\"子部门3-1\",\"value\":\"子部门3-1\",\"isEdit\":false,\"children\":[{\"id\":32,\"label\":\"子部门3-1-1\",\"value\":\"子部门3-1-1\",\"isEdit\":false}]}]},{\"id\":27,\"label\":\"顶级部门4\",\"value\":\"顶级部门4\",\"isEdit\":false,\"children\":[{\"id\":31,\"label\":\"子部门4-1\",\"value\":\"子部门4-1\",\"isEdit\":false}]},{\"id\":35,\"label\":\"顶级部门5\",\"value\":\"顶级部门5\",\"isEdit\":false,\"children\":[]}]');
-INSERT INTO `taro_enum` VALUES (5, 'policy_tree', '[{\"policyTreeId\":5},{\"id\":1,\"label\":\"策略1\",\"value\":\"策略1\",\"isEdit\":false,\"children\":[]},{\"id\":3,\"label\":\"策略2\",\"value\":\"策略2\",\"isEdit\":false,\"children\":[]},{\"id\":4,\"label\":\"策略3\",\"value\":\"策略3\",\"isEdit\":false,\"children\":[{\"id\":4,\"label\":\"子策略3-1\",\"value\":\"子策略3-1\",\"isEdit\":false}]}]');
+INSERT INTO `taro_enum` VALUES (5, 'policy_tree', '[{\"policyTreeId\":9},{\"id\":1,\"label\":\"策略1\",\"value\":\"策略1\",\"isEdit\":false,\"children\":[]},{\"id\":3,\"label\":\"策略2\",\"value\":\"策略2\",\"isEdit\":false,\"children\":[]},{\"id\":4,\"label\":\"策略3\",\"value\":\"策略3\",\"isEdit\":false,\"children\":[{\"id\":4,\"label\":\"子策略3-1\",\"value\":\"子策略3-1\",\"isEdit\":false}]},{\"id\":8,\"label\":\"父策略4\",\"value\":\"父策略4\",\"isEdit\":false,\"children\":[]},{\"id\":9,\"label\":\"父策略5\",\"value\":\"父策略5\",\"isEdit\":false,\"children\":[]}]');
+INSERT INTO `taro_enum` VALUES (6, 'policy_model', '[{\"policy_name\":\"策略1\",\"model_type\":\"ACL\"},{\"policy_name\":\"策略2\",\"model_type\":\"RBAC\"},{\"policy_name\":\"策略3\",\"model_type\":\"RBAC\"},{\"policy_name\":\"父策略4\",\"model_type\":\"ACL\"},{\"policy_name\":\"父策略5\",\"model_type\":\"ACL\"}]');
+INSERT INTO `taro_enum` VALUES (7, 'policy_resource', '[{\"policyResourceId\":null},{\"id\":1,\"label\":\"资源1\",\"value\":\"资源1\",\"isEdit\":false,\"children\":[]},{\"id\":3,\"label\":\"资源2\",\"value\":\"资源2\",\"isEdit\":false,\"children\":[]},{\"id\":4,\"label\":\"资源3\",\"value\":\"资源3\",\"isEdit\":false,\"children\":[{\"id\":4,\"label\":\"子资源3-1\",\"value\":\"子资源3-1\",\"isEdit\":false}]},{\"id\":6,\"label\":\"资源4\",\"value\":\"资源4\",\"isEdit\":false,\"children\":[]},{\"id\":null,\"label\":\"资源5\",\"value\":\"资源5\",\"isEdit\":false,\"children\":[]}]');
+INSERT INTO `taro_enum` VALUES (8, 'identity_organization', '[{\"orgId\":37},{\"id\":35,\"label\":\"Org1\",\"value\":\"Org1\",\"isEdit\":false,\"children\":[]},{\"id\":36,\"label\":\"Org2\",\"value\":\"Org2\",\"isEdit\":false,\"children\":[]},{\"id\":37,\"label\":\"Org3\",\"value\":\"Org3\",\"isEdit\":false,\"children\":[]}]');
 
 -- ----------------------------
 -- Table structure for taro_identity
@@ -55,7 +58,7 @@ CREATE TABLE `taro_identity`  (
   `identity_pw` varchar(255) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL COMMENT 'Fabric 参与者主机密码',
   `identity_path` varchar(255) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL COMMENT 'Fabric 参与者主机路径',
   PRIMARY KEY (`identity_id`) USING BTREE
-) ENGINE = InnoDB AUTO_INCREMENT = 7 CHARACTER SET = utf8 COLLATE = utf8_general_ci ROW_FORMAT = Dynamic;
+) ENGINE = InnoDB AUTO_INCREMENT = 8 CHARACTER SET = utf8 COLLATE = utf8_general_ci ROW_FORMAT = Dynamic;
 
 -- ----------------------------
 -- Records of taro_identity
@@ -76,24 +79,34 @@ CREATE TABLE `taro_policy`  (
   `policy_sub` varchar(255) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL COMMENT '策略规则主体',
   `policy_obj` varchar(255) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL COMMENT '策略规则资源',
   `policy_act` varchar(255) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL COMMENT '策略规则动作',
+  `policy_type` varchar(255) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL COMMENT '策略类型',
   `policy_ctime` datetime(0) NULL DEFAULT NULL COMMENT '创建时间',
   PRIMARY KEY (`policy_id`) USING BTREE
-) ENGINE = InnoDB AUTO_INCREMENT = 27 CHARACTER SET = utf8 COLLATE = utf8_general_ci ROW_FORMAT = Dynamic;
+) ENGINE = InnoDB AUTO_INCREMENT = 42 CHARACTER SET = utf8 COLLATE = utf8_general_ci ROW_FORMAT = Dynamic;
 
 -- ----------------------------
 -- Records of taro_policy
 -- ----------------------------
-INSERT INTO `taro_policy` VALUES (2, '策略1', 'kong', 'data2', 'write', '2019-10-11 21:24:22');
-INSERT INTO `taro_policy` VALUES (3, '策略1', 'kong', 'data2', 'exec', '2019-10-11 21:25:02');
-INSERT INTO `taro_policy` VALUES (4, '策略1', 'zhao', 'data1', 'read', '2019-10-11 21:25:54');
-INSERT INTO `taro_policy` VALUES (6, '策略1', '管理员', 'data3', 'upload', '2019-10-11 21:26:32');
-INSERT INTO `taro_policy` VALUES (7, '策略2', 'Org1MSP.admin', 'Org1MSP', 'read', '2020-01-01 15:01:02');
-INSERT INTO `taro_policy` VALUES (8, '策略2', 'Org1MSP.peer', 'Org1MSP', 'read', '2020-01-01 15:01:45');
-INSERT INTO `taro_policy` VALUES (15, '策略1', '管理员', 'data4', 'exec', '2019-10-14 10:43:45');
-INSERT INTO `taro_policy` VALUES (20, '策略1', 'kong', 'start', 'sub', '2020-01-01 09:19:06');
-INSERT INTO `taro_policy` VALUES (21, '策略1', 'yang', 'start', 'pub', '2020-01-01 09:19:11');
-INSERT INTO `taro_policy` VALUES (23, '策略3', 'zhao', '444444', 'read', '2020-02-06 17:10:03');
-INSERT INTO `taro_policy` VALUES (24, '策略3', 'zhao', '2222', 'read', '2020-02-06 17:10:24');
+INSERT INTO `taro_policy` VALUES (2, '策略1', 'kong', 'data2', 'write', 'IOT策略', '2019-10-11 21:24:22');
+INSERT INTO `taro_policy` VALUES (3, '策略1', 'kong', 'data2', 'exec', 'IOT策略', '2019-10-11 21:25:02');
+INSERT INTO `taro_policy` VALUES (4, '策略1', 'zhao', 'data1', 'read', 'IOT策略', '2019-10-11 21:25:54');
+INSERT INTO `taro_policy` VALUES (6, '策略1', '管理员', 'data3', 'upload', 'IOT策略', '2019-10-11 21:26:32');
+INSERT INTO `taro_policy` VALUES (7, '策略2', 'Org1MSP.admin', 'Org1MSP', 'read', 'IOT策略', '2020-01-01 15:01:02');
+INSERT INTO `taro_policy` VALUES (8, '策略2', 'Org1MSP.peer', 'Org1MSP', 'read', 'IOT策略', '2020-01-01 15:01:45');
+INSERT INTO `taro_policy` VALUES (15, '策略1', '管理员', 'data4', 'exec', 'IOT策略', '2019-10-14 10:43:45');
+INSERT INTO `taro_policy` VALUES (20, '策略1', 'kong', 'start', 'sub', 'IOT策略', '2020-01-01 09:19:06');
+INSERT INTO `taro_policy` VALUES (21, '策略1', 'yang', 'start', 'pub', 'IOT策略', '2020-01-01 09:19:11');
+INSERT INTO `taro_policy` VALUES (23, '策略3', 'zhao', '444444', 'read', 'Fabric策略', '2020-02-06 17:10:03');
+INSERT INTO `taro_policy` VALUES (24, '策略3', 'Org3/order1', '资源1', 'read', 'Fabric策略', '2020-02-06 17:10:24');
+INSERT INTO `taro_policy` VALUES (27, '策略3', 'Org1/peer1', '资源5', 'read', 'Fabric策略', '2020-02-08 16:08:37');
+INSERT INTO `taro_policy` VALUES (28, '策略3', 'zhao', '12121212', 'read', 'Fabric策略', '2020-02-08 16:09:48');
+INSERT INTO `taro_policy` VALUES (31, '策略3#子策略3-1', 'Org3/peer1', '资源3/子资源3-1', 'read', 'Fabric策略', '2020-02-08 17:47:47');
+INSERT INTO `taro_policy` VALUES (33, '策略3', '顶级部门1/yang', '3333333', 'read', 'Fabric策略', '2020-02-08 18:02:11');
+INSERT INTO `taro_policy` VALUES (34, '策略3#子策略3-1', 'zzzz', '99999', 'read', 'Fabric策略', '2020-02-08 18:12:58');
+INSERT INTO `taro_policy` VALUES (38, '策略3', 'user1', '资源3/子资源3-1', 'read', 'Fabric策略', '2020-02-10 16:12:13');
+INSERT INTO `taro_policy` VALUES (39, '策略3', 'Org1/peer1', '资源5', 'read', 'Fabric策略', '2020-02-10 16:34:45');
+INSERT INTO `taro_policy` VALUES (40, '策略2', '顶级部门5/yang', '资源5', 'read', 'IOT策略', '2020-02-10 16:42:42');
+INSERT INTO `taro_policy` VALUES (41, '父策略4', '顶级部门5/zzzz', '资源5', 'pub', 'IOT策略', '2020-02-10 17:33:29');
 
 -- ----------------------------
 -- Table structure for taro_resource

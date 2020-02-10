@@ -191,3 +191,22 @@ func (c *IdentityController) Install() {
 	}
 	return
 }
+
+func (c *IdentityController) ListNames() {
+	var req services.IdentityReq
+	var err error
+	err = json.Unmarshal(c.Ctx.Input.RequestBody, &req)
+	if err != nil {
+		utils.BuildJsonResp(c, "Error", "Json Parse Error")
+		return
+	}
+	list, count, err := services.ListIdentityNames()
+	if err != nil {
+		logs.Error("List User Error", err.Error())
+		utils.BuildJsonResp(c, "Error", "List User Error")
+		return
+	}
+	c.Data["json"] = &services.IdentityNamesResp{List:list, Count:count}
+	c.ServeJSON()
+	return
+}
