@@ -3,6 +3,7 @@ package services
 import (
 	"encoding/json"
 	"errors"
+	"fmt"
 	"github.com/astaxie/beego/logs"
 	"github.com/casbin/casbin"
 	"strings"
@@ -54,7 +55,7 @@ func ListPolicy(req *PolicyReq) ([]models.TaroPolicy, int64, error) {
 	m := new(models.TaroPolicy)
 	if len(req.SearchSub) != 0 {
 		err = engine.Table("taro_policy").
-			Where("policy_sub = ? ", req.SearchSub).
+			Where("policy_sub like ? ", "%"+req.SearchSub+"%").
 			Limit(int(req.PageSize), int((req.PageIndex-1)*req.PageSize)).
 			Find(&policies)
 		count, _ = engine.Where("policy_sub = ? ", req.SearchSub).Count(m)
@@ -79,13 +80,27 @@ func CreatePolicy(r *models.TaroPolicy) (bool, error) {
 		logs.Error("CreatePolicy: Table Policy InsertOne Error")
 		return false, err
 	}
-	casbin_model := "./casbinfiles/rbac_model.conf"
+	model_type, err := GetModelType(r.PolicyName)
+	if err != nil {
+		logs.Error("CreatePolicy: Get ModelType Error")
+		return false, err
+	}
+	casbin_model := "./casbinfiles/" + strings.ToLower(model_type) + "_model.conf"
 	casbin_policys := "./casbinfiles/" + r.PolicyName + ".csv"
 	if ok, err := utils.FileExistAndCreate(casbin_policys); !ok {
 		return false, err
 	}
 	enf := casbin.NewEnforcer(casbin_model, casbin_policys)
 	ret := enf.AddPolicy(r.PolicySub, r.PolicyObj, r.PolicyAct)
+	if model_type == "RBAC" {
+		var users []models.TaroUser
+		err = engine.Table("taro_user").
+			Where("user_role like ? ", "%"+r.PolicySub+"%").Find(&users)
+		fmt.Println("users:", r.PolicySub, users)
+		for _, v := range users {
+			_ = enf.AddRoleForUser(v.UserName, r.PolicySub)
+		}
+	}
 	_ = enf.SavePolicy()
 	return ret, nil
 }
@@ -102,13 +117,27 @@ func DeletePolicyById(id int) (bool, error) {
 		return false, err
 	}
 	if has {
-		casbin_model := "./casbinfiles/rbac_model.conf"
+		model_type, err := GetModelType(r.PolicyName)
+		if err != nil {
+			logs.Error("CreatePolicy: Get ModelType Error")
+			return false, err
+		}
+		casbin_model := "./casbinfiles/" + strings.ToLower(model_type) + "_model.conf"
 		casbin_policys := "./casbinfiles/" + r.PolicyName + ".csv"
 		if ok, err := utils.FileExistAndCreate(casbin_policys); !ok {
 			return false, err
 		}
 		enf := casbin.NewEnforcer(casbin_model, casbin_policys)
 		ret = enf.RemovePolicy(r.PolicySub, r.PolicyObj, r.PolicyAct)
+		if model_type == "RBAC" {
+			var users []models.TaroUser
+			err = engine.Table("taro_user").
+				Where("user_role like ? ", "%"+r.PolicySub+"%").Find(&users)
+			fmt.Println("users:", r.PolicySub, users)
+			for _, v := range users {
+				_ = enf.DeleteRoleForUser(v.UserName, r.PolicySub)
+			}
+		}
 		_ = enf.SavePolicy()
 	}
 
@@ -131,27 +160,36 @@ func UpdatePolicy(r *models.TaroPolicy) (bool, error) {
 		return false, err
 	}
 	if has {
-		casbin_model := "./casbinfiles/rbac_model.conf"
-		casbin_policys_old := "./casbinfiles/" + old.PolicyName + ".csv"
-		casbin_policys_new := "./casbinfiles/" + r.PolicyName + ".csv"
-		if ok, err := utils.FileExistAndCreate(casbin_policys_new); !ok {
+		model_type, err := GetModelType(r.PolicyName)
+		if err != nil {
+			logs.Error("CreatePolicy: Get ModelType Error")
 			return false, err
 		}
-		if old.PolicyName == r.PolicyName {
-			enf1 := casbin.NewEnforcer(casbin_model, casbin_policys_new)
-			ret1 := enf1.RemovePolicy(old.PolicySub, old.PolicyObj, old.PolicyAct)
-			ret2 := enf1.AddPolicy(r.PolicySub, r.PolicyObj, r.PolicyAct)
-			_ = enf1.SavePolicy()
-			ret = ret1 && ret2
-		} else {
-			enf1 := casbin.NewEnforcer(casbin_model, casbin_policys_old)
-			enf2 := casbin.NewEnforcer(casbin_model, casbin_policys_new)
-			ret1 := enf1.RemovePolicy(old.PolicySub, old.PolicyObj, old.PolicyAct)
-			ret2 := enf2.AddPolicy(r.PolicySub, r.PolicyObj, r.PolicyAct)
-			_ = enf1.SavePolicy()
-			_ = enf2.SavePolicy()
-			ret = ret1 && ret2
+		casbin_model := "./casbinfiles/" + strings.ToLower(model_type) + "_model.conf"
+		casbin_policys := "./casbinfiles/" + r.PolicyName + ".csv"
+		if ok, err := utils.FileExistAndCreate(casbin_policys); !ok {
+			return false, err
 		}
+		enf := casbin.NewEnforcer(casbin_model, casbin_policys)
+		ret1 := enf.RemovePolicy(old.PolicySub, old.PolicyObj, old.PolicyAct)
+		ret2 := enf.AddPolicy(r.PolicySub, r.PolicyObj, r.PolicyAct)
+		if model_type == "RBAC" {
+			var users []models.TaroUser
+			err = engine.Table("taro_user").
+				Where("user_role like ? ", "%"+old.PolicySub+"%").Find(&users)
+			for _, v := range users {
+				_ = enf.DeleteRoleForUser(v.UserName, old.PolicySub)
+			}
+			users = users[0:0]
+			err = engine.Table("taro_user").
+				Where("user_role like ? ", "%"+r.PolicySub+"%").Find(&users)
+			for _, v := range users {
+				_ = enf.AddRoleForUser(v.UserName, r.PolicySub)
+			}
+		}
+		_ = enf.SavePolicy()
+		ret = ret1 && ret2
+		_ = enf.SavePolicy()
 	}
 	_, err = engine.ID(r.PolicyId).Update(r)
 	if err != nil {
@@ -179,24 +217,9 @@ func CheckPolicy(r *PolicyCheckReq) (bool, error) {
 	if has &&
 		r.UserHash == m.UserHash &&
 		(r.PolicySub == m.UserName || r.PolicySub == m.UserRole) {
-		req := &models.TaroEnum{EnumKey:"policy_model"}
-		enum, err := GetEnumValue(req)
+		model_type, err := GetModelType(r.PolicyName)
 		if err != nil {
-			return false, err
-		}
-		var pms []PolicyModel
-		if err := json.Unmarshal([]byte(enum.EnumValue), &pms); err != nil {
-			return false, err
-		}
-		model_type := "acl"
-		if strings.Index(r.PolicyName, "#") != -1 {
-			firstStr := strings.Split(r.PolicyName, "#")[0]
-			for _, v := range pms {
-				if v.PolicyName == firstStr {
-					model_type = v.ModelType
-					break
-				}
-			}
+			logs.Error("CheckPolicy: Get Model Type Error")
 		}
 		casbin_model := "./casbinfiles/" + strings.ToLower(model_type) + "_model.conf"
 		casbin_policys := "./casbinfiles/" + r.PolicyName + ".csv"
@@ -207,4 +230,30 @@ func CheckPolicy(r *PolicyCheckReq) (bool, error) {
 	} else {
 		return false, nil
 	}
+}
+
+func GetModelType(pn string) (string, error) {
+	model_type := "acl"
+	req := &models.TaroEnum{EnumKey:"policy_model"}
+	enum, err := GetEnumValue(req)
+	if err != nil {
+		return "", err
+	}
+	var pms []PolicyModel
+	if err := json.Unmarshal([]byte(enum.EnumValue), &pms); err != nil {
+		return "", err
+	}
+	firstStr := ""
+	if strings.Index(pn, "#") != -1 {
+		firstStr = strings.Split(pn, "#")[0]
+	} else {
+		firstStr = pn
+	}
+	for _, v := range pms {
+		if v.PolicyName == firstStr {
+			model_type = v.ModelType
+			break
+		}
+	}
+	return model_type, nil
 }

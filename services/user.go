@@ -8,7 +8,6 @@ import (
 	"fmt"
 	"github.com/astaxie/beego"
 	"github.com/astaxie/beego/logs"
-	"github.com/casbin/casbin"
 	"github.com/dgrijalva/jwt-go"
 	"golang.org/x/net/context"
 	"google.golang.org/grpc"
@@ -66,7 +65,7 @@ func ListUser(req *UserReq) ([]models.TaroUser, int64, error) {
 	if len(req.SearchType) != 0 {
 		err = engine.Table("taro_user").
 			Where("user_name like ? ", "%"+req.SearchName+"%").
-			And("user_role = ?", req.SearchType).
+			And("user_role like ?", "%"+req.SearchType+"%").
 			Limit(int(req.PageSize), int((req.PageIndex-1)*req.PageSize)).
 			Find(&users)
 		count, _ = engine.Where("user_name like ? ", "%"+req.SearchName+"%").
@@ -96,19 +95,6 @@ func CreateUser(r *models.TaroUser) (bool, error) {
 		logs.Error("CreateUser: User InsertOne Failed")
 		return false, errors.New("CreateUser: User InsertOne Failed")
 	}
-	casbin_model := "./casbinfiles/rbac_model.conf"
-	casbin_policys := "./casbinfiles/策略1.csv"
-	if ok, err := utils.FileExistAndCreate(casbin_policys); !ok {
-		return false, err
-	}
-	// TODO: How To Add user Role in csvfile
-	enf := casbin.NewEnforcer(casbin_model, casbin_policys)
-	success := enf.AddRoleForUser(r.UserName, r.UserRole)
-	_ = enf.SavePolicy()
-	if !success {
-		logs.Error("CreateUser: User Add Role Failed")
-		return false, errors.New("CreateUser: User Add Role Failed")
-	}
 	return true, nil
 }
 
@@ -120,49 +106,24 @@ func DeleteUserById(r *models.TaroUser) (bool, error) {
 		logs.Error("DeleteUserById: Table User Delete Error")
 		return false, err
 	}
-	casbin_model := "./casbinfiles/rbac_model.conf"
-	casbin_policys := "./casbinfiles/策略1.csv"
-	if ok, err := utils.FileExistAndCreate(casbin_policys); !ok {
-		return false, err
-	}
-	enf := casbin.NewEnforcer(casbin_model, casbin_policys)
-	success := enf.DeleteRoleForUser(r.UserName, r.UserRole)
-	_ = enf.SavePolicy()
-	if !success {
-		logs.Error("DeleteUserById: Delete User Role Error")
-		return false, errors.New("DeleteUserById: Delete User Role Error")
-	}
 	return true, nil
 }
 
 func UpdateUser(r *models.TaroUser) (bool, error) {
 	engine := utils.Engine_mysql
 	old := new(models.TaroUser)
-	var ret bool
-	has, err := engine.Table("taro_user").
+	_, err := engine.Table("taro_user").
 		Where("user_id = ?", r.UserId).Get(old)
 	if err != nil {
 		logs.Error("UpdateUser: Table User Get Error")
 		return false, err
-	}
-	if has {
-		casbin_model := "./casbinfiles/rbac_model.conf"
-		casbin_policys := "./casbinfiles/策略1.csv"
-		if ok, err := utils.FileExistAndCreate(casbin_policys); !ok {
-			return false, err
-		}
-		enf := casbin.NewEnforcer(casbin_model, casbin_policys)
-		ret1 := enf.DeleteRoleForUser(old.UserName, old.UserRole)
-		ret2 := enf.AddRoleForUser(r.UserName, r.UserRole)
-		_ = enf.SavePolicy()
-		ret = ret1 && ret2
 	}
 	_, err = engine.ID(r.UserId).Update(r)
 	if err != nil {
 		logs.Error("UpdatePolicy: Table Policy Update Error")
 		return false, err
 	}
-	return ret, nil
+	return true, nil
 }
 
 func ListUserNameAndRole() ([]NameOptions, int64, error) {
