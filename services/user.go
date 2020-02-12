@@ -85,6 +85,13 @@ func ListUser(req *UserReq) ([]models.TaroUser, int64, error) {
 }
 
 func CreateUser(r *models.TaroUser) (bool, error) {
+	roles := strings.Split(r.UserRole, "#")
+	if len(roles) == 2 {
+		rar := &RoleAllotReq{Name: r.UserName, Roles: roles}
+		if ret, _ := RoleAllot(rar); !ret {
+			return false, nil
+		}
+	}
 	engine := utils.Engine_mysql
 	res, err := engine.InsertOne(r)
 	if err != nil {
@@ -110,6 +117,13 @@ func DeleteUserById(r *models.TaroUser) (bool, error) {
 }
 
 func UpdateUser(r *models.TaroUser) (bool, error) {
+	roles := strings.Split(r.UserRole, "#")
+	if len(roles) == 2 {
+		rar := &RoleAllotReq{Name: r.UserName, Roles: roles}
+		if ret, _ := RoleAllot(rar); !ret {
+			return false, nil
+		}
+	}
 	engine := utils.Engine_mysql
 	old := new(models.TaroUser)
 	_, err := engine.Table("taro_user").

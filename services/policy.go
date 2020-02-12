@@ -33,12 +33,17 @@ type PolicyResp struct {
 
 type RoleAllotReq struct {
 	Name string `json:"name"`
-	Role []string `json:"role"`
+	Roles []string `json:"roles"`
 }
 
 type PolicyModel struct {
 	PolicyName string `json:"policy_name"`
 	ModelType string `json:"model_type"`
+}
+
+type MutexRole struct {
+	Role1 string `json:"user_role1"`
+	Role2 string `json:"user_role2"`
 }
 
 type ExecutableReq struct {
@@ -230,6 +235,29 @@ func CheckPolicy(r *PolicyCheckReq) (bool, error) {
 	} else {
 		return false, nil
 	}
+}
+
+func RoleAllot(r *RoleAllotReq) (bool, error) {
+	if len(r.Roles) < 2 {
+		return true, nil
+	}
+	m := &models.TaroEnum{EnumKey:"mutex_role"}
+	enum, err := GetEnumValue(m)
+	if err != nil {
+		return false, err
+	}
+	var mrs []MutexRole
+	if err := json.Unmarshal([]byte(enum.EnumValue), &mrs); err != nil {
+		return false, err
+	}
+	for _, v := range mrs {
+		if len(r.Roles) == 2 &&
+			((r.Roles[0] == v.Role1 && r.Roles[1] == v.Role2) ||
+				(r.Roles[0] == v.Role2 && r.Roles[1] == v.Role1)) {
+			return false, nil
+		}
+	}
+	return true, nil
 }
 
 func GetModelType(pn string) (string, error) {

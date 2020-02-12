@@ -135,7 +135,27 @@ func (c *PolicyController) Check() {
 }
 
 func (c *PolicyController) RoleAllot() {
+	var r services.RoleAllotReq
+	var ret bool
+	var err error
+	err = json.Unmarshal(c.Ctx.Input.RequestBody, &r)
+	if err != nil {
+		utils.BuildJsonResp(c, "Error", "Json Parse Error")
+		return
+	}
+	ret, err = services.RoleAllot(&r)
+	if err != nil {
+		logs.Error("RoleAllot error", err.Error())
+		utils.BuildJsonResp(c, "Error", "RoleAllot Error")
+		return
+	}
+	if ret {
+		utils.BuildJsonResp(c, "Normal", "RoleAllot Success")
+	} else {
+		utils.BuildJsonResp(c, "Error", "RoleAllot Failed")
+	}
 
+	return
 }
 
 func (c *PolicyController) Executable() {
