@@ -305,5 +305,10 @@ func ListIdentityNames() ([]NameOptions, int64, error) {
 		m := &NameOptions{Value: v, Label: v}
 		ins = append(ins, *m)
 	}
+	strs := []NameOptions{{"Admin","Admin"},
+		{"Readers","Readers"},
+		{"Writers","Writers"},
+	}
+	ins = append(ins, strs...)
 	return ins, int64(len(ins)), nil
 }

@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
+	"github.com/astaxie/beego"
 	"github.com/astaxie/beego/logs"
 	"github.com/casbin/casbin"
 	"strings"
@@ -107,6 +108,22 @@ func CreatePolicy(r *models.TaroPolicy) (bool, error) {
 		}
 	}
 	_ = enf.SavePolicy()
+
+	if r.PolicyName == beego.AppConfig.String("fabric_policy_name") {
+		tx, err := utils.ParseYamlFile(beego.AppConfig.String("fabric_configtx"))
+		if err == nil {
+			if len(tx.Application.ACLs) == 0{
+				tx.Application.ACLs = make(map[string]string)
+			}
+			subStr := r.PolicyObj[strings.Index(r.PolicyObj, "/") + 1:]
+			tx.Application.ACLs[subStr] = r.PolicySub
+			if err = utils.SaveYamlFile(tx, beego.AppConfig.String("fabric_configtx")); err != nil {
+				return false, err
+			}
+		} else {
+			return false, err
+		}
+	}
 	return ret, nil
 }
 
@@ -150,6 +167,20 @@ func DeletePolicyById(id int) (bool, error) {
 	if err != nil {
 		logs.Error("DeletePolicyById: Table Policy Delete Error")
 		return false, err
+	}
+
+	if r.PolicyName == beego.AppConfig.String("fabric_policy_name") {
+		tx, err := utils.ParseYamlFile(beego.AppConfig.String("fabric_configtx"))
+		if err == nil && len(tx.Application.ACLs) != 0 {
+			subStr := r.PolicyObj[strings.Index(r.PolicyObj, "/") + 1:]
+			delete(tx.Application.ACLs, subStr)
+			err = utils.SaveYamlFile(tx, beego.AppConfig.String("fabric_configtx"))
+			if err != nil {
+				return false, err
+			}
+		} else {
+			return false, err
+		}
 	}
 	return ret, nil
 }
@@ -200,6 +231,20 @@ func UpdatePolicy(r *models.TaroPolicy) (bool, error) {
 	if err != nil {
 		logs.Error("UpdatePolicy: Table Policy Update Error")
 		return false, err
+	}
+
+	if r.PolicyName == beego.AppConfig.String("fabric_policy_name") {
+		tx, err := utils.ParseYamlFile(beego.AppConfig.String("fabric_configtx"))
+		if err == nil && len(tx.Application.ACLs) != 0 {
+			subStr := r.PolicyObj[strings.Index(r.PolicyObj, "/") + 1:]
+			tx.Application.ACLs[subStr] = r.PolicySub
+			err = utils.SaveYamlFile(tx, beego.AppConfig.String("fabric_configtx"))
+			if err != nil {
+				return false, err
+			}
+		} else {
+			return false, err
+		}
 	}
 	return ret, nil
 }
