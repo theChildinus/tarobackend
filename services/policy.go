@@ -48,7 +48,7 @@ type MutexRole struct {
 }
 
 type ExecutableReq struct {
-	EpcCtx map[string]string `json:"epcCtx"`
+	EpcCtx utils.EpcCtx `json:"epcCtx"`
 }
 
 func ListPolicy(req *PolicyReq) ([]models.TaroPolicy, int64, error) {
@@ -329,4 +329,59 @@ func GetModelType(pn string) (string, error) {
 		}
 	}
 	return model_type, nil
+}
+
+func Executable(r *ExecutableReq) (string, error) {
+	type OuFuncIu struct {
+		Ou string
+		Func string
+		Iu string
+	}
+	var ou_func_iu []*OuFuncIu
+	function := make(map[string]interface{})
+	ou := make(map[string]interface{})
+	iu := make(map[string]interface{})
+	for _, v := range r.EpcCtx.Epc.Function {
+		function[v.ID] = v.Name
+	}
+	for _, v := range r.EpcCtx.Epc.Ou {
+		ou[v.ID] = v.OuName
+	}
+	for _, v := range r.EpcCtx.Epc.Iu {
+		iu[v.ID] = v.IuName
+	}
+	arc := r.EpcCtx.Epc.Arc
+	for i := 0; i < len(arc) - 1; i++ {
+		for j := 1; j < len(arc); j++ {
+			is, it, js, jt := arc[i].Flow.Source, arc[i].Flow.Target,
+				arc[j].Flow.Source, arc[j].Flow.Target
+			if _, ok := function[it]; ok && it == jt {
+				_, ok1 := ou[is]
+				_, ok2 := iu[js]
+				_, ok3 := ou[js]
+				_, ok4 := iu[is]
+				if ok1 && ok2 {
+					ou_func_iu = append(ou_func_iu, &OuFuncIu{
+						Ou:ou[is].(string),
+						Iu:iu[js].(string),
+						Func:function[it].(string),
+					})
+				} else if ok3 && ok4 {
+					ou_func_iu = append(ou_func_iu, &OuFuncIu{
+						Ou:ou[js].(string),
+						Iu:iu[is].(string),
+						Func:function[it].(string),
+					})
+				}
+			}
+		}
+	}
+	var ret string
+	for _, v := range ou_func_iu {
+		has, _ := utils.Engine_mysql.Exist(&models.TaroPolicy{PolicySub:v.Ou, PolicyObj:v.Iu})
+		if !has {
+			ret += v.Ou + "->" + v.Func + "<-" + v.Iu + " "
+		}
+	}
+	return ret, nil
 }

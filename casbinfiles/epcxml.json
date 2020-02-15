@@ -1,0 +1,335 @@
+{
+  "epcCtx": {
+    "@xmlns:epml": "http://www.epml.de",
+    "@xmlns:xsi": "http://www.w3.org/2001/XMLSchema-instance",
+    "@xsi:schemaLocation": "http://www.epml.de EPML_2.0.xsd",
+    "epc": {
+      "@name": "EPC",
+      "@ServicesName": null,
+      "@procCateId": "352772539904163840",
+      "@procCateName": "土壤监测",
+      "@sort": null,
+      "event": [
+        {
+          "@topic": "soilTempLow",
+          "@topicId": "412101012044644352",
+          "@topicTitle": "soilTempLow",
+          "@id": "3",
+          "name": "土壤异常",
+          "rule": {
+            "@ruleId": "412097022619811840",
+            "@ruleTitle": "土壤温度太低的阀值",
+            "#text": "soiltemp < 5"
+          }
+        },
+        {
+          "@topic": "soilHumidityLow",
+          "@topicId": "412101012053032960",
+          "@topicTitle": "soilHumidityLow",
+          "@id": "13",
+          "name": "土壤过湿",
+          "rule": {
+            "@ruleId": "412469675440472064",
+            "@ruleTitle": "soilHumidityRule",
+            "#text": "soilHumi > 9"
+          }
+        },
+        {
+          "@topic": "soilSaltyLow",
+          "@topicId": "412101012057227264",
+          "@topicTitle": "soilSaltyLow",
+          "@id": "15",
+          "name": "土壤盐分过高",
+          "rule": {
+            "@ruleId": "412469845032960000",
+            "@ruleTitle": "盐度规则",
+            "#text": "soilSalty > 14"
+          }
+        },
+        {
+          "@topic": "end",
+          "@topicId": "412101011985924096",
+          "@topicTitle": "end",
+          "@id": "20",
+          "name": "结束",
+          "rule": {
+            "@ruleId": "",
+            "@ruleTitle": ""
+          }
+        }
+      ],
+      "function": [
+        {
+          "@id": "5",
+          "name": "观测结果",
+          "funccate": {
+            "@serviceCateId": "348326424496570368",
+            "@serviceCateTitle": "土壤监测"
+          },
+          "serviceoperation": {
+            "@serviceName": "MyCalculateServicePortType.add",
+            "@serviceId": "412472383434129408",
+            "@serviceTitle": "MyCalculateServicePortType:add"
+          },
+          "form": {
+            "@formId": "415035552111263744"
+          },
+          "fieldPerms": [
+            {
+              "name": "ID",
+              "fieldname": "ID",
+              "datatype": "bigint",
+              "labelname": "唯一标识",
+              "inputtype": "myform",
+              "permtype": "3"
+            },
+            {
+              "name": "PARENT_ID",
+              "fieldname": "PARENT_ID",
+              "datatype": "bigint",
+              "labelname": "父ID",
+              "inputtype": "myform",
+              "permtype": "3"
+            },
+            {
+              "name": "TREE_PATH",
+              "fieldname": "TREE_PATH",
+              "datatype": "varchar",
+              "labelname": "节点路径",
+              "inputtype": "myform",
+              "permtype": "3"
+            },
+            {
+              "name": "NODE_GRADE",
+              "fieldname": "NODE_GRADE",
+              "datatype": "int",
+              "labelname": "节点级别",
+              "inputtype": "myform",
+              "permtype": "3"
+            },
+            {
+              "name": "SORT",
+              "fieldname": "SORT",
+              "datatype": "int",
+              "labelname": "排序",
+              "inputtype": "myform",
+              "permtype": "2"
+            },
+            {
+              "name": "FLAG",
+              "fieldname": "FLAG",
+              "datatype": "int",
+              "labelname": "删除标识",
+              "inputtype": "myform",
+              "permtype": "3"
+            },
+            {
+              "name": "CREATE_DATE",
+              "fieldname": "CREATE_DATE",
+              "datatype": "datetime",
+              "labelname": "创建时间",
+              "inputtype": "myform",
+              "permtype": "1"
+            },
+            {
+              "name": "MODIFY_DATE",
+              "fieldname": "MODIFY_DATE",
+              "datatype": "datetime",
+              "labelname": "修改时间",
+              "inputtype": "myform",
+              "permtype": "3"
+            },
+            {
+              "name": "TITLE",
+              "fieldname": "TITLE",
+              "datatype": "varchar",
+              "labelname": "标题",
+              "inputtype": "myform",
+              "permtype": "2"
+            },
+            {
+              "name": "BRIEF",
+              "fieldname": "BRIEF",
+              "datatype": "varchar",
+              "labelname": "简介",
+              "inputtype": "myform",
+              "permtype": "2"
+            }
+          ]
+        },
+        {
+          "@id": "19",
+          "name": "土壤异常上报",
+          "funccate": {
+            "@serviceCateId": "348326424496570368",
+            "@serviceCateTitle": "土壤监测"
+          },
+          "serviceoperation": {
+            "@serviceName": "MyCalculateServicePortType.add",
+            "@serviceId": "412472383434129408",
+            "@serviceTitle": "MyCalculateServicePortType:add"
+          },
+          "form": {
+            "@formId": "415035889547214848"
+          },
+          "fieldPerms": [
+            {
+              "name": "ID",
+              "fieldname": "ID",
+              "datatype": "bigint",
+              "labelname": "ID",
+              "inputtype": "myform",
+              "permtype": "3"
+            },
+            {
+              "name": "SOIL_TEMPERATURE",
+              "fieldname": "SOIL_TEMPERATURE",
+              "datatype": "decimal",
+              "labelname": "土壤温度",
+              "inputtype": "myform",
+              "permtype": "1"
+            },
+            {
+              "name": "SOIL_HUMIDITY",
+              "fieldname": "SOIL_HUMIDITY",
+              "datatype": "decimal",
+              "labelname": "土壤湿度",
+              "inputtype": "myform",
+              "permtype": "1"
+            },
+            {
+              "name": "SOIL_SALINITY",
+              "fieldname": "SOIL_SALINITY",
+              "datatype": "decimal",
+              "labelname": "土壤盐分",
+              "inputtype": "myform",
+              "permtype": "1"
+            },
+            {
+              "name": "SIGN_RESULT",
+              "fieldname": "SIGN_RESULT",
+              "datatype": "varchar",
+              "labelname": "签字",
+              "inputtype": "myform",
+              "permtype": "2"
+            }
+          ]
+        }
+      ],
+      "ou": [
+        {
+          "@ouName": "观测员",
+          "@id": "10",
+          "roles": "392182173743972352"
+        },
+        {
+          "@ouName": "观测区站长",
+          "@id": "24",
+          "roles": "375807167850086400"
+        }
+      ],
+      "iu": [
+        {
+          "@iuName": "土壤温度数据",
+          "@id": "7",
+          "table": "392185257232695296"
+        },
+        {
+          "@iuName": "土壤温度数据",
+          "@id": "22",
+          "table": "392185257232695296"
+        }
+      ],
+      "and": {
+        "@id": "17",
+        "@andName": null
+      },
+      "arc": [
+        {
+          "@id": "2",
+          "flow": {
+            "@source": "3",
+            "@target": "5"
+          }
+        },
+        {
+          "@id": "4",
+          "flow": {
+            "@source": "5",
+            "@target": "13"
+          }
+        },
+        {
+          "@id": "6",
+          "flow": {
+            "@source": "7",
+            "@target": "5"
+          }
+        },
+        {
+          "@id": "8",
+          "flow": {
+            "@source": "7",
+            "@target": "7"
+          }
+        },
+        {
+          "@id": "9",
+          "flow": {
+            "@source": "10",
+            "@target": "5"
+          }
+        },
+        {
+          "@id": "12",
+          "flow": {
+            "@source": "13",
+            "@target": "17"
+          }
+        },
+        {
+          "@id": "14",
+          "flow": {
+            "@source": "15",
+            "@target": "17"
+          }
+        },
+        {
+          "@id": "16",
+          "flow": {
+            "@source": "17",
+            "@target": "19"
+          }
+        },
+        {
+          "@id": "18",
+          "flow": {
+            "@source": "19",
+            "@target": "20"
+          }
+        },
+        {
+          "@id": "21",
+          "flow": {
+            "@source": "22",
+            "@target": "19"
+          }
+        },
+        {
+          "@id": "23",
+          "flow": {
+            "@source": "24",
+            "@target": "19"
+          }
+        },
+        {
+          "@id": "26",
+          "flow": {
+            "@source": "5",
+            "@target": "5"
+          }
+        }
+      ]
+    }
+  }
+}
