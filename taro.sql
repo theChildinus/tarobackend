@@ -11,7 +11,7 @@
  Target Server Version : 50727
  File Encoding         : 65001
 
- Date: 11/02/2020 16:24:08
+ Date: 21/02/2020 10:58:20
 */
 
 SET NAMES utf8mb4;
@@ -26,19 +26,20 @@ CREATE TABLE `taro_enum`  (
   `enum_key` varchar(255) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL,
   `enum_value` varchar(8192) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL,
   PRIMARY KEY (`enum_id`) USING BTREE
-) ENGINE = InnoDB AUTO_INCREMENT = 9 CHARACTER SET = utf8 COLLATE = utf8_general_ci ROW_FORMAT = Dynamic;
+) ENGINE = InnoDB AUTO_INCREMENT = 10 CHARACTER SET = utf8 COLLATE = utf8_general_ci ROW_FORMAT = Dynamic;
 
 -- ----------------------------
 -- Records of taro_enum
 -- ----------------------------
 INSERT INTO `taro_enum` VALUES (1, 'user_role', '管理员##经理##员工##第三方团队##发布者##订阅者');
 INSERT INTO `taro_enum` VALUES (2, 'resource_type', '主题##报表##工具##态势图##Peer节点##Order节点');
-INSERT INTO `taro_enum` VALUES (3, 'policy_act', 'read##write##exec##upload##sub##pub');
-INSERT INTO `taro_enum` VALUES (4, 'user_organization', '[{\"orgId\":35},{\"id\":24,\"label\":\"顶级部门1\",\"value\":\"顶级部门1\",\"isEdit\":false,\"children\":[{\"id\":27,\"label\":\"子部门1-1\",\"value\":\"子部门1-1\",\"isEdit\":false,\"children\":[{\"id\":28,\"label\":\"子部门1-1-1\",\"value\":\"子部门1-1-1\",\"isEdit\":false,\"children\":[{\"id\":33,\"label\":\"子部门1-1-1-1\",\"value\":\"子部门1-1-1-1\",\"isEdit\":false}]}]}]},{\"id\":25,\"label\":\"顶级部门2\",\"value\":\"顶级部门2\",\"isEdit\":false,\"children\":[{\"id\":29,\"label\":\"子部门2-1\",\"value\":\"子部门2-1\",\"isEdit\":false}]},{\"id\":26,\"label\":\"顶级部门3\",\"value\":\"顶级部门3\",\"isEdit\":false,\"children\":[{\"id\":30,\"label\":\"子部门3-1\",\"value\":\"子部门3-1\",\"isEdit\":false,\"children\":[{\"id\":32,\"label\":\"子部门3-1-1\",\"value\":\"子部门3-1-1\",\"isEdit\":false}]}]},{\"id\":27,\"label\":\"顶级部门4\",\"value\":\"顶级部门4\",\"isEdit\":false,\"children\":[{\"id\":31,\"label\":\"子部门4-1\",\"value\":\"子部门4-1\",\"isEdit\":false}]},{\"id\":35,\"label\":\"顶级部门5\",\"value\":\"顶级部门5\",\"isEdit\":false,\"children\":[]}]');
-INSERT INTO `taro_enum` VALUES (5, 'policy_tree', '[{\"policyTreeId\":9},{\"id\":1,\"label\":\"策略1\",\"value\":\"策略1\",\"isEdit\":false,\"children\":[]},{\"id\":3,\"label\":\"策略2\",\"value\":\"策略2\",\"isEdit\":false,\"children\":[]},{\"id\":4,\"label\":\"策略3\",\"value\":\"策略3\",\"isEdit\":false,\"children\":[{\"id\":4,\"label\":\"子策略3-1\",\"value\":\"子策略3-1\",\"isEdit\":false}]},{\"id\":8,\"label\":\"父策略4\",\"value\":\"父策略4\",\"isEdit\":false,\"children\":[]},{\"id\":9,\"label\":\"父策略5\",\"value\":\"父策略5\",\"isEdit\":false,\"children\":[]}]');
-INSERT INTO `taro_enum` VALUES (6, 'policy_model', '[{\"policy_name\":\"策略1\",\"model_type\":\"ACL\"},{\"policy_name\":\"策略2\",\"model_type\":\"ACL\"},{\"policy_name\":\"策略3\",\"model_type\":\"ACL\"},{\"policy_name\":\"父策略4\",\"model_type\":\"RBAC\"},{\"policy_name\":\"父策略5\",\"model_type\":\"RBAC\"}]');
-INSERT INTO `taro_enum` VALUES (7, 'policy_resource', '[{\"policyResourceId\":null},{\"id\":1,\"label\":\"资源1\",\"value\":\"资源1\",\"isEdit\":false,\"children\":[]},{\"id\":3,\"label\":\"资源2\",\"value\":\"资源2\",\"isEdit\":false,\"children\":[]},{\"id\":4,\"label\":\"资源3\",\"value\":\"资源3\",\"isEdit\":false,\"children\":[{\"id\":4,\"label\":\"子资源3-1\",\"value\":\"子资源3-1\",\"isEdit\":false}]},{\"id\":6,\"label\":\"资源4\",\"value\":\"资源4\",\"isEdit\":false,\"children\":[]},{\"id\":null,\"label\":\"资源5\",\"value\":\"资源5\",\"isEdit\":false,\"children\":[]}]');
-INSERT INTO `taro_enum` VALUES (8, 'identity_organization', '[{\"orgId\":37},{\"id\":35,\"label\":\"Org1\",\"value\":\"Org1\",\"isEdit\":false,\"children\":[]},{\"id\":36,\"label\":\"Org2\",\"value\":\"Org2\",\"isEdit\":false,\"children\":[]},{\"id\":37,\"label\":\"Org3\",\"value\":\"Org3\",\"isEdit\":false,\"children\":[]}]');
+INSERT INTO `taro_enum` VALUES (3, 'policy_act', 'read##write##exec##upload##sub##pub##permit');
+INSERT INTO `taro_enum` VALUES (4, 'user_organization', '[{\"orgId\":36},{\"id\":24,\"label\":\"顶级部门1\",\"value\":\"顶级部门1\",\"isEdit\":false,\"children\":[{\"id\":27,\"label\":\"子部门1-1\",\"value\":\"子部门1-1\",\"isEdit\":false,\"children\":[{\"id\":28,\"label\":\"子部门1-1-1\",\"value\":\"子部门1-1-1\",\"isEdit\":false,\"children\":[{\"id\":33,\"label\":\"子部门1-1-1-1\",\"value\":\"子部门1-1-1-1\",\"isEdit\":false}]}]}]},{\"id\":25,\"label\":\"顶级部门2\",\"value\":\"顶级部门2\",\"isEdit\":false,\"children\":[{\"id\":29,\"label\":\"子部门2-1\",\"value\":\"子部门2-1\",\"isEdit\":false}]},{\"id\":26,\"label\":\"顶级部门3\",\"value\":\"顶级部门3\",\"isEdit\":false,\"children\":[{\"id\":30,\"label\":\"子部门3-1\",\"value\":\"子部门3-1\",\"isEdit\":false,\"children\":[{\"id\":32,\"label\":\"子部门3-1-1\",\"value\":\"子部门3-1-1\",\"isEdit\":false}]}]},{\"id\":27,\"label\":\"顶级部门4\",\"value\":\"顶级部门4\",\"isEdit\":false,\"children\":[{\"id\":31,\"label\":\"子部门4-1\",\"value\":\"子部门4-1\",\"isEdit\":false}]}]');
+INSERT INTO `taro_enum` VALUES (5, 'policy_tree', '[{\"policyTreeId\":10},{\"id\":1,\"label\":\"策略1\",\"value\":\"策略1\",\"isEdit\":false,\"children\":[]},{\"id\":3,\"label\":\"策略2\",\"value\":\"策略2\",\"isEdit\":false,\"children\":[]},{\"id\":4,\"label\":\"策略3\",\"value\":\"策略3\",\"isEdit\":false,\"children\":[{\"id\":4,\"label\":\"子策略3-1\",\"value\":\"子策略3-1\",\"isEdit\":false}]},{\"id\":8,\"label\":\"父策略4\",\"value\":\"父策略4\",\"isEdit\":false,\"children\":[]},{\"id\":9,\"label\":\"父策略5\",\"value\":\"父策略5\",\"isEdit\":false,\"children\":[]},{\"id\":10,\"label\":\"区块链访问控制策略\",\"value\":\"区块链访问控制策略\",\"isEdit\":false,\"children\":[]}]');
+INSERT INTO `taro_enum` VALUES (6, 'policy_model', '[{\"policy_name\":\"策略1\",\"model_type\":\"ACL\"},{\"policy_name\":\"策略2\",\"model_type\":\"ACL\"},{\"policy_name\":\"策略3\",\"model_type\":\"ACL\"},{\"policy_name\":\"父策略4\",\"model_type\":\"RBAC\"},{\"policy_name\":\"父策略5\",\"model_type\":\"RBAC\"},{\"policy_name\":\"区块链访问控制策略\",\"model_type\":\"ACL\"}]');
+INSERT INTO `taro_enum` VALUES (7, 'policy_resource', '[{\"policyResourceId\":4},{\"id\":3,\"label\":\"物联网资源\",\"value\":\"物联网资源\",\"isEdit\":false,\"children\":[{\"id\":10,\"label\":\"报表\",\"value\":\"报表\",\"isEdit\":false},{\"id\":11,\"label\":\"工具\",\"value\":\"工具\",\"isEdit\":false},{\"id\":12,\"label\":\"态势图\",\"value\":\"态势图\",\"isEdit\":false}]},{\"id\":1,\"label\":\"区块链资源\",\"value\":\"区块链资源\",\"isEdit\":false,\"children\":[{\"id\":17,\"label\":\"lscc\",\"value\":\"lscc\",\"isEdit\":false,\"children\":[{\"id\":20,\"label\":\"ChaincodeExists\",\"value\":\"ChaincodeExists\",\"isEdit\":false},{\"id\":21,\"label\":\"GetDeploymentSpec\",\"value\":\"GetDeploymentSpec\",\"isEdit\":false},{\"id\":22,\"label\":\"GetChaincodeData\",\"value\":\"GetChaincodeData\",\"isEdit\":false},{\"id\":23,\"label\":\"GetInstantiatedChaincodes\",\"value\":\"GetInstantiatedChaincodes\",\"isEdit\":false}]},{\"id\":18,\"label\":\"qscc\",\"value\":\"qscc\",\"isEdit\":false,\"children\":[{\"id\":24,\"label\":\"GetChainInfo\",\"value\":\"GetChainInfo\",\"isEdit\":false},{\"id\":25,\"label\":\"GetBlockByNumber\",\"value\":\"GetBlockByNumber\",\"isEdit\":false},{\"id\":26,\"label\":\"GetBlockByHash\",\"value\":\"GetBlockByHash\",\"isEdit\":false},{\"id\":27,\"label\":\"GetTransactionByID\",\"value\":\"GetTransactionByID\",\"isEdit\":false},{\"id\":28,\"label\":\"GetBlockByTxID\",\"value\":\"GetBlockByTxID\",\"isEdit\":false}]},{\"id\":19,\"label\":\"cscc\",\"value\":\"cscc\",\"isEdit\":false,\"children\":[{\"id\":29,\"label\":\"GetConfigBlock\",\"value\":\"GetConfigBlock\",\"isEdit\":false},{\"id\":30,\"label\":\"GetConfigTree\",\"value\":\"GetConfigTree\",\"isEdit\":false},{\"id\":31,\"label\":\"SimulateConfigTreeUpdate\",\"value\":\"SimulateConfigTreeUpdate\",\"isEdit\":false}]},{\"id\":32,\"label\":\"peer\",\"value\":\"peer\",\"isEdit\":false,\"children\":[{\"id\":33,\"label\":\"Propose\",\"value\":\"Propose\",\"isEdit\":false},{\"id\":34,\"label\":\"ChaincodeToChaincode\",\"value\":\"ChaincodeToChaincode\",\"isEdit\":false}]},{\"id\":35,\"label\":\"event\",\"value\":\"event\",\"isEdit\":false,\"children\":[{\"id\":36,\"label\":\"Block\",\"value\":\"Block\",\"isEdit\":false},{\"id\":37,\"label\":\"FilteredBlock\",\"value\":\"FilteredBlock\",\"isEdit\":false}]}]},{\"id\":2,\"label\":\"资源1\",\"value\":\"资源1\",\"isEdit\":false,\"children\":[]},{\"id\":3,\"label\":\"资源3\",\"value\":\"资源3\",\"isEdit\":false,\"children\":[]},{\"id\":4,\"label\":\"资源4\",\"value\":\"资源4\",\"isEdit\":false,\"children\":[]}]');
+INSERT INTO `taro_enum` VALUES (8, 'identity_organization', '[{\"orgId\":41},{\"id\":35,\"label\":\"Org1\",\"value\":\"Org1\",\"isEdit\":false,\"children\":[]},{\"id\":36,\"label\":\"Org2\",\"value\":\"Org2\",\"isEdit\":false,\"children\":[]},{\"id\":37,\"label\":\"Org3\",\"value\":\"Org3\",\"isEdit\":false,\"children\":[]},{\"id\":38,\"label\":\"Channel\",\"value\":\"Channel\",\"isEdit\":false,\"children\":[{\"id\":38,\"label\":\"Application\",\"value\":\"Application\",\"isEdit\":false}]}]');
+INSERT INTO `taro_enum` VALUES (9, 'mutex_role', '[{\"user_role1\":\"顶级部门1/子部门1-1/管理员\",\"user_role2\":\"顶级部门2/子部门2-1/经理\"},{\"user_role1\":\"顶级部门4/经理\",\"user_role2\":\"顶级部门4/员工\"}]');
 
 -- ----------------------------
 -- Table structure for taro_identity
@@ -58,16 +59,16 @@ CREATE TABLE `taro_identity`  (
   `identity_pw` varchar(255) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL COMMENT 'Fabric 参与者主机密码',
   `identity_path` varchar(255) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL COMMENT 'Fabric 参与者主机路径',
   PRIMARY KEY (`identity_id`) USING BTREE
-) ENGINE = InnoDB AUTO_INCREMENT = 8 CHARACTER SET = utf8 COLLATE = utf8_general_ci ROW_FORMAT = Dynamic;
+) ENGINE = InnoDB AUTO_INCREMENT = 7 CHARACTER SET = utf8 COLLATE = utf8_general_ci ROW_FORMAT = Dynamic;
 
 -- ----------------------------
 -- Records of taro_identity
 -- ----------------------------
-INSERT INTO `taro_identity` VALUES (1, 'peer1', 'peer1pw', 'peer', 'org1', 'email=peer1@gmail.com', '2019-11-21 16:58:40', 2, '211.159.147.194', 'wayne', 'wayne941001', '/home/wayne/kong');
-INSERT INTO `taro_identity` VALUES (3, 'order1', 'order1pw', 'order', 'org1', '', '2019-11-21 16:59:19', 1, '211.159.147.194', 'wayne', 'wayne941001', NULL);
-INSERT INTO `taro_identity` VALUES (4, 'peer2', 'peer2pw', 'peer', 'org1', '', '2019-11-21 16:59:45', 0, '211.159.147.194', 'wayne', 'wayne941001', NULL);
-INSERT INTO `taro_identity` VALUES (5, 'order2', 'order2pw', 'order', 'org2', '', '2019-11-22 08:30:53', 0, '211.159.147.194', 'wayne', 'wayne941001', NULL);
-INSERT INTO `taro_identity` VALUES (6, 'user1', 'user1pw', 'client', 'org2', 'app1Admin=true:ecert,email=user1@gmail.com', '2019-11-21 15:00:43', 0, '211.159.147.194', 'wayne', 'wayne941001', NULL);
+INSERT INTO `taro_identity` VALUES (1, 'peer1', 'peer1pw', 'peer', 'Org1', 'email=peer1@gmail.com', '2019-11-21 16:58:40', 2, '211.159.147.194', 'wayne', 'wayne941001', '/home/wayne/kong');
+INSERT INTO `taro_identity` VALUES (3, 'order1', 'order1pw', 'order', 'Org1', 'email=peer1@gmail.com', '2019-11-21 16:59:19', 1, '211.159.147.194', 'wayne', 'wayne941001', '/home/wayne/kong');
+INSERT INTO `taro_identity` VALUES (4, 'peer2', 'peer2pw', 'peer', 'O/r/g/2', 'app1Admin=true:ecert,email=user1@gmail.com', '2019-11-21 16:59:45', 0, '211.159.147.194', 'wayne', 'wayne941001', '/home/wayne/kong');
+INSERT INTO `taro_identity` VALUES (5, 'order2', 'order2pw', 'order', 'o/r/g/2', '', '2019-11-22 08:30:53', 0, '211.159.147.194', 'wayne', 'wayne941001', '/home/wayne/kong');
+INSERT INTO `taro_identity` VALUES (6, 'user1', 'user1pw', 'client', 'o/r/g/2', 'app1Admin=true:ecert,email=user1@gmail.com', '2019-11-21 15:00:43', 0, '211.159.147.194', 'wayne', 'wayne941001', '/home/wayne/zhao');
 
 -- ----------------------------
 -- Table structure for taro_policy
@@ -82,29 +83,44 @@ CREATE TABLE `taro_policy`  (
   `policy_type` varchar(255) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL COMMENT '策略类型',
   `policy_ctime` datetime(0) NULL DEFAULT NULL COMMENT '创建时间',
   PRIMARY KEY (`policy_id`) USING BTREE
-) ENGINE = InnoDB AUTO_INCREMENT = 50 CHARACTER SET = utf8 COLLATE = utf8_general_ci ROW_FORMAT = Dynamic;
+) ENGINE = InnoDB AUTO_INCREMENT = 94 CHARACTER SET = utf8 COLLATE = utf8_general_ci ROW_FORMAT = Dynamic;
 
 -- ----------------------------
 -- Records of taro_policy
 -- ----------------------------
-INSERT INTO `taro_policy` VALUES (2, '策略1', 'kong', '资源1', 'write', 'IOT策略', '2019-10-11 21:24:22');
-INSERT INTO `taro_policy` VALUES (3, '策略1', 'kong', '资源2', 'exec', 'IOT策略', '2019-10-11 21:25:02');
-INSERT INTO `taro_policy` VALUES (4, '策略1', 'zhao', '资源3', 'read', 'IOT策略', '2019-10-11 21:25:54');
-INSERT INTO `taro_policy` VALUES (6, '策略1', '管理员', '资源4', 'upload', 'IOT策略', '2019-10-11 21:26:32');
-INSERT INTO `taro_policy` VALUES (15, '策略1', '管理员', '资源4', 'exec', 'IOT策略', '2019-10-14 10:43:45');
-INSERT INTO `taro_policy` VALUES (20, '策略1', 'kong', '资源1', 'sub', 'IOT策略', '2020-01-01 09:19:06');
-INSERT INTO `taro_policy` VALUES (21, '策略1', 'yang', '资源5', 'pub', 'IOT策略', '2020-01-01 09:19:11');
-INSERT INTO `taro_policy` VALUES (23, '策略3', 'zhao', '444444', 'read', 'Fabric策略', '2020-02-06 17:10:03');
-INSERT INTO `taro_policy` VALUES (24, '策略3', 'Org3/order1', '资源1', 'read', 'Fabric策略', '2020-02-06 17:10:24');
-INSERT INTO `taro_policy` VALUES (27, '策略3', 'Org1/peer1', '资源5', 'read', 'Fabric策略', '2020-02-08 16:08:37');
-INSERT INTO `taro_policy` VALUES (28, '策略3', 'Org1/peer2', '资源1', 'read', 'Fabric策略', '2020-02-08 16:09:48');
-INSERT INTO `taro_policy` VALUES (31, '策略3#子策略3-1', 'Org3/peer1', '资源3/子资源3-1', 'read', 'Fabric策略', '2020-02-08 17:47:47');
-INSERT INTO `taro_policy` VALUES (33, '策略3', '顶级部门1/yang', '3333333', 'read', 'Fabric策略', '2020-02-08 18:02:11');
-INSERT INTO `taro_policy` VALUES (34, '策略3#子策略3-1', 'zzzz', '99999', 'read', 'Fabric策略', '2020-02-08 18:12:58');
-INSERT INTO `taro_policy` VALUES (38, '策略3', 'user1', '资源3/子资源3-1', 'read', 'Fabric策略', '2020-02-10 16:12:13');
-INSERT INTO `taro_policy` VALUES (39, '策略3', 'Org1/peer1', '资源5', 'read', 'Fabric策略', '2020-02-10 16:34:45');
-INSERT INTO `taro_policy` VALUES (40, '策略2', '顶级部门5/yang', '资源5', 'read', 'IOT策略', '2020-02-10 16:42:42');
-INSERT INTO `taro_policy` VALUES (49, '父策略4', '顶级部门4/管理员', '资源4', 'read', 'IOT策略', '2020-02-11 16:05:16');
+INSERT INTO `taro_policy` VALUES (2, '策略1', 'kong', '物联网资源/报表', 'upload', '物联网用户', '2019-10-11 21:24:22');
+INSERT INTO `taro_policy` VALUES (3, '策略1', 'kong', '物联网资源/报表', 'exec', '物联网用户', '2019-10-11 21:25:02');
+INSERT INTO `taro_policy` VALUES (4, '策略1', 'zhao', '物联网资源/工具', 'read', '物联网用户', '2019-10-11 21:25:54');
+INSERT INTO `taro_policy` VALUES (6, '策略1', '管理员', '物联网资源/工具', 'upload', '物联网用户', '2019-10-11 21:26:32');
+INSERT INTO `taro_policy` VALUES (15, '策略1', '管理员', '物联网资源/态势图', 'exec', '物联网用户', '2019-10-14 10:43:45');
+INSERT INTO `taro_policy` VALUES (20, '策略1', 'kong', '物联网资源/态势图', 'sub', '物联网用户', '2020-01-01 09:19:06');
+INSERT INTO `taro_policy` VALUES (21, '策略1', 'yang', '资源1', 'exec', '物联网用户', '2020-01-01 09:19:11');
+INSERT INTO `taro_policy` VALUES (23, '策略3', 'Org2/order1', '资源1', 'read', '区块链参与者', '2020-02-06 17:10:03');
+INSERT INTO `taro_policy` VALUES (24, '策略3', 'Org3/order1', '资源1', 'read', '区块链参与者', '2020-02-06 17:10:24');
+INSERT INTO `taro_policy` VALUES (27, '策略3', 'Org1/order1', '资源3', 'read', '区块链参与者', '2020-02-08 16:08:37');
+INSERT INTO `taro_policy` VALUES (28, '策略3', 'Org1/peer1', '资源1', 'read', '区块链参与者', '2020-02-08 16:09:48');
+INSERT INTO `taro_policy` VALUES (31, '策略3#子策略3-1', 'Org3/peer1', '资源3/子资源3-1', 'read', '区块链参与者', '2020-02-08 17:47:47');
+INSERT INTO `taro_policy` VALUES (34, '策略3#子策略3-1', 'Org3/user1', '资源3/子资源3-1', 'read', '区块链参与者', '2020-02-08 18:12:58');
+INSERT INTO `taro_policy` VALUES (38, '策略3', 'Org2/peer1', '资源3/子资源3-1', 'read', '区块链参与者', '2020-02-10 16:12:13');
+INSERT INTO `taro_policy` VALUES (49, '父策略4', '顶级部门3/经理', '物联网资源/工具', 'pub', '物联网用户', '2020-02-11 16:05:16');
+INSERT INTO `taro_policy` VALUES (50, '策略3', 'Org3/peer1', '资源3', 'read', '区块链参与者', '2020-02-12 15:28:18');
+INSERT INTO `taro_policy` VALUES (51, '区块链访问控制策略', 'Channel/Application/Readers', '区块链资源/lscc/ChaincodeExists', 'permit', '区块链参与者', '2020-02-13 18:05:49');
+INSERT INTO `taro_policy` VALUES (52, '区块链访问控制策略', 'Channel/Application/Readers', '区块链资源/lscc/GetDeploymentSpec', 'permit', '区块链参与者', '2020-02-13 18:07:49');
+INSERT INTO `taro_policy` VALUES (53, '区块链访问控制策略', 'Channel/Application/Readers', '区块链资源/lscc/GetChaincodeData', 'permit', '区块链参与者', '2020-02-13 18:08:07');
+INSERT INTO `taro_policy` VALUES (54, '区块链访问控制策略', 'Channel/Application/Readers', '区块链资源/lscc/GetInstantiatedChaincodes', 'permit', '区块链参与者', '2020-02-13 18:08:22');
+INSERT INTO `taro_policy` VALUES (55, '区块链访问控制策略', 'Channel/Application/Readers', '区块链资源/qscc/GetChainInfo', 'permit', '区块链参与者', '2020-02-13 18:08:51');
+INSERT INTO `taro_policy` VALUES (56, '区块链访问控制策略', 'Channel/Application/Readers', '区块链资源/qscc/GetBlockByNumber', 'permit', '区块链参与者', '2020-02-13 18:09:14');
+INSERT INTO `taro_policy` VALUES (57, '区块链访问控制策略', 'Channel/Application/Readers', '区块链资源/qscc/GetBlockByHash', 'permit', '区块链参与者', '2020-02-13 18:09:33');
+INSERT INTO `taro_policy` VALUES (58, '区块链访问控制策略', 'Channel/Application/Readers', '区块链资源/qscc/GetTransactionByID', 'permit', '区块链参与者', '2020-02-13 18:09:46');
+INSERT INTO `taro_policy` VALUES (59, '区块链访问控制策略', 'Channel/Application/Readers', '区块链资源/qscc/GetBlockByTxID', 'permit', '区块链参与者', '2020-02-13 18:10:12');
+INSERT INTO `taro_policy` VALUES (60, '区块链访问控制策略', 'Channel/Application/Readers', '区块链资源/cscc/GetConfigBlock', 'permit', '区块链参与者', '2020-02-13 18:10:39');
+INSERT INTO `taro_policy` VALUES (61, '区块链访问控制策略', 'Channel/Application/Readers', '区块链资源/cscc/GetConfigTree', 'permit', '区块链参与者', '2020-02-13 18:10:59');
+INSERT INTO `taro_policy` VALUES (62, '区块链访问控制策略', 'Channel/Application/Readers', '区块链资源/cscc/SimulateConfigTreeUpdate', 'permit', '区块链参与者', '2020-02-13 18:11:17');
+INSERT INTO `taro_policy` VALUES (63, '区块链访问控制策略', 'Channel/Application/Writers', '区块链资源/peer/Propose', 'permit', '区块链参与者', '2020-02-13 18:11:48');
+INSERT INTO `taro_policy` VALUES (64, '区块链访问控制策略', 'Channel/Application/Readers', '区块链资源/peer/ChaincodeToChaincode', 'permit', '区块链参与者', '2020-02-13 18:12:07');
+INSERT INTO `taro_policy` VALUES (83, '区块链访问控制策略', 'Channel/Application/Readers', '区块链资源/event/FilteredBlock', 'permit', '区块链参与者', '2020-02-14 19:50:49');
+INSERT INTO `taro_policy` VALUES (84, '区块链访问控制策略', 'Channel/Application/Writers', '区块链资源/event/Block', 'permit', '区块链参与者', '2020-02-14 19:51:23');
+INSERT INTO `taro_policy` VALUES (93, '父策略4', '顶级部门1/管理员', '资源1', 'read', '物联网用户', '2020-02-21 10:35:07');
 
 -- ----------------------------
 -- Table structure for taro_resource
@@ -175,18 +191,18 @@ CREATE TABLE `taro_user`  (
 -- ----------------------------
 -- Records of taro_user
 -- ----------------------------
-INSERT INTO `taro_user` VALUES (1, 'zhao', '管理员', '111111', '6555@163.com', '123123123', 1, '3d5557a4b09c67bbc0019cc809d26da6', 'D:\\goProjects\\tarobackend\\card\\zhao');
-INSERT INTO `taro_user` VALUES (2, 'kong', '经理,第三方团队', '123131231', 'df@qq.com', '12312312', 1, '575c776ac08615a4949a6e35d4b73896', 'D:\\goProjects\\tarobackend\\card\\kong');
-INSERT INTO `taro_user` VALUES (3, 'yang', '经理', '1231', 'dfdf@qq.com', '12312312', 1, '', 'D:\\goProjects\\tarobackend\\card\\yang');
-INSERT INTO `taro_user` VALUES (4, 'zzzz', '员工', '1231adfasdf', 'dfdf@qq.com', '12312312', 0, '', 'D:\\goProjects\\tarobackend\\card\\');
-INSERT INTO `taro_user` VALUES (5, 'adsfasdf', '第三方团队', '1231adfasdf', 'dfdf@qq.com', '12312312', 0, '', 'D:\\goProjects\\tarobackend\\card\\yang');
-INSERT INTO `taro_user` VALUES (6, 'ggggggg', '经理', '1231adfasdf', 'dfdf@qq.com', '12312312', 0, '', 'D:\\goProjects\\tarobackend\\card\\yang');
-INSERT INTO `taro_user` VALUES (14, 'abddd', '员工', 'adfad', '11233434322@qq.com', '123124ddd', 0, '', 'D:\\goProjects\\tarobackend\\card\\yang');
-INSERT INTO `taro_user` VALUES (15, 'abdddaaaa', '员工', 'adfad', '11233434322@qq.com', '123124ddd', 0, '', 'D:\\goProjects\\tarobackend\\card\\yang');
-INSERT INTO `taro_user` VALUES (16, 'adfasdfd', '员工', 'dfdfdf', '1123131@123.com', '544342341', 0, '', 'D:\\goProjects\\tarobackend\\card\\yang');
-INSERT INTO `taro_user` VALUES (17, 'test9', '员工', 'dfadf', '123124323@qq.com', '1231243432', 0, '75cded9e84623b344159aaab0aa8e7fd', 'D:\\goProjects\\tarobackend\\card\\yang');
-INSERT INTO `taro_user` VALUES (18, 'test1', '经理', 'bupt', '123456@qq.com', '123456', 0, '', 'D:\\goProjects\\tarobackend\\card\\yang');
-INSERT INTO `taro_user` VALUES (19, 'eeeeeee', '管理员', 'erererere', '55566@qq.com', '1231230434231', 0, '', 'D:\\goProjects\\tarobackend\\card\\yang');
-INSERT INTO `taro_user` VALUES (21, 'aaaaaaaa', '顶级部门1/经理#顶级部门4/员工', '', '', '', 0, '', '');
+INSERT INTO `taro_user` VALUES (1, 'zhao', '顶级部门1/管理员#', '西土城路9号', '6555@163.com', '13912345678', 1, '3d5557a4b09c67bbc0019cc809d26da6', 'D:\\goProjects\\tarobackend\\card\\zhao');
+INSERT INTO `taro_user` VALUES (2, 'kong', '顶级部门1/管理员', '西土城路9号', 'df@qq.com', '13912334678', 1, '575c776ac08615a4949a6e35d4b73896', 'D:\\goProjects\\tarobackend\\card\\kong');
+INSERT INTO `taro_user` VALUES (3, 'yang', '顶级部门2/子部门2-1/管理员#', '西土城路9号', 'dfdf@qq.com', '13913545678', 1, '', 'D:\\goProjects\\tarobackend\\card\\yang');
+INSERT INTO `taro_user` VALUES (4, 'zzzz', '顶级部门1/管理员', '西土城路9号', 'dfdf@qq.com', '13912345667', 0, '', 'D:\\goProjects\\tarobackend\\card\\');
+INSERT INTO `taro_user` VALUES (5, 'adsfasdf', '顶级部门1/员工', '西土城路9号', 'dfdf@qq.com', '13912345352', 0, '', 'D:\\goProjects\\tarobackend\\card\\yang');
+INSERT INTO `taro_user` VALUES (6, 'ggggggg', '顶级部门1/员工', '西土城路9号', 'dfdf@qq.com', '13912345678', 0, '', 'D:\\goProjects\\tarobackend\\card\\yang');
+INSERT INTO `taro_user` VALUES (14, 'abddd', '顶级部门1/员工#顶级部门2/经理', '西土城路九号', '11234322@qq.com', '123124d', 0, '', 'D:\\goProjects\\tarobackend\\card\\abddd');
+INSERT INTO `taro_user` VALUES (15, 'abdddaaaa', '顶级部门1/员工', 'adfad', '11233434322@qq.com', '123124ddd', 0, '', 'D:\\goProjects\\tarobackend\\card\\yang');
+INSERT INTO `taro_user` VALUES (16, 'adfasdfd', '顶级部门1/员工#顶级部门4/经理', 'dfdfdf', '1123131@123.com', '544342341', 0, '', 'D:\\goProjects\\tarobackend\\card\\yang');
+INSERT INTO `taro_user` VALUES (17, 'test9', '顶级部门1/经理#', 'dfadf', '123124323@qq.com', '1231243432', 0, '75cded9e84623b344159aaab0aa8e7fd', 'D:\\goProjects\\tarobackend\\card\\yang');
+INSERT INTO `taro_user` VALUES (18, 'test1', '顶级部门1/经理', 'bupt', '123456@qq.com', '123456', 0, '', 'D:\\goProjects\\tarobackend\\card\\yang');
+INSERT INTO `taro_user` VALUES (19, 'eeeeeee', '顶级部门1/管理员', 'erererere', '55566@qq.com', '1231230434231', 0, '', 'D:\\goProjects\\tarobackend\\card\\yang');
+INSERT INTO `taro_user` VALUES (21, 'aaaaaaaa', '顶级部门2/子部门2-1/经理#顶级部门4/员工', '', '', '', 0, '', '');
 
 SET FOREIGN_KEY_CHECKS = 1;
