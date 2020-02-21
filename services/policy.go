@@ -80,12 +80,6 @@ func ListPolicy(req *PolicyReq) ([]models.TaroPolicy, int64, error) {
 }
 
 func CreatePolicy(r *models.TaroPolicy) (bool, error) {
-	engine := utils.Engine_mysql
-	_, err := engine.InsertOne(r)
-	if err != nil {
-		logs.Error("CreatePolicy: Table Policy InsertOne Error")
-		return false, err
-	}
 	model_type, err := GetModelType(r.PolicyName)
 	if err != nil {
 		logs.Error("CreatePolicy: Get ModelType Error")
@@ -97,7 +91,17 @@ func CreatePolicy(r *models.TaroPolicy) (bool, error) {
 		return false, err
 	}
 	enf := casbin.NewEnforcer(casbin_model, casbin_policys)
+	// if policy exist, return false, else add and insert to db
+	if has := enf.HasPolicy(r.PolicySub, r.PolicyObj, r.PolicyAct); has {
+		return false, nil
+	}
 	ret := enf.AddPolicy(r.PolicySub, r.PolicyObj, r.PolicyAct)
+	engine := utils.Engine_mysql
+	_, err = engine.InsertOne(r)
+	if err != nil {
+		logs.Error("CreatePolicy: Table Policy InsertOne Error")
+		return false, err
+	}
 	if model_type == "RBAC" {
 		var users []models.TaroUser
 		err = engine.Table("taro_user").
@@ -109,6 +113,7 @@ func CreatePolicy(r *models.TaroPolicy) (bool, error) {
 	}
 	_ = enf.SavePolicy()
 
+	// add policy to fabric configtx.yaml file when policyName matching
 	if r.PolicyName == beego.AppConfig.String("fabric_policy_name") {
 		tx, err := utils.ParseYamlFile(beego.AppConfig.String("fabric_configtx"))
 		if err == nil {
@@ -210,12 +215,14 @@ func UpdatePolicy(r *models.TaroPolicy) (bool, error) {
 		ret1 := enf.RemovePolicy(old.PolicySub, old.PolicyObj, old.PolicyAct)
 		ret2 := enf.AddPolicy(r.PolicySub, r.PolicyObj, r.PolicyAct)
 		if model_type == "RBAC" {
+			// remove policy rule: users has old role
 			var users []models.TaroUser
 			err = engine.Table("taro_user").
 				Where("user_role like ? ", "%"+old.PolicySub+"%").Find(&users)
 			for _, v := range users {
 				_ = enf.DeleteRoleForUser(v.UserName, old.PolicySub)
 			}
+			// add policy rule: users has new role
 			users = users[0:0]
 			err = engine.Table("taro_user").
 				Where("user_role like ? ", "%"+r.PolicySub+"%").Find(&users)
@@ -333,9 +340,9 @@ func GetModelType(pn string) (string, error) {
 
 func Executable(r *ExecutableReq) (string, error) {
 	type OuFuncIu struct {
-		Ou string
-		Func string
-		Iu string
+		Ou string   // organization unit pel
+		Func string // function pel
+		Iu string   // information unit pel
 	}
 	var ou_func_iu []*OuFuncIu
 	function := make(map[string]interface{})

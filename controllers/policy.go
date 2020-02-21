@@ -33,7 +33,7 @@ func (c *PolicyController) Create() {
 	if ret {
 		utils.BuildJsonResp(c, "Normal", "Create Policy Success")
 	} else {
-		utils.BuildJsonResp(c, "Normal", "Policy Existed")
+		utils.BuildJsonResp(c, "Error", "Policy Existed or Create Error")
 	}
 	return
 }
@@ -80,7 +80,7 @@ func (c *PolicyController) DeleteOne() {
 	if ret {
 		utils.BuildJsonResp(c, "Normal", "Delete Policy Success")
 	} else {
-		utils.BuildJsonResp(c, "Normal", "Policy Not Exist")
+		utils.BuildJsonResp(c, "Error", "Policy Not Exist")
 	}
 
 	return
@@ -104,7 +104,7 @@ func (c *PolicyController) Update() {
 	if ret {
 		utils.BuildJsonResp(c, "Normal", "Update Policy Success")
 	} else {
-		utils.BuildJsonResp(c, "Normal", "Policy Not Exist")
+		utils.BuildJsonResp(c, "Error", "Policy Not Exist")
 	}
 
 	return
