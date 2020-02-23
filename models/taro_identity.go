@@ -17,4 +17,5 @@ type TaroIdentity struct {
 	IdentityUser        string    `json:"identity_user" xorm:"comment('Fabric 参与者主机名') VARCHAR(255)"`
 	IdentityPw          string    `json:"identity_pw" xorm:"comment('Fabric 参与者主机密码') VARCHAR(255)"`
 	IdentityPath        string    `json:"identity_path" xorm:"comment('Fabric 参与者主机路径') VARCHAR(255)"`
+	IdentityHash        string    `json:"identity_hash" xorm:"comment('Fabric 参与者Hash') VARCHAR(255)"`
 }

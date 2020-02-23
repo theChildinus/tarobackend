@@ -11,7 +11,7 @@
  Target Server Version : 50727
  File Encoding         : 65001
 
- Date: 21/02/2020 10:58:20
+ Date: 24/02/2020 16:42:05
 */
 
 SET NAMES utf8mb4;
@@ -58,17 +58,18 @@ CREATE TABLE `taro_identity`  (
   `identity_user` varchar(255) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL COMMENT 'Fabric 参与者主机名',
   `identity_pw` varchar(255) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL COMMENT 'Fabric 参与者主机密码',
   `identity_path` varchar(255) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL COMMENT 'Fabric 参与者主机路径',
+  `identity_hash` varchar(255) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL COMMENT 'Fabric 参与者Hash',
   PRIMARY KEY (`identity_id`) USING BTREE
-) ENGINE = InnoDB AUTO_INCREMENT = 7 CHARACTER SET = utf8 COLLATE = utf8_general_ci ROW_FORMAT = Dynamic;
+) ENGINE = InnoDB AUTO_INCREMENT = 8 CHARACTER SET = utf8 COLLATE = utf8_general_ci ROW_FORMAT = Dynamic;
 
 -- ----------------------------
 -- Records of taro_identity
 -- ----------------------------
-INSERT INTO `taro_identity` VALUES (1, 'peer1', 'peer1pw', 'peer', 'Org1', 'email=peer1@gmail.com', '2019-11-21 16:58:40', 2, '211.159.147.194', 'wayne', 'wayne941001', '/home/wayne/kong');
-INSERT INTO `taro_identity` VALUES (3, 'order1', 'order1pw', 'order', 'Org1', 'email=peer1@gmail.com', '2019-11-21 16:59:19', 1, '211.159.147.194', 'wayne', 'wayne941001', '/home/wayne/kong');
-INSERT INTO `taro_identity` VALUES (4, 'peer2', 'peer2pw', 'peer', 'O/r/g/2', 'app1Admin=true:ecert,email=user1@gmail.com', '2019-11-21 16:59:45', 0, '211.159.147.194', 'wayne', 'wayne941001', '/home/wayne/kong');
-INSERT INTO `taro_identity` VALUES (5, 'order2', 'order2pw', 'order', 'o/r/g/2', '', '2019-11-22 08:30:53', 0, '211.159.147.194', 'wayne', 'wayne941001', '/home/wayne/kong');
-INSERT INTO `taro_identity` VALUES (6, 'user1', 'user1pw', 'client', 'o/r/g/2', 'app1Admin=true:ecert,email=user1@gmail.com', '2019-11-21 15:00:43', 0, '211.159.147.194', 'wayne', 'wayne941001', '/home/wayne/zhao');
+INSERT INTO `taro_identity` VALUES (1, 'peer1', 'peer1pw', 'peer', 'Org1', 'email=peer1@gmail.com', '2019-11-21 16:58:40', 2, '211.159.147.194', 'wayne', 'wayne941001', '/home/wayne/kong', NULL);
+INSERT INTO `taro_identity` VALUES (3, 'order1', 'order1pw', 'order', 'Org1', 'email=peer1@gmail.com', '2019-11-21 16:59:19', 1, '211.159.147.194', 'wayne', 'wayne941001', '/home/wayne/kong', NULL);
+INSERT INTO `taro_identity` VALUES (4, 'peer2', 'peer2pw', 'peer', 'Org3', 'app1Admin=true:ecert,email=user1@gmail.com', '2019-11-21 16:59:45', 0, '211.159.147.194', 'wayne', 'wayne941001', '/home/wayne/kong', NULL);
+INSERT INTO `taro_identity` VALUES (5, 'order2', 'order2pw', 'order', 'Org2', '', '2019-11-22 08:30:53', 0, '211.159.147.194', 'wayne', 'wayne941001', '/home/wayne/kong', NULL);
+INSERT INTO `taro_identity` VALUES (7, 'user1', 'user1pw', 'user', 'Org1', '', '2020-02-23 16:19:58', 2, '', '', '', '', 'f7e115f6fe0320c31023cd218e07f38d');
 
 -- ----------------------------
 -- Table structure for taro_policy
@@ -191,7 +192,7 @@ CREATE TABLE `taro_user`  (
 -- ----------------------------
 -- Records of taro_user
 -- ----------------------------
-INSERT INTO `taro_user` VALUES (1, 'zhao', '顶级部门1/管理员#', '西土城路9号', '6555@163.com', '13912345678', 1, '3d5557a4b09c67bbc0019cc809d26da6', 'D:\\goProjects\\tarobackend\\card\\zhao');
+INSERT INTO `taro_user` VALUES (1, 'zhao', '顶级部门1/管理员#', '西土城路9号', '6555@163.com', '13912345678', 1, 'dbfb2e1126c121ac4cff434cbc156ef3', 'D:\\goProjects\\tarobackend\\card\\zhao');
 INSERT INTO `taro_user` VALUES (2, 'kong', '顶级部门1/管理员', '西土城路9号', 'df@qq.com', '13912334678', 1, '575c776ac08615a4949a6e35d4b73896', 'D:\\goProjects\\tarobackend\\card\\kong');
 INSERT INTO `taro_user` VALUES (3, 'yang', '顶级部门2/子部门2-1/管理员#', '西土城路9号', 'dfdf@qq.com', '13913545678', 1, '', 'D:\\goProjects\\tarobackend\\card\\yang');
 INSERT INTO `taro_user` VALUES (4, 'zzzz', '顶级部门1/管理员', '西土城路9号', 'dfdf@qq.com', '13912345667', 0, '', 'D:\\goProjects\\tarobackend\\card\\');

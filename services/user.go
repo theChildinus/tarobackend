@@ -260,17 +260,13 @@ func DownloadCert(req *pb.DownloadReq) (*pb.DownloadResp, error) {
 }
 
 func VerifyIdentity(req *pb.VerifyIdentityReq) (int64, error) {
-	fromdb := new(models.TaroUser)
+
 	engine := utils.Engine_mysql
-	has, err := engine.Table("taro_user").
-		Where("user_name = ?", req.Name).Get(fromdb)
-	if err != nil {
-		logs.Error("VerifyIdentity: User Info Get Error")
-		return -1, err
-	}
-	if !has {
+	isUser, _ := engine.Exist(&models.TaroUser{UserName:req.Name})
+	isIdentity, _ := engine.Exist(&models.TaroIdentity{IdentityName:req.Name})
+	if !isUser && !isIdentity {
 		logs.Error("VerifyIdentity: User Doesn't Exist")
-		return -1, err
+		return -1, nil
 	}
 	if len(req.Sign) == 0 || req.Rand == 0 {
 		randnum := rand.Int63()
@@ -298,14 +294,24 @@ func VerifyIdentity(req *pb.VerifyIdentityReq) (int64, error) {
 		bytes, _ := base64.StdEncoding.DecodeString(req.Sign)
 		md5Inst.Write(bytes)
 		md5Sum := md5Inst.Sum([]byte(""))
-		engine := utils.Engine_mysql
-		user := new(models.TaroUser)
-		user.UserHash = hex.EncodeToString(md5Sum)
-		// fmt.Println("namewithNum: ", nameWithNum, "userhash: ", user.UserHash)
-		_, err = engine.Where("user_name = ?", req.Name).Update(user)
-		if err != nil {
-			logs.Error("VerifyIdentity: User Hash Update Error")
-			return -1, err
+		if isUser {
+			user := new(models.TaroUser)
+			user.UserHash = hex.EncodeToString(md5Sum)
+			fmt.Println("isUser")
+			_, err = engine.Where("user_name = ?", req.Name).Update(user)
+			if err != nil {
+				logs.Error("VerifyIdentity: User Hash Update Error")
+				return -1, err
+			}
+		} else if isIdentity {
+			identity := new(models.TaroIdentity)
+			identity.IdentityHash = hex.EncodeToString(md5Sum)
+			fmt.Println("isIdentity")
+			_, err = engine.Where("identity_name = ?", req.Name).Update(identity)
+			if err != nil {
+				logs.Error("VerifyIdentity: Identity Hash Update Error")
+				return -1, err
+			}
 		}
 	}
 	return r.Code, nil
