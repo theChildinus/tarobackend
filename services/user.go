@@ -40,11 +40,12 @@ type UserNameAndRoleResp struct {
 
 type LoginReq struct {
 	UserName string `json:"name"`
-	UserRole []string `json:"role"`
+	UserRole string `json:"role"`
 	UserSecret string `json:"secret"`
 }
 
 type LoginResp struct {
+	Code int `json:"code"`
 	Token string `json:"token"`
 }
 
@@ -367,9 +368,28 @@ func VerifyCert(req *pb.VerifyCertReq) (int64, error) {
 }
 
 func Login(req *LoginReq, tokenStr string) (string, error) {
-
+	// determine user has allocated role
+	if len(req.UserRole) == 0 {
+		return "-1", errors.New("UserRole empty")
+	}
+	user := new(models.TaroUser)
+	if _, err := utils.Engine_mysql.Table("taro_user").
+		Where("user_name = ?", req.UserName).Get(user); err != nil {
+		return "-1", err
+	}
+	hasRole := false
+	roles := strings.Split(user.UserRole, "#")
+	for _, v := range roles {
+		if v == req.UserRole {
+			hasRole = true
+		}
+	}
+	if !hasRole {
+		return "-1", errors.New("User doesn't has this role")
+	}
 	// Create a new token object, specifying signing method and the claims
 	// you would like it to contain.
+	// first time login, tokenStr not generate
 	if len(req.UserSecret) != 0 && len(tokenStr) == 0 {
 		// verify UserSecret
 		conn, err := grpc.Dial(beego.AppConfig.String("fabric_service"), grpc.WithInsecure())
@@ -401,11 +421,12 @@ func Login(req *LoginReq, tokenStr string) (string, error) {
 		bytes, _ := base64.StdEncoding.DecodeString(req.UserSecret)
 		if tokenString, err := token.SignedString(bytes); err == nil {
 			tokenMap[req.UserName] = req.UserSecret
-			fmt.Println(tokenString)
+			logs.Info("TokenStr: ", tokenString)
 			return tokenString, nil
 		} else {
 			return "", err
 		}
+		// login with tokenStr
 	} else if len(tokenStr) != 0 {
 		if t, ok := tokenMap[req.UserName]; ok {
 			claims, err := parseToken(tokenStr, t)

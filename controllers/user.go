@@ -258,19 +258,19 @@ func (c *UserController) Login() {
 		return
 	}
 	token := c.Ctx.Input.Header("Authorization")
-	code, err := services.Login(&req, token)
+	ret, err := services.Login(&req, token)
 	if err != nil {
 		logs.Error("Login Error", err.Error())
-		utils.BuildJsonResp(c, "Error", "Login Error")
+		utils.BuildJsonResp(c, "Error", "Login "+req.UserName+" Failed")
 		return
 	}
-	if code != "0" && code != "-1" {
-		c.Data["json"] = &services.LoginResp{Token:code}
+	if ret != "0" && ret != "-1" {
+		c.Data["json"] = &services.LoginResp{Code:0, Token:ret}
 		c.ServeJSON()
 		return
 	}
 
-	if code == "0" {
+	if ret == "0" {
 		logs.Info("Login " + req.UserName + " Success")
 		utils.BuildJsonResp(c, "Normal", "Login "+req.UserName+" Success")
 	} else {
