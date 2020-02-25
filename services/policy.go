@@ -61,7 +61,7 @@ func ListPolicy(req *PolicyReq) ([]models.TaroPolicy, int64, error) {
 	m := new(models.TaroPolicy)
 	if len(req.SearchSub) != 0 {
 		err = engine.Table("taro_policy").
-			Where("policy_sub like ? ", "%"+req.SearchSub+"%").
+			Where("policy_name like ? ", "%"+req.SearchSub+"%").
 			Limit(int(req.PageSize), int((req.PageIndex-1)*req.PageSize)).
 			Find(&policies)
 		count, _ = engine.Where("policy_sub = ? ", req.SearchSub).Count(m)
@@ -257,9 +257,9 @@ func UpdatePolicy(r *models.TaroPolicy) (bool, error) {
 }
 
 func CheckPolicy(r *PolicyCheckReq) (bool, error) {
-	if len(r.UserHash) == 0 {
-		logs.Error("CheckPolicy: UserHase Empty")
-		return false, errors.New("CheckPolicy: UserHase Empty")
+	if len(r.UserHash) == 0 || len(r.UserName) == 0 || len(r.PolicyName) == 0  {
+		logs.Error("CheckPolicy: UserHash or UserName or PolicyName Empty")
+		return false, errors.New("CheckPolicy: UserHash or UserName or PolicyName Empty")
 	}
 	engine := utils.Engine_mysql
 	m := new(models.TaroUser)
