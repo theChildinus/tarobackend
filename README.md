@@ -4,7 +4,7 @@
 
 | 项目           | 描述                                                         | github地址                                                   | docker 容器名  |
 | -------------- | ------------------------------------------------------------ | ------------------------------------------------------------ | -------------- |
-| web 前端       | vue.js，提供用户管理、资源管理、权限管理等功能，在用户管理中包括用户证书的创建、下载、注销等 | [vue-manage-system 分支：access-control](https://github.com/theChildinus/vue-manage-system/tree/access-control) | 部署在nginx中  |
+| web 前端       | vue.js，提供用户管理、资源管理、权限管理等功能，在用户管理中包括用户证书的创建、下载、注销等 | [tarofrontend 分支： master](https://github.com/theChildinus/tarofrontend) | 部署在nginx中  |
 | web 后端       | beego + casbin + grpc (client)，web的后端服务，将数据持久化到数据库中，作为 grpc 的客户端调用 fabric_service，请求 Fabric CA 服务 | [tarobackend 分支：master](https://github.com/theChildinus/tarobackend) | goweb          |
 | fabric_service | fabric-java-sdk + grpc (server)，作为 grpc 的服务端 处理 web后台的 Fabric CA 请求，同时作为 Fabric CA Client 与 Fabric CA Server 通信 | [fabric-service-client 分支：master](https://github.com/theChildinus/fabric-service-client) | fabric_service |
 | API 示例代码   | 提供 用户登录、权限校验、策略获取、证书验证等功能            | [LoginCheckApp 分支：master](https://github.com/theChildinus/LoginCheckApp) | 无             |
@@ -15,7 +15,7 @@
 
 | 项目（文件夹名）                       | 开发环境                                                     | 正式环境                                                     |
 | -------------------------------------- | ------------------------------------------------------------ | ------------------------------------------------------------ |
-| web 前端（vue-manage-system）          | `npm run dev`                                                | `npm run build` 将生成的 `dist` 文件夹复制到 tarobackend 文件夹中 |
+| web 前端tarofrontend）                 | `npm run dev`                                                | `npm run build` 将生成的 `dist` 文件夹复制到 tarobackend 文件夹中 |
 | web 后端(tarobackend)                  | 修改 `conf/app.conf` 中的 `httpaddr`, `mysqlurl`, `fabric_service` 为 localhost，端口不变，Goland IDE 直接启动 | 1. 注释 `compose.yaml`  中的 `command: sh -c 'cd /go/src && ./main'`。2. `docker-compose -f compose.yaml up -d` 重启 goweb服务。3. `docker exec -it goweb bash` 进入goweb容器，`cd src` , `go build main.go`  等待编译完成。4. 取消 `compose.yaml` 中的注释，再重启 goweb 服务 |
 | fabric_service (fabric-service-client) | IDEA IDE 直接启动 FabricService                              | IDEA IDE Maven 工具中选择输入命令：`mvn assembly:assembly` , 将生成的后缀为 `with-dependencies`的jar包 拷贝到 tarobackend 文件夹中 |
 
