@@ -10,6 +10,7 @@ import (
 	"strings"
 	"tarobackend/models"
 	"tarobackend/utils"
+	"time"
 )
 
 type PolicyReq struct {
@@ -20,11 +21,11 @@ type PolicyReq struct {
 
 type PolicyCheckReq struct {
 	PolicyName string `json:"policyname"`
-	PolicySub string `json:"policysub"`
-	PolicyObj string `json:"policyobj"`
-	PolicyAct string `json:"policyact"`
-	UserName  string `json:"username"`
-	UserHash  string `json:"userhash"`
+	PolicySub  string `json:"policysub"`
+	PolicyObj  string `json:"policyobj"`
+	PolicyAct  string `json:"policyact"`
+	UserName   string `json:"username"`
+	UserHash   string `json:"userhash"`
 }
 
 type PolicyResp struct {
@@ -33,13 +34,13 @@ type PolicyResp struct {
 }
 
 type RoleAllotReq struct {
-	Name string `json:"name"`
+	Name  string   `json:"name"`
 	Roles []string `json:"roles"`
 }
 
 type PolicyModel struct {
 	PolicyName string `json:"policy_name"`
-	ModelType string `json:"model_type"`
+	ModelType  string `json:"model_type"`
 }
 
 type MutexRole struct {
@@ -106,7 +107,7 @@ func CreatePolicy(r *models.TaroPolicy) (bool, error) {
 		var users []models.TaroUser
 		err = engine.Table("taro_user").
 			Where("user_role like ? ", "%"+r.PolicySub+"%").Find(&users)
-		fmt.Println("users:", r.PolicySub, users)
+		//logs.Info("users:", r.PolicySub, users)
 		for _, v := range users {
 			_ = enf.AddRoleForUser(v.UserName, r.PolicySub)
 		}
@@ -117,10 +118,10 @@ func CreatePolicy(r *models.TaroPolicy) (bool, error) {
 	if r.PolicyName == beego.AppConfig.String("fabric_policy_name") {
 		tx, err := utils.ParseYamlFile(beego.AppConfig.String("fabric_configtx"))
 		if err == nil {
-			if len(tx.Application.ACLs) == 0{
+			if len(tx.Application.ACLs) == 0 {
 				tx.Application.ACLs = make(map[string]string)
 			}
-			subStr := r.PolicyObj[strings.Index(r.PolicyObj, "/") + 1:]
+			subStr := r.PolicyObj[strings.Index(r.PolicyObj, "/")+1:]
 			tx.Application.ACLs[subStr] = r.PolicySub
 			if err = utils.SaveYamlFile(tx, beego.AppConfig.String("fabric_configtx")); err != nil {
 				return false, err
@@ -177,7 +178,7 @@ func DeletePolicyById(id int) (bool, error) {
 	if r.PolicyName == beego.AppConfig.String("fabric_policy_name") {
 		tx, err := utils.ParseYamlFile(beego.AppConfig.String("fabric_configtx"))
 		if err == nil && len(tx.Application.ACLs) != 0 {
-			subStr := r.PolicyObj[strings.Index(r.PolicyObj, "/") + 1:]
+			subStr := r.PolicyObj[strings.Index(r.PolicyObj, "/")+1:]
 			delete(tx.Application.ACLs, subStr)
 			err = utils.SaveYamlFile(tx, beego.AppConfig.String("fabric_configtx"))
 			if err != nil {
@@ -243,7 +244,7 @@ func UpdatePolicy(r *models.TaroPolicy) (bool, error) {
 	if r.PolicyName == beego.AppConfig.String("fabric_policy_name") {
 		tx, err := utils.ParseYamlFile(beego.AppConfig.String("fabric_configtx"))
 		if err == nil && len(tx.Application.ACLs) != 0 {
-			subStr := r.PolicyObj[strings.Index(r.PolicyObj, "/") + 1:]
+			subStr := r.PolicyObj[strings.Index(r.PolicyObj, "/")+1:]
 			tx.Application.ACLs[subStr] = r.PolicySub
 			err = utils.SaveYamlFile(tx, beego.AppConfig.String("fabric_configtx"))
 			if err != nil {
@@ -257,7 +258,7 @@ func UpdatePolicy(r *models.TaroPolicy) (bool, error) {
 }
 
 func CheckPolicy(r *PolicyCheckReq) (bool, error) {
-	if len(r.UserHash) == 0 || len(r.UserName) == 0 || len(r.PolicyName) == 0  {
+	if len(r.UserHash) == 0 || len(r.UserName) == 0 || len(r.PolicyName) == 0 {
 		logs.Error("CheckPolicy: UserHash or UserName or PolicyName Empty")
 		return false, errors.New("CheckPolicy: UserHash or UserName or PolicyName Empty")
 	}
@@ -293,7 +294,7 @@ func RoleAllot(r *RoleAllotReq) (bool, error) {
 	if len(r.Roles) < 2 {
 		return true, nil
 	}
-	m := &models.TaroEnum{EnumKey:"mutex_role"}
+	m := &models.TaroEnum{EnumKey: "mutex_role"}
 	enum, err := GetEnumValue(m)
 	if err != nil {
 		return false, err
@@ -314,7 +315,7 @@ func RoleAllot(r *RoleAllotReq) (bool, error) {
 
 func GetModelType(pn string) (string, error) {
 	model_type := "acl"
-	req := &models.TaroEnum{EnumKey:"policy_model"}
+	req := &models.TaroEnum{EnumKey: "policy_model"}
 	enum, err := GetEnumValue(req)
 	if err != nil {
 		return "", err
@@ -340,14 +341,15 @@ func GetModelType(pn string) (string, error) {
 
 func Executable(r *ExecutableReq) (string, error) {
 	type OuFuncIu struct {
-		Ou string   // organization unit pel
+		Ou   string // organization unit pel
+		Iu   string // information unit pel
 		Func string // function pel
-		Iu string   // information unit pel
 	}
 	var ou_func_iu []*OuFuncIu
-	function := make(map[string]interface{})
-	ou := make(map[string]interface{})
-	iu := make(map[string]interface{})
+	removeMult := make(map[string]int)
+	function := make(map[string]string)
+	ou := make(map[string]string)
+	iu := make(map[string]string)
 	for _, v := range r.EpcCtx.Epc.Function {
 		function[v.ID] = v.Name
 	}
@@ -358,7 +360,7 @@ func Executable(r *ExecutableReq) (string, error) {
 		iu[v.ID] = v.IuName
 	}
 	arc := r.EpcCtx.Epc.Arc
-	for i := 0; i < len(arc) - 1; i++ {
+	for i := 0; i < len(arc)-1; i++ {
 		for j := 1; j < len(arc); j++ {
 			is, it, js, jt := arc[i].Flow.Source, arc[i].Flow.Target,
 				arc[j].Flow.Source, arc[j].Flow.Target
@@ -368,26 +370,37 @@ func Executable(r *ExecutableReq) (string, error) {
 				_, ok3 := ou[js]
 				_, ok4 := iu[is]
 				if ok1 && ok2 {
-					ou_func_iu = append(ou_func_iu, &OuFuncIu{
-						Ou:ou[is].(string),
-						Iu:iu[js].(string),
-						Func:function[it].(string),
-					})
+					o, i, f := ou[is], iu[js], function[it]
+					if _, exist := removeMult[o+"#"+i+"#"+f]; !exist {
+						ou_func_iu = append(ou_func_iu, &OuFuncIu{Ou: o, Iu: i, Func: f})
+						removeMult[o+"#"+i+"#"+f] = 0
+					}
 				} else if ok3 && ok4 {
-					ou_func_iu = append(ou_func_iu, &OuFuncIu{
-						Ou:ou[js].(string),
-						Iu:iu[is].(string),
-						Func:function[it].(string),
-					})
+					o, i, f := ou[js], iu[is], function[it]
+					if _, exist := removeMult[o+"#"+i+"#"+f]; !exist {
+						ou_func_iu = append(ou_func_iu, &OuFuncIu{Ou: o, Iu: i, Func: f})
+						removeMult[o+"#"+i+"#"+f] = 0
+					}
 				}
 			}
 		}
 	}
 	var ret string
 	for _, v := range ou_func_iu {
-		has, _ := utils.Engine_mysql.Exist(&models.TaroPolicy{PolicySub:v.Ou, PolicyObj:v.Iu})
-		if !has {
-			ret += v.Ou + "->" + v.Func + "<-" + v.Iu + " "
+		// TODO: v.Ou / v.Iu in db ?
+		policy_name := beego.AppConfig.String("epc_policy_name")
+		_, err := CreatePolicy(&models.TaroPolicy{
+			PolicyName:  policy_name,
+			PolicySub:   v.Ou,
+			PolicyObj:   v.Iu,
+			PolicyAct:   v.Func,
+			PolicyType:  "",
+			PolicyCtime: time.Time{},
+		})
+		if err != nil {
+			str := v.Ou + "->" + v.Func + "<-" + v.Iu
+			logs.Error("CreatePolicy: ", str, " Existed Or Error")
+			ret += str
 		}
 	}
 	return ret, nil
