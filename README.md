@@ -19,6 +19,12 @@
 | web 后端(tarobackend)                  | 修改 `conf/app.conf` 中的 `httpaddr`, `mysqlurl`, `fabric_service` 为 localhost，端口不变，Goland IDE 直接启动 | 1. 注释 `compose.yaml`  中的 `command: sh -c 'cd /go/src && ./main'`。2. `docker-compose -f compose.yaml up -d` 重启 goweb服务。3. `docker exec -it goweb bash` 进入goweb容器，`cd src` , `go build main.go`  等待编译完成。4. 取消 `compose.yaml` 中的注释，再重启 goweb 服务 |
 | fabric_service (fabric-service-client) | IDEA IDE 直接启动 FabricService                              | IDEA IDE Maven 工具中选择输入命令：`mvn assembly:assembly` , 将生成的后缀为 `with-dependencies`的jar包 拷贝到 tarobackend 文件夹中 |
 
+## 部署
+
+- 修改 `conf/app.conf`  本地主机信息部分
+- 修改 `conf/nginx.conf` 第33行 `server_name` 为本机IP，保留 `https://`
+- 一键部署 `docker-compose -f compose.yaml up -d` 
+
 ## 一些命令
 
 #### 使用 grpc 结合 protobuf 自动生成代码 XXXXpb.go

@@ -305,3 +305,28 @@ func (c *UserController) Logout() {
 	}
 	return
 }
+
+func (c *UserController) Install() {
+	var req models.TaroUser
+	var err error
+	err = json.Unmarshal(c.Ctx.Input.RequestBody, &req)
+	if err != nil {
+		utils.BuildJsonResp(c, "Error", "Json Parse Error")
+		return
+	}
+
+	code, err := services.InstallUser(&req)
+	if err != nil {
+		logs.Error("Cert Install Error", err.Error())
+		utils.BuildJsonResp(c, "Error", "Cert Install Error")
+		return
+	}
+	if code == 0 {
+		logs.Info("Install " + req.UserName + " Cert Success")
+		utils.BuildJsonResp(c, "Normal", "InstallCert "+req.UserName+" Success")
+	} else {
+		logs.Error("Install " + req.UserName + " Cert Failed")
+		utils.BuildJsonResp(c, "Error", "InstallCert "+req.UserName+" Failed")
+	}
+	return
+}

@@ -5,7 +5,7 @@ services:
     command: --default-authentication-plugin=mysql_native_password
     image: mysql:5.7
     ports:
-      - 3306:3306
+      - "3306:3306"
     volumes:
       - ./dbdata:/var/lib/mysql
     environment:
@@ -17,7 +17,7 @@ services:
     container_name: nginx
     image: nginx:latest
     ports:
-      - 4433:4433
+      - "4433:4433"
     volumes:
       - ./dist:/usr/share/nginx/html
       - ./conf/nginx.conf:/etc/nginx/nginx.conf
@@ -48,7 +48,7 @@ services:
     container_name: fabric_service
     image: openjdk:latest
     ports:
-      - 50051:50051
+      - "50051:50051"
     volumes:
       - ./:/home/
     networks:

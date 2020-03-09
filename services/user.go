@@ -11,9 +11,7 @@ import (
 	"github.com/dgrijalva/jwt-go"
 	"golang.org/x/net/context"
 	"google.golang.org/grpc"
-	"io"
 	"math/rand"
-	"os"
 	"strings"
 	"tarobackend/models"
 	pb "tarobackend/proto"
@@ -199,40 +197,26 @@ func RegisterUser(req *pb.RegisterReq) (int64, error) {
 			logs.Error("RegisterUser: User Status Update Error")
 			return -1, err
 		}
-
-		if _, err := engine.Id(req.Id).Get(&user); err != nil {
-			return -1, err
-		}
-		// Copy cert&pem file to Secret Device Path
-		srcFileName1 := "./card/" + req.Name + "/" + req.Name + ".crt"
-		srcFileName2 :=  "./card/" + req.Name + "/" + req.Name + ".pem"
-		dstFileName1 := user.UserPath + req.Name + ".crt"
-		dstFileName2 := user.UserPath + req.Name + ".pem"
-		if _, err := CopyFile(dstFileName1, srcFileName1); err != nil {
-			return -1, err
-		}
-		if _, err := CopyFile(dstFileName2, srcFileName2); err != nil {
-			return -1, err
-		}
 	}
 	return r.GetCode(), nil
 }
 
-func CopyFile(dstFileName, srcFileName string) (int64, error) {
-	srcFile, err := os.Open(srcFileName)
+func InstallUser(req *models.TaroUser) (int64, error) {
+	if len(req.UserName) == 0 || len(req.UserPath) == 0 {
+		logs.Error("UserName or UserPath is empty")
+		return -1, errors.New("UserName or UserPath is empty")
+	}
+	_, err := InstallIdentity(&pb.InstallReq{
+		Name: req.UserName,
+		Ip:   beego.AppConfig.String("local_host"),
+		User: beego.AppConfig.String("local_username"),
+		Pw:   beego.AppConfig.String("local_password"),
+		Path: req.UserPath,
+	})
 	if err != nil {
-		logs.Error("CopyFile: open file err = %v\n", err)
 		return -1, err
 	}
-	defer srcFile.Close()
-
-	dstFile, err := os.OpenFile(dstFileName, os.O_WRONLY | os.O_CREATE | os.O_TRUNC, 0755)
-	if err != nil {
-		logs.Error("CopyFile: open file err = %v\n", err)
-		return -1, err
-	}
-	defer dstFile.Close()
-	return io.Copy(dstFile, srcFile)
+	return 0, nil
 }
 
 func DownloadCert(req *pb.DownloadReq) (*pb.DownloadResp, error) {

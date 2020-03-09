@@ -65,7 +65,7 @@ func ListPolicy(req *PolicyReq) ([]models.TaroPolicy, int64, error) {
 			Where("policy_name like ? ", "%"+req.SearchSub+"%").
 			Limit(int(req.PageSize), int((req.PageIndex-1)*req.PageSize)).
 			Find(&policies)
-		count, _ = engine.Where("policy_sub = ? ", req.SearchSub).Count(m)
+		count, _ = engine.Where("policy_name like ? ", "%"+req.SearchSub+"%").Count(m)
 	} else {
 		err = engine.Table("taro_policy").
 			Limit(int(req.PageSize), int((req.PageIndex-1)*req.PageSize)).

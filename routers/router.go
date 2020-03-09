@@ -41,6 +41,7 @@ func init() {
 	beego.Router("user/verifyCert", &controllers.UserController{}, "post:VerifyCert")
 	beego.Router("user/login", &controllers.UserController{}, "post:Login")
 	beego.Router("user/logout", &controllers.UserController{}, "post:Logout")
+	beego.Router("user/install", &controllers.UserController{}, "post:Install")
 
 	beego.Router("identity/create", &controllers.IdentityController{}, "post:Create")
 	beego.Router("identity/list", &controllers.IdentityController{}, "*:List")
