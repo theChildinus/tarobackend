@@ -1,0 +1,7 @@
+p, kong, 物联网资源/报表, exec
+p, 管理员, 物联网资源/工具, upload
+p, kong, 物联网资源/态势图, sub
+p, 管理员, 物联网资源/态势图, exec
+p, yang, 资源1, exec
+p, kong, 物联网资源/报表, upload
+p, zhao, 物联网资源/态势图, read

@@ -1,0 +1,6 @@
+p, Org1MSP.admin, Org1MSP, read
+p, Org1MSP.peer, Org1MSP, read
+p, Org1MSP.client, Org1MSP, read
+p, Org1MSP.client, Org1MSP, write
+p, Org1MSP.admin, Org1MSP, write
+p, Org1MSP.admin, Org1MSP, admin

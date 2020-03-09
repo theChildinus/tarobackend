@@ -1,0 +1,9 @@
+p, 技术部/研发部/员工, 物联网资源/工具, exec
+p, Org1/peer1, 区块链资源/peer/Propose, read
+p, 财务部/经理, 物联网资源/报表, write
+p, Org2/user1, 区块链资源/event/Block, read
+p, 销售部/线下销售部/员工, 物联网资源/报表, read
+p, Org3/peer1, 区块链资源/event/FilteredBlock, write
+p, 观测员, 土壤温度数据, 观测结果
+p, 观测区站长, 土壤温度数据, 土壤异常上报
+g, adsfasdf, 技术部/研发部/员工
