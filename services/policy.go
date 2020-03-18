@@ -274,7 +274,7 @@ func CheckPolicy(r *PolicyCheckReq) (bool, error) {
 	// fmt.Println("r.policysub:", r.PolicySub, "m.username:", m.UserName, "m.userrole:", m.UserRole)
 	if has &&
 		r.UserHash == m.UserHash &&
-		(r.PolicySub == m.UserName || r.PolicySub == m.UserRole) {
+		(strings.Contains(r.PolicySub, m.UserName) || r.PolicySub == m.UserRole) {
 		model_type, err := GetModelType(r.PolicyName)
 		if err != nil {
 			logs.Error("CheckPolicy: Get Model Type Error")

@@ -184,7 +184,7 @@ func RegisterUser(req *pb.RegisterReq) (int64, error) {
 	// Contact the server and print out its response.
 	ctx, cancel := context.WithTimeout(context.Background(), time.Second*10)
 	defer cancel()
-	r, err := c.Register(ctx, &pb.RegisterReq{Name: req.Name, Type: "user"})
+	r, err := c.Register(ctx, &pb.RegisterReq{Name: req.Name, Type: "iotuser"})
 	if err != nil {
 		logs.Error("RegisterUser: could not Register: %v", err)
 		return -1, err
@@ -231,7 +231,7 @@ func DownloadCert(req *pb.DownloadReq) (*pb.DownloadResp, error) {
 	// Contact the server and print out its response.
 	ctx, cancel := context.WithTimeout(context.Background(), time.Second*10)
 	defer cancel()
-	r, err := c.Download(ctx, &pb.DownloadReq{Name: req.Name, Type: "user"})
+	r, err := c.Download(ctx, &pb.DownloadReq{Name: req.Name, Type: "iotuser"})
 	if err != nil {
 		logs.Error("DownloadCert: could not Download: %v", err)
 		return nil, err
@@ -269,7 +269,7 @@ func VerifyIdentity(req *pb.VerifyIdentityReq) (int64, error) {
 	// Contact the server and print out its response.
 	ctx, cancel := context.WithTimeout(context.Background(), time.Second*10)
 	defer cancel()
-	r, err := c.VerifyIdentity(ctx, &pb.VerifyIdentityReq{Name: req.Name, Rand: req.Rand, Sign: req.Sign, Type: "user"})
+	r, err := c.VerifyIdentity(ctx, &pb.VerifyIdentityReq{Name: req.Name, Rand: req.Rand, Sign: req.Sign, Type: "iotuser"})
 	if err != nil {
 		logs.Error("VerifyIdentity: could not verify: %v", err)
 		return -1, err
@@ -315,7 +315,7 @@ func RevokeUser(req *pb.RevokeReq) (int64, error) {
 	// Contact the server and print out its response.
 	ctx, cancel := context.WithTimeout(context.Background(), time.Second*10)
 	defer cancel()
-	r, err := c.Revoke(ctx, &pb.RevokeReq{Name: req.Name, Type: "user"})
+	r, err := c.Revoke(ctx, &pb.RevokeReq{Name: req.Name, Type: "iotuser"})
 	if err != nil {
 		logs.Error("RevokeUser: could not Revoke: %v", err)
 		return -1, err
@@ -343,7 +343,7 @@ func VerifyCert(req *pb.VerifyCertReq) (int64, error) {
 	// Contact the server and print out its response.
 	ctx, cancel := context.WithTimeout(context.Background(), time.Second*10)
 	defer cancel()
-	r, err := c.VerifyCert(ctx, &pb.VerifyCertReq{Name: req.Name, Certcontent: req.Certcontent, Type: "user"})
+	r, err := c.VerifyCert(ctx, &pb.VerifyCertReq{Name: req.Name, Certcontent: req.Certcontent, Type: "iotuser"})
 	if err != nil {
 		logs.Error("VerifyCert: could not Verify: %v", err)
 		return -1, err
@@ -364,8 +364,9 @@ func Login(req *LoginReq, tokenStr string) (string, error) {
 	hasRole := false
 	roles := strings.Split(user.UserRole, "#")
 	for _, v := range roles {
-		if v == req.UserRole {
+		if strings.Contains(v, req.UserRole) {
 			hasRole = true
+			break
 		}
 	}
 	if !hasRole {
@@ -388,7 +389,7 @@ func Login(req *LoginReq, tokenStr string) (string, error) {
 		defer cancel()
 		// userSecret should be One Time Password
 		r, err := c.VerifyIdentity(ctx,
-			&pb.VerifyIdentityReq{Name: req.UserName, Rand: 123456, Sign: req.UserSecret, Type: "user"})
+			&pb.VerifyIdentityReq{Name: req.UserName, Rand: 123456, Sign: req.UserSecret, Type: "iotuser"})
 		if err != nil {
 			logs.Error("Login: could not verify: %v", err)
 			return "-1", err
@@ -418,7 +419,7 @@ func Login(req *LoginReq, tokenStr string) (string, error) {
 				return "-1", err
 			}
 			if claims.(jwt.MapClaims)["sub"] == req.UserName {
-				fmt.Println("claims: ", claims.(jwt.MapClaims)["sub"])
+				logs.Info("claims: ", claims.(jwt.MapClaims)["sub"])
 				return "0", nil
 			} else {
 				fmt.Println("")
