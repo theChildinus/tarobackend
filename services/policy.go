@@ -92,13 +92,39 @@ func CreatePolicy(r *models.TaroPolicy) (bool, error) {
 		return false, err
 	}
 	enf := casbin.NewEnforcer(casbin_model, casbin_policys)
-	// if policy exist, return false, else add and insert to db
-	if has := enf.HasPolicy(r.PolicySub, r.PolicyObj, r.PolicyAct); has {
-		return false, nil
+	objs := strings.Split(r.PolicyObj, "#")
+	var policys []models.TaroPolicy
+	for _, obj := range objs {
+		if len(obj) != 0 {
+			policys = append(policys, models.TaroPolicy{
+				PolicyName:  r.PolicyName,
+				PolicySub:   r.PolicySub,
+				PolicyObj:   obj,
+				PolicyAct:   r.PolicyAct,
+				PolicyType:  r.PolicyType,
+			})
+		}
 	}
-	ret := enf.AddPolicy(r.PolicySub, r.PolicyObj, r.PolicyAct)
+	// delete existed policy rule
+	j := 0
+	for _, p := range policys {
+		if has := enf.HasPolicy(p.PolicySub, p.PolicyObj, p.PolicyAct); !has {
+			policys[j] = p
+			j++
+		}
+	}
+	policys = policys[:j]
+	// save to casbin csvfile
+	for _, p := range policys {
+		ret := enf.AddPolicy(p.PolicySub, p.PolicyObj, p.PolicyAct)
+		if !ret {
+			logs.Error("Add policy rule Error: ", p)
+			return false, errors.New("Add policy rule Error")
+		}
+	}
+	// save to db
 	engine := utils.Engine_mysql
-	_, err = engine.InsertOne(r)
+	_, err = engine.Insert(&policys)
 	if err != nil {
 		logs.Error("CreatePolicy: Table Policy InsertOne Error")
 		return false, err
@@ -121,8 +147,10 @@ func CreatePolicy(r *models.TaroPolicy) (bool, error) {
 			if len(tx.Application.ACLs) == 0 {
 				tx.Application.ACLs = make(map[string]string)
 			}
-			subStr := r.PolicyObj[strings.Index(r.PolicyObj, "/")+1:]
-			tx.Application.ACLs[subStr] = r.PolicySub
+			for _, p := range policys {
+				subStr := p.PolicyObj[strings.Index(p.PolicyObj, "/")+1:]
+				tx.Application.ACLs[subStr] = p.PolicySub
+			}
 			if err = utils.SaveYamlFile(tx, beego.AppConfig.String("fabric_configtx")); err != nil {
 				return false, err
 			}
@@ -130,7 +158,7 @@ func CreatePolicy(r *models.TaroPolicy) (bool, error) {
 			return false, err
 		}
 	}
-	return ret, nil
+	return true, nil
 }
 
 func DeletePolicyById(id int) (bool, error) {
