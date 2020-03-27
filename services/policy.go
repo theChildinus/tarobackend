@@ -299,7 +299,7 @@ func CheckPolicy(r *PolicyCheckReq) (bool, error) {
 		logs.Error("CheckPolicy: Table User Get Error")
 		return false, err
 	}
-	// fmt.Println("r.policysub:", r.PolicySub, "m.username:", m.UserName, "m.userrole:", m.UserRole)
+	logs.Info("[CheckPolicy] Req:", r, "UserHash: ", m.UserHash)
 	if has &&
 		r.UserHash == m.UserHash &&
 		(strings.Contains(r.PolicySub, m.UserName) || r.PolicySub == m.UserRole) {

@@ -208,8 +208,7 @@ func InstallIdentity(req *pb.InstallReq) (int64, error) {
 	certFilePath := "./card/" + req.Name + "/" + req.Name + ".crt"
 	skFilePath :=  "./card/" + req.Name + "/" + req.Name + ".pem"
 
-	fmt.Println("cert: " + certFilePath)
-	fmt.Println("sk: " + skFilePath)
+	logs.Info("cert: " + certFilePath, " sk: " + skFilePath)
 
 	certFile, err := os.Open(certFilePath)
 	if err != nil {
@@ -248,7 +247,6 @@ func InstallIdentity(req *pb.InstallReq) (int64, error) {
 	}
 
 	defer dstFile.Close()
-	fmt.Println("copy file to remote server finished!")
 	return 0, nil
 }
 

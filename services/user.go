@@ -11,7 +11,10 @@ import (
 	"github.com/dgrijalva/jwt-go"
 	"golang.org/x/net/context"
 	"google.golang.org/grpc"
+	"gopkg.in/gomail.v2"
 	"math/rand"
+	"mime"
+	"strconv"
 	"strings"
 	"tarobackend/models"
 	pb "tarobackend/proto"
@@ -33,17 +36,17 @@ type UserResp struct {
 
 type UserNameAndRoleResp struct {
 	List  []NameOptions `json:"list"`
-	Count int64    `json:"count"`
+	Count int64         `json:"count"`
 }
 
 type LoginReq struct {
-	UserName string `json:"name"`
-	UserRole string `json:"role"`
+	UserName   string `json:"name"`
+	UserRole   string `json:"role"`
 	UserSecret string `json:"secret"`
 }
 
 type LoginResp struct {
-	Code int `json:"code"`
+	Code  int    `json:"code"`
 	Token string `json:"token"`
 }
 
@@ -202,18 +205,59 @@ func RegisterUser(req *pb.RegisterReq) (int64, error) {
 }
 
 func InstallUser(req *models.TaroUser) (int64, error) {
-	if len(req.UserName) == 0 || len(req.UserPath) == 0 {
-		logs.Error("UserName or UserPath is empty")
-		return -1, errors.New("UserName or UserPath is empty")
+	if len(req.UserName) == 0 {
+		logs.Error("UserName is empty")
+		return -1, errors.New("UserName is empty")
 	}
-	_, err := InstallIdentity(&pb.InstallReq{
-		Name: req.UserName,
-		Ip:   beego.AppConfig.String("local_host"),
-		User: beego.AppConfig.String("local_username"),
-		Pw:   beego.AppConfig.String("local_password"),
-		Path: req.UserPath,
-	})
-	if err != nil {
+
+	if len(req.UserPath) != 0 {
+		if _, err := InstallIdentity(&pb.InstallReq{
+			Name: req.UserName,
+			Ip:   beego.AppConfig.String("local_host"),
+			User: beego.AppConfig.String("local_username"),
+			Pw:   beego.AppConfig.String("local_password"),
+			Path: req.UserPath,
+		}); err != nil {
+			logs.Error(err.Error())
+			return -1, err
+		}
+		return 0, nil
+	}
+	if len(req.UserEmail) != 0 {
+		if _, err := SendEmail(req.UserName, req.UserEmail); err != nil {
+			logs.Error(err.Error())
+			return -1, err
+		}
+		return 0, nil
+	}
+	return -1, errors.New("UserPath & UserEmail are empty")
+}
+
+func SendEmail(username, useremail string) (int64, error) {
+	certFilePath := "./card/" + username + "/" + username + ".crt"
+	skFilePath := "./card/" + username + "/" + username + ".pem"
+	m := gomail.NewMessage()
+	m.SetAddressHeader("From", beego.AppConfig.String("sender_email"),
+		beego.AppConfig.String("sender_name"))
+	m.SetHeader("To", m.FormatAddress(useremail, username))
+	m.SetHeader("Subject", beego.AppConfig.String("email_subject"))
+	m.SetBody("text/html", beego.AppConfig.String("email_body"))
+	m.Attach(certFilePath, gomail.SetHeader(map[string][]string{
+		"Content-Disposition": []string{
+			fmt.Sprintf(`attachment; filename="%s"`, mime.QEncoding.Encode("UTF-8", username+".crt")),
+		},
+	}))
+	m.Attach(skFilePath, gomail.SetHeader(map[string][]string{
+		"Content-Disposition": []string{
+			fmt.Sprintf(`attachment; filename="%s"`, mime.QEncoding.Encode("UTF-8", username+".pem")),
+		},
+	}))
+	smtp_port, _ := strconv.Atoi(beego.AppConfig.String("smtp_port"))
+	d := gomail.NewDialer(beego.AppConfig.String("smtp_server"), smtp_port,
+		beego.AppConfig.String("sender_email"),
+		beego.AppConfig.String("sender_auth_code"),
+	)
+	if err := d.DialAndSend(m); err != nil {
 		return -1, err
 	}
 	return 0, nil
@@ -247,8 +291,8 @@ func DownloadCert(req *pb.DownloadReq) (*pb.DownloadResp, error) {
 func VerifyIdentity(req *pb.VerifyIdentityReq) (int64, error) {
 
 	engine := utils.Engine_mysql
-	isUser, _ := engine.Exist(&models.TaroUser{UserName:req.Name})
-	isIdentity, _ := engine.Exist(&models.TaroIdentity{IdentityName:req.Name})
+	isUser, _ := engine.Exist(&models.TaroUser{UserName: req.Name})
+	isIdentity, _ := engine.Exist(&models.TaroIdentity{IdentityName: req.Name})
 	if !isUser && !isIdentity {
 		logs.Error("VerifyIdentity: User Doesn't Exist")
 		return -1, nil
