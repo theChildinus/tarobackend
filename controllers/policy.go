@@ -2,10 +2,8 @@ package controllers
 
 import (
 	"encoding/json"
-	"encoding/xml"
 	"github.com/astaxie/beego"
 	"github.com/astaxie/beego/logs"
-	"io/ioutil"
 	"tarobackend/models"
 	"tarobackend/services"
 	"tarobackend/utils"
@@ -161,51 +159,18 @@ func (c *PolicyController) RoleAllot() {
 }
 
 func (c *PolicyController) Executable() {
-	file, _, err := c.GetFile("file")
+	var r services.ExecutableReq
+	var err error
+	err = json.Unmarshal(c.Ctx.Input.RequestBody, &r)
 	if err != nil {
-		utils.BuildJsonResp(c, "Error", "Upload Error")
-	}
-	defer file.Close()
-	bytes, err := ioutil.ReadAll(file)
-	var req utils.EpcCtx
-	if err = xml.Unmarshal(bytes, &req); err != nil {
-		logs.Error("XML Parse Error", err.Error())
-		utils.BuildJsonResp(c, "Error", "XML Parse Error")
+		utils.BuildJsonResp(c, "Error", "Json Parse Error")
 		return
 	}
 
-	ret, err := services.Executable(&services.ExecutableReq{EpcCtx: req})
-	//err = c.SaveToFile("file", path.Join("test", header.Filename))
-	//if err != nil {
-	//	utils.BuildJsonResp(c, "Error", "Save File Error")
-	//} else {
-	//	utils.BuildJsonResp(c, "Normal", "Upload Success")
-	//}
-
-	if len(ret) == 0 {
+	ret, err := services.Executable(r.EpcCtx)
+	if ret == 0 {
 		utils.BuildJsonResp(c, "Normal", "Executable Success")
 	} else {
-		utils.BuildJsonResp(c, "Error", ret+" Error")
+		utils.BuildJsonResp(c, "Error", err.Error())
 	}
-
-	//var r services.ExecutableReq
-	//var err error
-	//err = json.Unmarshal(c.Ctx.Input.RequestBody, &r)
-	//if err != nil {
-	//	utils.BuildJsonResp(c, "Error", "Json Parse Error")
-	//	return
-	//}
-	//ret, err := services.Executable(&r)
-	//if err != nil {
-	//	logs.Error("RoleAllot error", err.Error())
-	//	utils.BuildJsonResp(c, "Error", "Executable Error")
-	//	return
-	//}
-	//if len(ret) == 0 {
-	//	utils.BuildJsonResp(c, "Normal", "Executable Success")
-	//} else {
-	//	utils.BuildJsonResp(c, "Error", ret + " Error")
-	//}
-	//
-	//return
 }

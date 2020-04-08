@@ -1,9 +1,10 @@
 package services
 
 import (
+	"encoding/base64"
 	"encoding/json"
+	"encoding/xml"
 	"errors"
-	"fmt"
 	"github.com/astaxie/beego"
 	"github.com/astaxie/beego/logs"
 	"github.com/casbin/casbin"
@@ -49,7 +50,7 @@ type MutexRole struct {
 }
 
 type ExecutableReq struct {
-	EpcCtx utils.EpcCtx `json:"epcCtx"`
+	EpcCtx string `json:"epc_ctx"`
 }
 
 func ListPolicy(req *PolicyReq) ([]models.TaroPolicy, int64, error) {
@@ -189,7 +190,7 @@ func DeletePolicyById(id int) (bool, error) {
 			var users []models.TaroUser
 			err = engine.Table("taro_user").
 				Where("user_role like ? ", "%"+r.PolicySub+"%").Find(&users)
-			fmt.Println("users:", r.PolicySub, users)
+			logs.Info("policysub:", r.PolicySub, " users:", users)
 			for _, v := range users {
 				_ = enf.DeleteRoleForUser(v.UserName, r.PolicySub)
 			}
@@ -367,7 +368,15 @@ func GetModelType(pn string) (string, error) {
 	return model_type, nil
 }
 
-func Executable(r *ExecutableReq) (string, error) {
+func Executable(epcCtx string) (int64, error) {
+	bytes, _ := base64.StdEncoding.DecodeString(epcCtx)
+	var e utils.EpcCtx
+	var err error
+	if err = xml.Unmarshal(bytes, &e); err != nil {
+		logs.Error("XML Parse Error: ", err.Error())
+		return -1, errors.New("XML Parse Error: " + err.Error())
+	}
+
 	type OuFuncIu struct {
 		Ou   string // organization unit pel
 		Iu   string // information unit pel
@@ -378,16 +387,16 @@ func Executable(r *ExecutableReq) (string, error) {
 	function := make(map[string]string)
 	ou := make(map[string]string)
 	iu := make(map[string]string)
-	for _, v := range r.EpcCtx.Epc.Function {
+	for _, v := range e.Epc.Function {
 		function[v.ID] = v.Name
 	}
-	for _, v := range r.EpcCtx.Epc.Ou {
+	for _, v := range e.Epc.Ou {
 		ou[v.ID] = v.OuName
 	}
-	for _, v := range r.EpcCtx.Epc.Iu {
+	for _, v := range e.Epc.Iu {
 		iu[v.ID] = v.IuName
 	}
-	arc := r.EpcCtx.Epc.Arc
+	arc := e.Epc.Arc
 	for i := 0; i < len(arc)-1; i++ {
 		for j := 1; j < len(arc); j++ {
 			is, it, js, jt := arc[i].Flow.Source, arc[i].Flow.Target,
@@ -413,7 +422,6 @@ func Executable(r *ExecutableReq) (string, error) {
 			}
 		}
 	}
-	var ret string
 	for _, v := range ou_func_iu {
 		// TODO: v.Ou / v.Iu in db ?
 		policy_name := beego.AppConfig.String("epc_policy_name")
@@ -428,8 +436,7 @@ func Executable(r *ExecutableReq) (string, error) {
 		if err != nil {
 			str := v.Ou + "->" + v.Func + "<-" + v.Iu
 			logs.Error("CreatePolicy: ", str, " Existed Or Error")
-			ret += str
 		}
 	}
-	return ret, nil
+	return 0, nil
 }
