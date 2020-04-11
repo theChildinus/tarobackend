@@ -25,6 +25,7 @@ type PolicyCheckReq struct {
 	PolicySub  string `json:"policysub"`
 	PolicyObj  string `json:"policyobj"`
 	PolicyAct  string `json:"policyact"`
+	PolocyEnv  string `json:"policyenv"`
 	UserName   string `json:"username"`
 	UserHash   string `json:"userhash"`
 }
@@ -130,11 +131,11 @@ func CreatePolicy(r *models.TaroPolicy) (bool, error) {
 		logs.Error("CreatePolicy: Table Policy InsertOne Error")
 		return false, err
 	}
-	if model_type == "RBAC" {
+	if model_type == "RBAC" || model_type == "ABAC" {
 		var users []models.TaroUser
 		err = engine.Table("taro_user").
 			Where("user_role like ? ", "%"+r.PolicySub+"%").Find(&users)
-		//logs.Info("users:", r.PolicySub, users)
+		logs.Info("[CreatePolicy]: policysub:", r.PolicySub, "users:", users)
 		for _, v := range users {
 			_ = enf.AddRoleForUser(v.UserName, r.PolicySub)
 		}
@@ -186,11 +187,11 @@ func DeletePolicyById(id int) (bool, error) {
 		}
 		enf := casbin.NewEnforcer(casbin_model, casbin_policys)
 		ret = enf.RemovePolicy(r.PolicySub, r.PolicyObj, r.PolicyAct)
-		if model_type == "RBAC" {
+		if model_type == "RBAC" || model_type == "ABAC" {
 			var users []models.TaroUser
 			err = engine.Table("taro_user").
 				Where("user_role like ? ", "%"+r.PolicySub+"%").Find(&users)
-			logs.Info("policysub:", r.PolicySub, " users:", users)
+			logs.Info("[DeletePolicy]: policysub:", r.PolicySub, " users:", users)
 			for _, v := range users {
 				_ = enf.DeleteRoleForUser(v.UserName, r.PolicySub)
 			}
@@ -244,7 +245,7 @@ func UpdatePolicy(r *models.TaroPolicy) (bool, error) {
 		enf := casbin.NewEnforcer(casbin_model, casbin_policys)
 		ret1 := enf.RemovePolicy(old.PolicySub, old.PolicyObj, old.PolicyAct)
 		ret2 := enf.AddPolicy(r.PolicySub, r.PolicyObj, r.PolicyAct)
-		if model_type == "RBAC" {
+		if model_type == "RBAC" || model_type == "ABAC" {
 			// remove policy rule: users has old role
 			var users []models.TaroUser
 			err = engine.Table("taro_user").
@@ -307,13 +308,38 @@ func CheckPolicy(r *PolicyCheckReq) (bool, error) {
 		model_type, err := GetModelType(r.PolicyName)
 		if err != nil {
 			logs.Error("CheckPolicy: Get Model Type Error")
+			return false, err
 		}
 		casbin_model := "./casbinfiles/" + strings.ToLower(model_type) + "_model.conf"
 		casbin_policys := "./casbinfiles/" + r.PolicyName + ".csv"
 		logs.Info("[CheckPolicy] modelfile:", casbin_model, "policyfile:", casbin_policys)
 		enf := casbin.NewEnforcer(casbin_model, casbin_policys)
-		ret := enf.Enforce(r.PolicySub, r.PolicyObj, r.PolicyAct)
-		return ret, nil
+		if model_type == "ABAC" {
+			var sa SubAttr
+			var oa ObjAttr
+			var aa ActAttr
+			var ea EnvAttr
+			if err := json.Unmarshal([]byte(r.PolicySub), &sa); err != nil {
+				logs.Error("json Unmarshal PolicySub Error")
+				return false, err
+			}
+			if err := json.Unmarshal([]byte(r.PolicyObj), &oa); err != nil {
+				return false, err
+			}
+			if err := json.Unmarshal([]byte(r.PolicyAct), &aa); err != nil {
+				return false, err
+			}
+			if err := json.Unmarshal([]byte(r.PolocyEnv), &ea); err != nil {
+				return false, err
+			}
+			logs.Info("SubAttr=>", sa, "ObjAttr=>", oa, "ActAttr=>", aa, "EnvAttr=>", ea)
+			enf.AddFunction("obj_func", ObjKeyMatchFunc)
+			ret := enf.Enforce(sa, oa, aa, ea)
+			return ret, nil
+		} else {
+			ret := enf.Enforce(r.PolicySub, r.PolicyObj, r.PolicyAct)
+			return ret, nil
+		}
 	} else {
 		return false, nil
 	}
@@ -422,6 +448,17 @@ func Executable(epcCtx string) (int64, error) {
 			}
 		}
 	}
+
+	for i := 0; i < len(ou_func_iu); i++ {
+		for j := i + 1; j < len(ou_func_iu); j++ {
+			if ou_func_iu[i].Ou != ou_func_iu[j].Ou &&
+				ou_func_iu[i].Func == ou_func_iu[j].Func {
+				logs.Error("The same role accesses different functions")
+				return -1, errors.New("The same role accesses different functions")
+			}
+		}
+	}
+
 	for _, v := range ou_func_iu {
 		// TODO: v.Ou / v.Iu in db ?
 		policy_name := beego.AppConfig.String("epc_policy_name")
@@ -435,7 +472,7 @@ func Executable(epcCtx string) (int64, error) {
 		})
 		if err != nil {
 			str := v.Ou + "->" + v.Func + "<-" + v.Iu
-			logs.Error("CreatePolicy: ", str, " Existed Or Error")
+			logs.Error("CreatePolicy: ", str, " Error")
 		}
 	}
 	return 0, nil
