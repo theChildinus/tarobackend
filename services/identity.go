@@ -82,10 +82,10 @@ func CreateIdentity(r *models.TaroIdentity) (int64, error) {
 	return res, nil
 }
 
-func DeleteIdentityById(id int) error {
+func DeleteIdentityById(ids []int) error {
 	engine := utils.Engine_mysql
 	r := new(models.TaroIdentity)
-	_, err := engine.ID(id).Delete(r)
+	_, err := engine.Table("taro_identity").In("identity_id", ids).Delete(r)
 	if err != nil {
 		logs.Error("DeleteIdentityById: Table Identity Delete Error")
 		return err

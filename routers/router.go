@@ -31,7 +31,7 @@ func init() {
 
 	beego.Router("user/create", &controllers.UserController{}, "post:Create")
 	beego.Router("user/list", &controllers.UserController{}, "*:List")
-	beego.Router("user/deleteOne", &controllers.UserController{}, "post:DeleteOne")
+	beego.Router("user/delete", &controllers.UserController{}, "post:Delete")
 	beego.Router("user/update", &controllers.UserController{}, "post:Update")
 	beego.Router("user/listNameAndRole", &controllers.UserController{}, "post:ListNameAndRole")
 	beego.Router("user/register", &controllers.UserController{}, "post:Register")
@@ -45,7 +45,7 @@ func init() {
 
 	beego.Router("identity/create", &controllers.IdentityController{}, "post:Create")
 	beego.Router("identity/list", &controllers.IdentityController{}, "*:List")
-	beego.Router("identity/deleteOne", &controllers.IdentityController{}, "post:DeleteOne")
+	beego.Router("identity/delete", &controllers.IdentityController{}, "post:Delete")
 	beego.Router("identity/update", &controllers.IdentityController{}, "post:Update")
 	beego.Router("identity/register", &controllers.IdentityController{}, "post:Register")
 	beego.Router("identity/enroll", &controllers.IdentityController{}, "post:Enroll")

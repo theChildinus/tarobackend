@@ -60,8 +60,8 @@ func (c *UserController) Create() {
 	return
 }
 
-func (c *UserController) DeleteOne() {
-	var m models.TaroUser
+func (c *UserController) Delete() {
+	var m services.DeleteIds
 	var err error
 	err = json.Unmarshal(c.Ctx.Input.RequestBody, &m)
 	if err != nil {
@@ -70,7 +70,7 @@ func (c *UserController) DeleteOne() {
 		return
 	}
 
-	ret, err := services.DeleteUserById(&m)
+	ret, err := services.DeleteUserById(m.Ids)
 	if err != nil {
 		logs.Error("DeleteUserById error", err.Error())
 		utils.BuildJsonResp(c, "Error", "DeleteUserById Error")

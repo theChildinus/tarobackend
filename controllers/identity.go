@@ -56,8 +56,8 @@ func (c *IdentityController) Create() {
 	return
 }
 
-func (c *IdentityController) DeleteOne() {
-	var m models.TaroIdentity
+func (c *IdentityController) Delete() {
+	var m services.DeleteIds
 	var err error
 	err = json.Unmarshal(c.Ctx.Input.RequestBody, &m)
 	if err != nil {
@@ -66,7 +66,7 @@ func (c *IdentityController) DeleteOne() {
 		return
 	}
 
-	err = services.DeleteIdentityById(m.IdentityId)
+	err = services.DeleteIdentityById(m.Ids)
 	if err != nil {
 		logs.Error("DeleteIdentityById error", err.Error())
 		utils.BuildJsonResp(c, "Error", "DeleteIdentityById Error")

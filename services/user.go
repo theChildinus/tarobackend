@@ -39,6 +39,10 @@ type UserNameAndRoleResp struct {
 	Count int64         `json:"count"`
 }
 
+type DeleteIds struct {
+	Ids []int `json:"ids"`
+}
+
 type LoginReq struct {
 	UserName   string `json:"name"`
 	UserRole   string `json:"role"`
@@ -107,10 +111,10 @@ func CreateUser(r *models.TaroUser) (bool, error) {
 	return true, nil
 }
 
-func DeleteUserById(r *models.TaroUser) (bool, error) {
+func DeleteUserById(ids []int) (bool, error) {
 	engine := utils.Engine_mysql
 	m := new(models.TaroUser)
-	_, err := engine.ID(r.UserId).Delete(m)
+	_, err := engine.Table("taro_user").In("user_id", ids).Delete(m)
 	if err != nil {
 		logs.Error("DeleteUserById: Table User Delete Error")
 		return false, err
