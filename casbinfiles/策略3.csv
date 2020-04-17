@@ -1,6 +1,0 @@
-p, Org3/order1, 资源1, read
-p, Org2/order1, 资源1, read
-p, Org3/peer1, 资源3, read
-p, Org1/order1, 资源3, read
-p, Org1/peer1, 资源1, read
-p, Org2/peer1, 资源3/子资源3-1, read

@@ -5,6 +5,7 @@ import (
 	"encoding/json"
 	"encoding/xml"
 	"errors"
+	"fmt"
 	"github.com/astaxie/beego"
 	"github.com/astaxie/beego/logs"
 	"github.com/casbin/casbin"
@@ -104,6 +105,7 @@ func CreatePolicy(r *models.TaroPolicy) (bool, error) {
 				PolicyObj:   obj,
 				PolicyAct:   r.PolicyAct,
 				PolicyType:  r.PolicyType,
+				PolicyCtime: time.Time{},
 			})
 		}
 	}
@@ -132,12 +134,13 @@ func CreatePolicy(r *models.TaroPolicy) (bool, error) {
 		return false, err
 	}
 	if model_type == "RBAC" || model_type == "ABAC" {
-		var users []models.TaroUser
+		var usernames []string
 		err = engine.Table("taro_user").
-			Where("user_role like ? ", "%"+r.PolicySub+"%").Find(&users)
-		logs.Info("[CreatePolicy]: policysub:", r.PolicySub, "users:", users)
-		for _, v := range users {
-			_ = enf.AddRoleForUser(v.UserName, r.PolicySub)
+			Where("user_role like ? ", "%"+r.PolicySub+"%").
+			Cols("user_name").Find(&usernames)
+		logs.Info("[CreatePolicy]: policysub:", r.PolicySub, "users:", usernames)
+		for _, v := range usernames {
+			_ = enf.AddRoleForUser(v, r.PolicySub)
 		}
 	}
 	_ = enf.SavePolicy()
@@ -163,21 +166,20 @@ func CreatePolicy(r *models.TaroPolicy) (bool, error) {
 	return true, nil
 }
 
-func DeletePolicyById(id int) (bool, error) {
+func DeletePolicyById(ids []int) (bool, error) {
 	engine := utils.Engine_mysql
-	r := new(models.TaroPolicy)
-	var ret bool
+	var ps []models.TaroPolicy
 
-	has, err := engine.Table("taro_policy").
-		Where("policy_id = ?", id).Get(r)
+	err := engine.Table("taro_policy").In("policy_id", ids).Find(&ps)
 	if err != nil {
-		logs.Error("DeletePolicyById: Table Policy Get Error")
+		logs.Error("DeletePolicyById: Table Policy Find Error")
 		return false, err
 	}
-	if has {
+
+	for _, r := range ps {
 		model_type, err := GetModelType(r.PolicyName)
 		if err != nil {
-			logs.Error("CreatePolicy: Get ModelType Error")
+			logs.Error("DeletePolicy: Get ModelType Error")
 			return false, err
 		}
 		casbin_model := "./casbinfiles/" + strings.ToLower(model_type) + "_model.conf"
@@ -186,39 +188,51 @@ func DeletePolicyById(id int) (bool, error) {
 			return false, err
 		}
 		enf := casbin.NewEnforcer(casbin_model, casbin_policys)
-		ret = enf.RemovePolicy(r.PolicySub, r.PolicyObj, r.PolicyAct)
+		ret := enf.RemovePolicy(r.PolicySub, r.PolicyObj, r.PolicyAct)
+		if !ret {
+			logs.Error("DeletePolicy: Delete", r, " Failed")
+			return false, nil
+		}
 		if model_type == "RBAC" || model_type == "ABAC" {
-			var users []models.TaroUser
-			err = engine.Table("taro_user").
-				Where("user_role like ? ", "%"+r.PolicySub+"%").Find(&users)
-			logs.Info("[DeletePolicy]: policysub:", r.PolicySub, " users:", users)
-			for _, v := range users {
-				_ = enf.DeleteRoleForUser(v.UserName, r.PolicySub)
+			subs, exist := enf.GetAllSubjects(), false
+			for _, sub := range subs {
+				if r.PolicySub == sub {
+					exist = true
+					break
+				}
+			}
+			if !exist {
+				usernames, _ := enf.GetUsersForRole(r.PolicySub)
+				logs.Info("[DeletePolicy]: policysub:", r.PolicySub, " users:", usernames)
+				for _, v := range usernames {
+					_ = enf.DeleteRoleForUser(v, r.PolicySub)
+				}
 			}
 		}
 		_ = enf.SavePolicy()
+
+		if r.PolicyName == beego.AppConfig.String("fabric_policy_name") {
+			tx, err := utils.ParseYamlFile(beego.AppConfig.String("fabric_configtx"))
+			if err == nil && len(tx.Application.ACLs) != 0 {
+				subStr := r.PolicyObj[strings.Index(r.PolicyObj, "/")+1:]
+				delete(tx.Application.ACLs, subStr)
+				err = utils.SaveYamlFile(tx, beego.AppConfig.String("fabric_configtx"))
+				if err != nil {
+					return false, err
+				}
+			} else {
+				return false, err
+			}
+		}
 	}
 
-	_, err = engine.ID(id).Delete(r)
+	var m models.TaroPolicy
+	_, err = engine.Table("taro_policy").In("policy_id", ids).Delete(&m)
 	if err != nil {
 		logs.Error("DeletePolicyById: Table Policy Delete Error")
 		return false, err
 	}
-
-	if r.PolicyName == beego.AppConfig.String("fabric_policy_name") {
-		tx, err := utils.ParseYamlFile(beego.AppConfig.String("fabric_configtx"))
-		if err == nil && len(tx.Application.ACLs) != 0 {
-			subStr := r.PolicyObj[strings.Index(r.PolicyObj, "/")+1:]
-			delete(tx.Application.ACLs, subStr)
-			err = utils.SaveYamlFile(tx, beego.AppConfig.String("fabric_configtx"))
-			if err != nil {
-				return false, err
-			}
-		} else {
-			return false, err
-		}
-	}
-	return ret, nil
+	return true, nil
 }
 
 func UpdatePolicy(r *models.TaroPolicy) (bool, error) {
@@ -247,23 +261,31 @@ func UpdatePolicy(r *models.TaroPolicy) (bool, error) {
 		ret2 := enf.AddPolicy(r.PolicySub, r.PolicyObj, r.PolicyAct)
 		if model_type == "RBAC" || model_type == "ABAC" {
 			// remove policy rule: users has old role
-			var users []models.TaroUser
-			err = engine.Table("taro_user").
-				Where("user_role like ? ", "%"+old.PolicySub+"%").Find(&users)
-			for _, v := range users {
-				_ = enf.DeleteRoleForUser(v.UserName, old.PolicySub)
+			subs, exist := enf.GetAllSubjects(), false
+			for _, sub := range subs {
+				if r.PolicySub == sub {
+					exist = true
+					break
+				}
+			}
+			if !exist {
+				usernames, _ := enf.GetUsersForRole(r.PolicySub)
+				logs.Info("[DeletePolicy]: policysub:", r.PolicySub, " users:", usernames)
+				for _, v := range usernames {
+					_ = enf.DeleteRoleForUser(v, r.PolicySub)
+				}
 			}
 			// add policy rule: users has new role
-			users = users[0:0]
+			var usernames []string
 			err = engine.Table("taro_user").
-				Where("user_role like ? ", "%"+r.PolicySub+"%").Find(&users)
-			for _, v := range users {
-				_ = enf.AddRoleForUser(v.UserName, r.PolicySub)
+				Where("user_role like ? ", "%"+old.PolicySub+"%").
+				Cols("user_name").Find(&usernames)
+			for _, v := range usernames {
+				_ = enf.AddRoleForUser(v, r.PolicySub)
 			}
 		}
 		_ = enf.SavePolicy()
 		ret = ret1 && ret2
-		_ = enf.SavePolicy()
 	}
 	_, err = engine.ID(r.PolicyId).Update(r)
 	if err != nil {
@@ -334,6 +356,7 @@ func CheckPolicy(r *PolicyCheckReq) (bool, error) {
 			}
 			logs.Info("SubAttr=>", sa, "ObjAttr=>", oa, "ActAttr=>", aa, "EnvAttr=>", ea)
 			enf.AddFunction("obj_func", ObjKeyMatchFunc)
+			enf.AddFunction("act_func", ActKeyMatchFunc)
 			ret := enf.Enforce(sa, oa, aa, ea)
 			return ret, nil
 		} else {
@@ -424,7 +447,7 @@ func Executable(epcCtx string) (int64, error) {
 	}
 	arc := e.Epc.Arc
 	for i := 0; i < len(arc)-1; i++ {
-		for j := 1; j < len(arc); j++ {
+		for j := i + 1; j < len(arc); j++ {
 			is, it, js, jt := arc[i].Flow.Source, arc[i].Flow.Target,
 				arc[j].Flow.Source, arc[j].Flow.Target
 			if _, ok := function[it]; ok && it == jt {
@@ -449,31 +472,39 @@ func Executable(epcCtx string) (int64, error) {
 		}
 	}
 
+	for _, v := range ou_func_iu {
+		fmt.Println(v.Ou, "->", v.Func, "<-", v.Iu)
+	}
 	for i := 0; i < len(ou_func_iu); i++ {
 		for j := i + 1; j < len(ou_func_iu); j++ {
-			if ou_func_iu[i].Ou != ou_func_iu[j].Ou &&
-				ou_func_iu[i].Func == ou_func_iu[j].Func {
-				logs.Error("The same role accesses different functions")
-				return -1, errors.New("The same role accesses different functions")
+			role1, role2 := ou_func_iu[i].Ou, ou_func_iu[j].Ou
+			func1, func2 := ou_func_iu[i].Func, ou_func_iu[j].Func
+			if role1 != role2 && func1 == func2 {
+				req := &RoleAllotReq{Roles: []string{role1, role2}}
+				ret, _ := RoleAllot(req)
+				if !ret {
+					logs.Error("The mutex role accesses same functions")
+					return -1, errors.New("The mutex role accesses same functions")
+				}
 			}
 		}
 	}
 
-	for _, v := range ou_func_iu {
-		// TODO: v.Ou / v.Iu in db ?
-		policy_name := beego.AppConfig.String("epc_policy_name")
-		_, err := CreatePolicy(&models.TaroPolicy{
-			PolicyName:  policy_name,
-			PolicySub:   v.Ou,
-			PolicyObj:   v.Iu,
-			PolicyAct:   v.Func,
-			PolicyType:  "",
-			PolicyCtime: time.Time{},
-		})
-		if err != nil {
-			str := v.Ou + "->" + v.Func + "<-" + v.Iu
-			logs.Error("CreatePolicy: ", str, " Error")
-		}
-	}
+	//for _, v := range ou_func_iu {
+	//	// TODO: v.Ou / v.Iu in db ?
+	//	policy_name := beego.AppConfig.String("epc_policy_name")
+	//	_, err := CreatePolicy(&models.TaroPolicy{
+	//		PolicyName:  policy_name,
+	//		PolicySub:   v.Ou,
+	//		PolicyObj:   v.Iu,
+	//		PolicyAct:   v.Func,
+	//		PolicyType:  "",
+	//		PolicyCtime: time.Time{},
+	//	})
+	//	if err != nil {
+	//		str := v.Ou + "->" + v.Func + "<-" + v.Iu
+	//		logs.Error("CreatePolicy: ", str, " Error")
+	//	}
+	//}
 	return 0, nil
 }

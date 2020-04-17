@@ -60,8 +60,8 @@ func (c *PolicyController) List() {
 	return
 }
 
-func (c *PolicyController) DeleteOne() {
-	var m models.TaroPolicy
+func (c *PolicyController) Delete() {
+	var m services.DeleteIds
 	var ret bool
 	var err error
 	err = json.Unmarshal(c.Ctx.Input.RequestBody, &m)
@@ -71,7 +71,7 @@ func (c *PolicyController) DeleteOne() {
 		return
 	}
 
-	ret, err = services.DeletePolicyById(m.PolicyId)
+	ret, err = services.DeletePolicyById(m.Ids)
 	if err != nil {
 		logs.Error("DeletePolicyById error", err.Error())
 		utils.BuildJsonResp(c, "Error", "DeletePolicyById Error")
@@ -80,7 +80,7 @@ func (c *PolicyController) DeleteOne() {
 	if ret {
 		utils.BuildJsonResp(c, "Normal", "Delete Policy Success")
 	} else {
-		utils.BuildJsonResp(c, "Error", "Policy Not Exist")
+		utils.BuildJsonResp(c, "Error", "Delete Policy Failed")
 	}
 
 	return

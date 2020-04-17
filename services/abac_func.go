@@ -1,6 +1,9 @@
 package services
 
-import "fmt"
+import (
+	"fmt"
+	"strings"
+)
 
 type SubAttr struct {
 	Name string `json:"name"`
@@ -35,7 +38,7 @@ func SubKeyMatchFunc(args ...interface{}) (interface{}, error) {
 // abac Obj KeyMatch Func
 func ObjKeyMatch(key1 ObjAttr, key2 string) bool {
 	//fmt.Println("key1:", key1, "key2:", key2)
-	if key1.Name == key2 {
+	if strings.Contains(key1.Name, key2) || strings.Contains(key2, key1.Name) {
 		return true
 	}
 	return false
@@ -49,8 +52,8 @@ func ObjKeyMatchFunc(args ...interface{}) (interface{}, error) {
 
 // abac Act KeyMatch Func
 func ActKeyMatch(key1 ActAttr, key2 string) bool {
-	fmt.Println("key1:", key1, "key2:", key2)
-	if key1.Name == key2 {
+	//fmt.Println("key1:", key1, "key2:", key2)
+	if strings.Contains(key1.Name, key2) || strings.Contains(key2, key1.Name) {
 		return true
 	}
 	return false
