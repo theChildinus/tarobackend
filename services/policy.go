@@ -105,7 +105,7 @@ func CreatePolicy(r *models.TaroPolicy) (bool, error) {
 				PolicyObj:   obj,
 				PolicyAct:   r.PolicyAct,
 				PolicyType:  r.PolicyType,
-				PolicyCtime: time.Time{},
+				PolicyCtime: time.Now(),
 			})
 		}
 	}
