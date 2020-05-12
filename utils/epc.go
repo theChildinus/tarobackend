@@ -59,10 +59,18 @@ type EpcCtx struct {
 			ID     string `json:"@id" xml:"id,attr"`
 			Table  string `json:"table" xml:"table"`
 		} `json:"iu" xml:"iu"`
-		And struct {
+		And []struct {
 			ID      string `json:"@id" xml:"id,attr"`
 			AndName string `json:"@andName" xml:"andName,attr"`
 		} `json:"and" xml:"and"`
+		Or []struct {
+			ID     string `json:"@id" xml:"id,attr"`
+			OrName string `json:"@orName" xml:"orName,attr"`
+		} `json:"or" xml:"or"`
+		Xor []struct {
+			ID     string `json:"@id" xml:"id,attr"`
+			XorName string `json:"@xorName" xml:"xorName,attr"`
+		} `json:"xor" xml:"xor"`
 		Arc []struct {
 			ID   string `json:"@id" xml:"id,attr"`
 			Flow struct {

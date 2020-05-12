@@ -358,9 +358,11 @@ func CheckPolicy(r *PolicyCheckReq) (bool, error) {
 			enf.AddFunction("obj_func", ObjKeyMatchFunc)
 			enf.AddFunction("act_func", ActKeyMatchFunc)
 			ret := enf.Enforce(sa, oa, aa, ea)
+			logs.Info("[CheckPolicy]: RESULT:", ret)
 			return ret, nil
 		} else {
 			ret := enf.Enforce(r.PolicySub, r.PolicyObj, r.PolicyAct)
+			logs.Info("[CheckPolicy]: RESULT:", ret)
 			return ret, nil
 		}
 	} else {
@@ -431,11 +433,25 @@ func Executable(epcCtx string) (int64, error) {
 		Iu   string // information unit pel
 		Func string // function pel
 	}
+
+	type FuncEventOpr struct {
+		Func string // function pel
+		Event string // event pel
+		Opr string // relational operator pel
+	}
+
 	var ou_func_iu []*OuFuncIu
-	removeMult := make(map[string]int)
+	var func_event_opr []*FuncEventOpr
+
+	ofi_set := make(map[string]int)
+	feo_set := make(map[string]int)
 	function := make(map[string]string)
 	ou := make(map[string]string)
 	iu := make(map[string]string)
+	event := make(map[string]string)
+	epc_and := make(map[string]string)
+	epc_or := make(map[string]string)
+	epc_xor := make(map[string]string)
 	for _, v := range e.Epc.Function {
 		function[v.ID] = v.Name
 	}
@@ -445,11 +461,24 @@ func Executable(epcCtx string) (int64, error) {
 	for _, v := range e.Epc.Iu {
 		iu[v.ID] = v.IuName
 	}
+	for _, v := range e.Epc.Event {
+		event[v.ID] = v.Name
+	}
+	for _, v := range e.Epc.And {
+		epc_and[v.ID] = "AND"
+	}
+	for _, v := range e.Epc.Or {
+		epc_or[v.ID] = "OR"
+	}
+	for _, v := range e.Epc.Xor {
+		epc_xor[v.ID] = "XOR"
+	}
 	arc := e.Epc.Arc
 	for i := 0; i < len(arc)-1; i++ {
 		for j := i + 1; j < len(arc); j++ {
 			is, it, js, jt := arc[i].Flow.Source, arc[i].Flow.Target,
 				arc[j].Flow.Source, arc[j].Flow.Target
+			// find ou -> func <- iu
 			if _, ok := function[it]; ok && it == jt {
 				_, ok1 := ou[is]
 				_, ok2 := iu[js]
@@ -457,23 +486,39 @@ func Executable(epcCtx string) (int64, error) {
 				_, ok4 := iu[is]
 				if ok1 && ok2 {
 					o, i, f := ou[is], iu[js], function[it]
-					if _, exist := removeMult[o+"#"+i+"#"+f]; !exist {
+					if _, exist := ofi_set[o+"#"+i+"#"+f]; !exist {
 						ou_func_iu = append(ou_func_iu, &OuFuncIu{Ou: o, Iu: i, Func: f})
-						removeMult[o+"#"+i+"#"+f] = 0
+						ofi_set[o+"#"+i+"#"+f] = 0
 					}
 				} else if ok3 && ok4 {
 					o, i, f := ou[js], iu[is], function[it]
-					if _, exist := removeMult[o+"#"+i+"#"+f]; !exist {
+					if _, exist := ofi_set[o+"#"+i+"#"+f]; !exist {
 						ou_func_iu = append(ou_func_iu, &OuFuncIu{Ou: o, Iu: i, Func: f})
-						removeMult[o+"#"+i+"#"+f] = 0
+						ofi_set[o+"#"+i+"#"+f] = 0
+					}
+				}
+			}
+
+			// find func -> event -> operator
+			if _, ok := epc_and[jt]; ok {
+				if _, ok := event[it]; ok && it == js {
+					f, e, o := function[is], event[it], epc_and[jt]
+					if _, exist := feo_set[e+"#"+o]; !exist {
+						func_event_opr = append(func_event_opr, &FuncEventOpr{Func:f,Event:e,Opr:o})
+						feo_set[e+"#"+o] = 0
 					}
 				}
 			}
 		}
 	}
 
+	fmt.Println("##### 组织单元->函数<-信息单元 #####")
 	for _, v := range ou_func_iu {
 		fmt.Println(v.Ou, "->", v.Func, "<-", v.Iu)
+	}
+	fmt.Println("##### 函数->事件->关系 #####")
+	for _, v := range func_event_opr {
+		fmt.Println(v.Func, "->", v.Event, "->", v.Opr)
 	}
 	for i := 0; i < len(ou_func_iu); i++ {
 		for j := i + 1; j < len(ou_func_iu); j++ {
@@ -485,6 +530,19 @@ func Executable(epcCtx string) (int64, error) {
 				if !ret {
 					logs.Error("The mutex role accesses same functions")
 					return -1, errors.New("The mutex role accesses same functions")
+				}
+			}
+		}
+	}
+
+	casbin_model := "./casbinfiles/" + "rbac_model.conf"
+	casbin_policys := "./casbinfiles/" + beego.AppConfig.String("epc_policy_name") + ".csv"
+	enf := casbin.NewEnforcer(casbin_model, casbin_policys)
+	for _, ofi := range ou_func_iu {
+		for _, feo := range func_event_opr {
+			if ofi.Func == feo.Func && feo.Opr == "AND" {
+				if has := enf.HasPolicy(ofi.Ou); !has {
+					return -1, errors.New("Role "+ ofi.Ou +" has not been assigned permissions")
 				}
 			}
 		}
