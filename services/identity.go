@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"github.com/astaxie/beego"
 	"github.com/astaxie/beego/logs"
+	"github.com/pkg/errors"
 	"github.com/pkg/sftp"
 	"golang.org/x/crypto/ssh"
 	"golang.org/x/net/context"
@@ -71,6 +72,10 @@ func ListIdentity(req *IdentityReq) ([]models.TaroIdentity, int64, error) {
 
 func CreateIdentity(r *models.TaroIdentity) (int64, error) {
 	engine := utils.Engine_mysql
+	has, _ := engine.Exist(&models.TaroIdentity{IdentityName: r.IdentityName})
+	if has {
+		return -1, errors.New("CreateIdentity: Identity " + r.IdentityName + " Existed!")
+	}
 	res, err := engine.InsertOne(r)
 	if err != nil {
 		logs.Error("CreateIdentity: Table Identity InsertOne Error")

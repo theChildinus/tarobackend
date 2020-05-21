@@ -453,15 +453,23 @@ func Executable(epcCtx string) (int64, error) {
 	epc_or := make(map[string]string)
 	epc_xor := make(map[string]string)
 	for _, v := range e.Epc.Function {
+		v.Name = strings.Replace(v.Name, " ", "", -1)
+		v.Name = strings.Replace(v.Name, "\n", "", -1)
 		function[v.ID] = v.Name
 	}
 	for _, v := range e.Epc.Ou {
+		v.OuName = strings.Replace(v.OuName, "\n", "", -1)
 		ou[v.ID] = v.OuName
 	}
 	for _, v := range e.Epc.Iu {
+		v.IuName = strings.Replace(v.IuName, "<div>", "", -1)
+		v.IuName = strings.Replace(v.IuName, "</div>", "", -1)
+		v.IuName = strings.Replace(v.IuName, " ", "", -1)
+		v.IuName = strings.Replace(v.IuName, "\n", "", -1)
 		iu[v.ID] = v.IuName
 	}
 	for _, v := range e.Epc.Event {
+		v.Name = strings.Replace(v.Name, "\n", "", -1)
 		event[v.ID] = v.Name
 	}
 	for _, v := range e.Epc.And {
@@ -503,22 +511,32 @@ func Executable(epcCtx string) (int64, error) {
 			if _, ok := epc_and[jt]; ok {
 				if _, ok := event[it]; ok && it == js {
 					f, e, o := function[is], event[it], epc_and[jt]
-					if _, exist := feo_set[e+"#"+o]; !exist {
+					if _, exist := feo_set[f+"#"+e+"#"+o]; !exist {
 						func_event_opr = append(func_event_opr, &FuncEventOpr{Func:f,Event:e,Opr:o})
-						feo_set[e+"#"+o] = 0
+						feo_set[f+"#"+e+"#"+o] = 0
+					}
+				}
+			}
+
+			if _, ok := epc_or[jt]; ok {
+				if _, ok := event[it]; ok && it == js {
+					f, e, o := function[is], event[it], epc_or[jt]
+					if _, exist := feo_set[f+"#"+e+"#"+o]; !exist {
+						func_event_opr = append(func_event_opr, &FuncEventOpr{Func:f,Event:e,Opr:o})
+						feo_set[f+"#"+e+"#"+o] = 0
 					}
 				}
 			}
 		}
 	}
 
-	fmt.Println("##### 组织单元->函数<-信息单元 #####")
+	logs.Info("##### 从EPC模型中解析: 组织单元->函数<-信息单元 #####")
 	for _, v := range ou_func_iu {
-		fmt.Println(v.Ou, "->", v.Func, "<-", v.Iu)
+		fmt.Println(v.Ou + "->" + v.Func + "<-" + v.Iu)
 	}
-	fmt.Println("##### 函数->事件->关系 #####")
+	logs.Info("##### 从EPC模型中解析:  函数->事件->关系 #####")
 	for _, v := range func_event_opr {
-		fmt.Println(v.Func, "->", v.Event, "->", v.Opr)
+		fmt.Println(v.Func + "->" + v.Event + "->" + v.Opr)
 	}
 	for i := 0; i < len(ou_func_iu); i++ {
 		for j := i + 1; j < len(ou_func_iu); j++ {
@@ -542,7 +560,9 @@ func Executable(epcCtx string) (int64, error) {
 		for _, feo := range func_event_opr {
 			if ofi.Func == feo.Func && feo.Opr == "AND" {
 				if has := enf.HasPolicy(ofi.Ou); !has {
-					return -1, errors.New("Role "+ ofi.Ou +" has not been assigned permissions")
+					errmsg := "角色 "+ ofi.Ou + " 未被授权"
+					logs.Error(errmsg)
+					return -1, errors.New(errmsg)
 				}
 			}
 		}
@@ -564,5 +584,6 @@ func Executable(epcCtx string) (int64, error) {
 	//		logs.Error("CreatePolicy: ", str, " Error")
 	//	}
 	//}
+	logs.Info("角色分配未发生冲突，且均已授权")
 	return 0, nil
 }

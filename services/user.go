@@ -99,6 +99,10 @@ func CreateUser(r *models.TaroUser) (bool, error) {
 		}
 	}
 	engine := utils.Engine_mysql
+	has, _ := engine.Exist(&models.TaroUser{UserName: r.UserName})
+	if has {
+		return false, errors.New("CreateUser: User " + r.UserName + " Existed!")
+	}
 	res, err := engine.InsertOne(r)
 	if err != nil {
 		logs.Error("CreateUser: Table User InsertOne Error")

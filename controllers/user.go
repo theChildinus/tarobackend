@@ -48,7 +48,7 @@ func (c *UserController) Create() {
 	ret, err = services.CreateUser(&m)
 	if err != nil {
 		logs.Error("Create User error", err.Error())
-		utils.BuildJsonResp(c, "Error", "Create User error")
+		utils.BuildJsonResp(c, "Error", err.Error())
 		return
 	}
 	if ret {

@@ -49,7 +49,7 @@ func (c *IdentityController) Create() {
 	_, err = services.CreateIdentity(&m)
 	if err != nil {
 		logs.Error("Create Identity error", err.Error())
-		utils.BuildJsonResp(c, "Error", "Create Identity error")
+		utils.BuildJsonResp(c, "Error", err.Error())
 		return
 	}
 	utils.BuildJsonResp(c, "Normal", "Create Identity Success")
