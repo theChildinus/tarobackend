@@ -310,6 +310,7 @@ func UpdatePolicy(r *models.TaroPolicy) (bool, error) {
 }
 
 func CheckPolicy(r *PolicyCheckReq) (bool, error) {
+	logs.Info("[CheckPolicy] Req:", r)
 	if len(r.UserHash) == 0 || len(r.UserName) == 0 || len(r.PolicyName) == 0 {
 		logs.Error("CheckPolicy: UserHash or UserName or PolicyName Empty")
 		return false, errors.New("CheckPolicy: UserHash or UserName or PolicyName Empty")
@@ -323,7 +324,6 @@ func CheckPolicy(r *PolicyCheckReq) (bool, error) {
 		logs.Error("CheckPolicy: Table User Get Error")
 		return false, err
 	}
-	logs.Info("[CheckPolicy] Req:", r, "UserHash: ", m.UserHash)
 	if has &&
 		r.UserHash == m.UserHash &&
 		(strings.Contains(r.PolicySub, m.UserName) || r.PolicySub == m.UserRole) {
@@ -366,6 +366,7 @@ func CheckPolicy(r *PolicyCheckReq) (bool, error) {
 			return ret, nil
 		}
 	} else {
+		logs.Error("[CheckPolicy]: ", "UserHash_DB: ", m.UserHash, "UserHash_Req: ", r.UserHash)
 		return false, nil
 	}
 }

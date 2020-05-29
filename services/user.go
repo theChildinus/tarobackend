@@ -334,7 +334,7 @@ func VerifyIdentity(req *pb.VerifyIdentityReq) (int64, error) {
 		if isUser {
 			user := new(models.TaroUser)
 			user.UserHash = hex.EncodeToString(md5Sum)
-			fmt.Println("isUser")
+			logs.Info("isUser")
 			_, err = engine.Where("user_name = ?", req.Name).Update(user)
 			if err != nil {
 				logs.Error("VerifyIdentity: User Hash Update Error")
@@ -343,7 +343,7 @@ func VerifyIdentity(req *pb.VerifyIdentityReq) (int64, error) {
 		} else if isIdentity {
 			identity := new(models.TaroIdentity)
 			identity.IdentityHash = hex.EncodeToString(md5Sum)
-			fmt.Println("isIdentity")
+			logs.Info("isIdentity")
 			_, err = engine.Where("identity_name = ?", req.Name).Update(identity)
 			if err != nil {
 				logs.Error("VerifyIdentity: Identity Hash Update Error")

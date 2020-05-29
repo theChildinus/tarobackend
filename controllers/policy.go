@@ -173,4 +173,6 @@ func (c *PolicyController) Executable() {
 	} else {
 		utils.BuildJsonResp(c, "Error", err.Error())
 	}
+
+	return
 }
