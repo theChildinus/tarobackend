@@ -1,1 +1,179 @@
-<epml:epml xmlns:epml="http://www.epml.de" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.epml.de EPML_2.0.xsd"><epc name="EPC" ServicesName="null" procCateId="412882158357577728" procCateName="设备维修" sort="null"><event topic="device_failure" topicId="412101011981729792" topicTitle="device_failure" id="3"><name>设备故障</name><rule ruleId="412865607067762688" ruleTitle="设备故障判定规则"><![CDATA[name = deviceFailed]]></rule></event><event topic="device_failure_upload" topicId="412874973900701696" topicTitle="device_failure_upload" id="5"><name>上传成功</name><rule ruleId="412876720329195520" ruleTitle="数据上传成功"><![CDATA[uploadStatus > 4]]></rule></event><event topic="device_failure_judge" topicId="412101011981729793" topicTitle="device_failure_judge" id="11"><name>故障评定完成</name><rule ruleId="412875860471709696" ruleTitle="故障等级评定完成"><![CDATA[name = level3]]></rule></event><event topic="device_failure_fix" topicId="412874973900701697" topicTitle="device_failure_fix" id="28"><name>评定结果需要现场维修</name><rule ruleId="412875505855889408" ruleTitle="需要现场维修"><![CDATA[customer_reply_code = 4]]></rule></event><event topic="professor_arrive" topicId="412880820320075778" topicTitle="professor_arrive" id="34"><name>专业人员到达现场</name><rule ruleId="413267176984674304" ruleTitle="专业人员到达现场"><![CDATA[isArrive = true]]></rule></event><event topic="maintain_finished" topicId="412880820320075776" topicTitle="maintain_finished" id="38"><name>维修结束</name><rule ruleId="413268154127482880" ruleTitle="维修结束"><![CDATA[isFinish = 1]]></rule></event><event topic="end" topicId="412101011985924096" topicTitle="end" id="41"><name>故障排除</name><rule ruleId="" ruleTitle=""><![CDATA[]]></rule></event><event topic="operator_amender_arrive" topicId="412880820320075777" topicTitle="operator_amender_arrive" id="53"><name>运营商调度维修人员</name><rule ruleId="413267595714625536" ruleTitle="运营商调度维修人员"><![CDATA[isArrive = true]]></rule></event><function id="7"><name>上传故障信息</name><funccate serviceCateId="348326424496570368" serviceCateTitle="土壤监测"/><serviceoperation serviceName="MyCalculateServicePortType.add" serviceId="412472383434129408" serviceTitle="MyCalculateServicePortType:add"/><form formId="413293219929915392"/><fieldPerms><![CDATA[[{"name":"ID","fieldname":"ID","datatype":"bigint","labelname":"主键","inputtype":"myform","permtype":"1"},{"name":"DEVICE_CODE","fieldname":"DEVICE_CODE","datatype":"varchar","labelname":"设备编码","inputtype":"myform","permtype":"2"},{"name":"DEVICE_NAME","fieldname":"DEVICE_NAME","datatype":"varchar","labelname":"设备名称","inputtype":"myform","permtype":"1"},{"name":"ERROR_CODE","fieldname":"ERROR_CODE","datatype":"varchar","labelname":"错误编码","inputtype":"myform","permtype":"1"},{"name":"ERROR_INFO","fieldname":"ERROR_INFO","datatype":"varchar","labelname":"错误信息","inputtype":"myform","permtype":"1"}]]]></fieldPerms></function><function id="9"><name>调度专业维修人员</name><funccate serviceCateId="348326424496570368" serviceCateTitle="土壤监测"/><serviceoperation serviceName="MyCalculateServicePortType.add" serviceId="412472383434129408" serviceTitle="MyCalculateServicePortType:add"/><form formId="413294010610745344"/><fieldPerms><![CDATA[[{"name":"ID","fieldname":"ID","datatype":"bigint","labelname":"主键","inputtype":"myform","permtype":"3"},{"name":"DEVICE_CODE","fieldname":"DEVICE_CODE","datatype":"varchar","labelname":"设备编码","inputtype":"myform","permtype":"1"},{"name":"DEVICE_NAME","fieldname":"DEVICE_NAME","datatype":"varchar","labelname":"设备名称","inputtype":"myform","permtype":"1"},{"name":"ERROR_CODE","fieldname":"ERROR_CODE","datatype":"varchar","labelname":"错误编码","inputtype":"myform","permtype":"2"},{"name":"ERROR_INFO","fieldname":"ERROR_INFO","datatype":"varchar","labelname":"错误信息","inputtype":"myform","permtype":"1"}]]]></fieldPerms></function><function id="18"><name>确定故障类型和等级</name><funccate serviceCateId="348326424496570368" serviceCateTitle="土壤监测"/><serviceoperation serviceName="MyCalculateServicePortType.add" serviceId="412472383434129408" serviceTitle="MyCalculateServicePortType:add"/><form formId="413293645836320768"/><fieldPerms><![CDATA[[{"name":"ID","fieldname":"ID","datatype":"bigint","labelname":"主键","inputtype":"myform","permtype":"1"},{"name":"DEVICE_CODE","fieldname":"DEVICE_CODE","datatype":"varchar","labelname":"设备编码","inputtype":"myform","permtype":"1"},{"name":"DEVICE_NAME","fieldname":"DEVICE_NAME","datatype":"varchar","labelname":"设备名称","inputtype":"myform","permtype":"2"},{"name":"ERROR_CODE","fieldname":"ERROR_CODE","datatype":"varchar","labelname":"错误编码","inputtype":"myform","permtype":"1"},{"name":"ERROR_INFO","fieldname":"ERROR_INFO","datatype":"varchar","labelname":"错误信息","inputtype":"myform","permtype":"1"}]]]></fieldPerms></function><function id="36"><name>现场维修</name><funccate serviceCateId="348326424496570368" serviceCateTitle="土壤监测"/><serviceoperation serviceName="MyCalculateServicePortType.add" serviceId="412472383434129408" serviceTitle="MyCalculateServicePortType:add"/><form formId="413294207860473856"/><fieldPerms><![CDATA[[{"name":"ID","fieldname":"ID","datatype":"bigint","labelname":"主键","inputtype":"myform","permtype":"3"},{"name":"DEVICE_CODE","fieldname":"DEVICE_CODE","datatype":"varchar","labelname":"设备编码","inputtype":"myform","permtype":"1"},{"name":"DEVICE_NAME","fieldname":"DEVICE_NAME","datatype":"varchar","labelname":"设备名称","inputtype":"myform","permtype":"1"},{"name":"ERROR_CODE","fieldname":"ERROR_CODE","datatype":"varchar","labelname":"错误编码","inputtype":"myform","permtype":"1"},{"name":"ERROR_INFO","fieldname":"ERROR_INFO","datatype":"varchar","labelname":"错误信息","inputtype":"myform","permtype":"2"}]]]></fieldPerms></function><function id="40"><name>设备验收</name><funccate serviceCateId="348326424496570368" serviceCateTitle="土壤监测"/><serviceoperation serviceName="MyCalculateServicePortType.add" serviceId="412472383434129408" serviceTitle="MyCalculateServicePortType:add"/><form formId="413294445836894208"/><fieldPerms><![CDATA[[{"name":"ID","fieldname":"ID","datatype":"bigint","labelname":"主键","inputtype":"myform","permtype":"1"},{"name":"DEVICE_CODE","fieldname":"DEVICE_CODE","datatype":"varchar","labelname":"设备编码","inputtype":"myform","permtype":"1"},{"name":"DEVICE_NAME","fieldname":"DEVICE_NAME","datatype":"varchar","labelname":"设备名称","inputtype":"myform","permtype":"1"},{"name":"ERROR_CODE","fieldname":"ERROR_CODE","datatype":"varchar","labelname":"错误编码","inputtype":"myform","permtype":"1"},{"name":"ERROR_INFO","fieldname":"ERROR_INFO","datatype":"varchar","labelname":"错误信息","inputtype":"myform","permtype":"1"}]]]></fieldPerms></function><ou ouName="null" id="13"><roles>412868364306743296</roles></ou><ou ouName="值班调度人员" id="20"><roles>412868364306743296</roles></ou><ou ouName="null" id="25"><roles>412868364306743296</roles></ou><ou ouName="null" id="45"><roles>412869502003314688</roles></ou><ou ouName="null" id="48"><roles>412869681540497408</roles></ou><iu iuName="故障信息" id="16"><table>412867610225410048</table></iu><iu iuName="故障类型和等级判断规则" id="23"><table>412867610225410048</table></iu><iu iuName="null" id="32"><table>412867610225410048</table></iu><iu iuName="null" id="43"><table>412867610225410048</table></iu><iu iuName="null" id="51"><table>412867610225410048</table></iu><and id="30" andName="null"/><or id="55" orName="null"/><arc id="2"><flow source="3" target="7"/></arc><arc id="4"><flow source="5" target="18"/></arc><arc id="6"><flow source="7" target="5"/></arc><arc id="8"><flow source="9" target="34"/></arc><arc id="10"><flow source="11" target="30"/></arc><arc id="12"><flow source="13" target="7"/></arc><arc id="15"><flow source="16" target="7"/></arc><arc id="17"><flow source="18" target="11"/></arc><arc id="19"><flow source="20" target="18"/></arc><arc id="22"><flow source="23" target="18"/></arc><arc id="24"><flow source="25" target="9"/></arc><arc id="27"><flow source="28" target="30"/></arc><arc id="29"><flow source="30" target="9"/></arc><arc id="31"><flow source="32" target="9"/></arc><arc id="33"><flow source="34" target="55"/></arc><arc id="35"><flow source="36" target="38"/></arc><arc id="37"><flow source="38" target="40"/></arc><arc id="39"><flow source="40" target="41"/></arc><arc id="42"><flow source="43" target="36"/></arc><arc id="44"><flow source="45" target="36"/></arc><arc id="47"><flow source="48" target="40"/></arc><arc id="50"><flow source="51" target="40"/></arc><arc id="52"><flow source="53" target="55"/></arc><arc id="54"><flow source="55" target="36"/></arc><arc id="56"><flow source="11" target="11"/></arc></epc></epml:epml>
+<epml:epml xmlns:epml="http://www.epml.de" 
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.epml.de EPML_2.0.xsd">
+    <epc name="EPC" ServicesName="null" procCateId="412882158357577728" procCateName="设备维修" sort="null">
+        <event topic="device_failure" topicId="412101011981729792" topicTitle="device_failure" id="3">
+            <name>设备故障</name>
+            <rule ruleId="412865607067762688" ruleTitle="设备故障判定规则"><![CDATA[name = deviceFailed]]></rule>
+        </event>
+        <event topic="device_failure_upload" topicId="412874973900701696" topicTitle="device_failure_upload" id="5">
+            <name>上传成功</name>
+            <rule ruleId="412876720329195520" ruleTitle="数据上传成功"><![CDATA[uploadStatus > 4]]></rule>
+        </event>
+        <event topic="device_failure_judge" topicId="412101011981729793" topicTitle="device_failure_judge" id="11">
+            <name>故障评定完成</name>
+            <rule ruleId="412875860471709696" ruleTitle="故障等级评定完成"><![CDATA[name = level3]]></rule>
+        </event>
+        <event topic="device_failure_fix" topicId="412874973900701697" topicTitle="device_failure_fix" id="28">
+            <name>评定结果需要现场维修</name>
+            <rule ruleId="412875505855889408" ruleTitle="需要现场维修"><![CDATA[customer_reply_code = 4]]></rule>
+        </event>
+        <event topic="professor_arrive" topicId="412880820320075778" topicTitle="professor_arrive" id="34">
+            <name>专业人员到达现场</name>
+            <rule ruleId="413267176984674304" ruleTitle="专业人员到达现场"><![CDATA[isArrive = true]]></rule>
+        </event>
+        <event topic="maintain_finished" topicId="412880820320075776" topicTitle="maintain_finished" id="38">
+            <name>维修结束</name>
+            <rule ruleId="413268154127482880" ruleTitle="维修结束"><![CDATA[isFinish = 1]]></rule>
+        </event>
+        <event topic="end" topicId="412101011985924096" topicTitle="end" id="41">
+            <name>故障排除</name>
+            <rule ruleId="" ruleTitle=""><![CDATA[]]></rule>
+        </event>
+        <event topic="operator_amender_arrive" topicId="412880820320075777" topicTitle="operator_amender_arrive" id="53">
+            <name>运营商调度维修人员</name>
+            <rule ruleId="413267595714625536" ruleTitle="运营商调度维修人员"><![CDATA[isArrive = true]]></rule>
+        </event>
+        <function id="7">
+            <name>上传故障信息</name>
+            <funccate serviceCateId="348326424496570368" serviceCateTitle="土壤监测"/>
+            <serviceoperation serviceName="MyCalculateServicePortType.add" serviceId="412472383434129408" serviceTitle="MyCalculateServicePortType:add"/>
+            <form formId="413293219929915392"/>
+            <fieldPerms><![CDATA[[{"name":"ID","fieldname":"ID","datatype":"bigint","labelname":"主键","inputtype":"myform","permtype":"1"},{"name":"DEVICE_CODE","fieldname":"DEVICE_CODE","datatype":"varchar","labelname":"设备编码","inputtype":"myform","permtype":"2"},{"name":"DEVICE_NAME","fieldname":"DEVICE_NAME","datatype":"varchar","labelname":"设备名称","inputtype":"myform","permtype":"1"},{"name":"ERROR_CODE","fieldname":"ERROR_CODE","datatype":"varchar","labelname":"错误编码","inputtype":"myform","permtype":"1"},{"name":"ERROR_INFO","fieldname":"ERROR_INFO","datatype":"varchar","labelname":"错误信息","inputtype":"myform","permtype":"1"}]]]></fieldPerms>
+        </function>
+        <function id="9">
+            <name>调度专业维修人员</name>
+            <funccate serviceCateId="348326424496570368" serviceCateTitle="土壤监测"/>
+            <serviceoperation serviceName="MyCalculateServicePortType.add" serviceId="412472383434129408" serviceTitle="MyCalculateServicePortType:add"/>
+            <form formId="413294010610745344"/>
+            <fieldPerms><![CDATA[[{"name":"ID","fieldname":"ID","datatype":"bigint","labelname":"主键","inputtype":"myform","permtype":"3"},{"name":"DEVICE_CODE","fieldname":"DEVICE_CODE","datatype":"varchar","labelname":"设备编码","inputtype":"myform","permtype":"1"},{"name":"DEVICE_NAME","fieldname":"DEVICE_NAME","datatype":"varchar","labelname":"设备名称","inputtype":"myform","permtype":"1"},{"name":"ERROR_CODE","fieldname":"ERROR_CODE","datatype":"varchar","labelname":"错误编码","inputtype":"myform","permtype":"2"},{"name":"ERROR_INFO","fieldname":"ERROR_INFO","datatype":"varchar","labelname":"错误信息","inputtype":"myform","permtype":"1"}]]]></fieldPerms>
+        </function>
+        <function id="18">
+            <name>确定故障类型和等级</name>
+            <funccate serviceCateId="348326424496570368" serviceCateTitle="土壤监测"/>
+            <serviceoperation serviceName="MyCalculateServicePortType.add" serviceId="412472383434129408" serviceTitle="MyCalculateServicePortType:add"/>
+            <form formId="413293645836320768"/>
+            <fieldPerms><![CDATA[[{"name":"ID","fieldname":"ID","datatype":"bigint","labelname":"主键","inputtype":"myform","permtype":"1"},{"name":"DEVICE_CODE","fieldname":"DEVICE_CODE","datatype":"varchar","labelname":"设备编码","inputtype":"myform","permtype":"1"},{"name":"DEVICE_NAME","fieldname":"DEVICE_NAME","datatype":"varchar","labelname":"设备名称","inputtype":"myform","permtype":"2"},{"name":"ERROR_CODE","fieldname":"ERROR_CODE","datatype":"varchar","labelname":"错误编码","inputtype":"myform","permtype":"1"},{"name":"ERROR_INFO","fieldname":"ERROR_INFO","datatype":"varchar","labelname":"错误信息","inputtype":"myform","permtype":"1"}]]]></fieldPerms>
+        </function>
+        <function id="36">
+            <name>现场维修</name>
+            <funccate serviceCateId="348326424496570368" serviceCateTitle="土壤监测"/>
+            <serviceoperation serviceName="MyCalculateServicePortType.add" serviceId="412472383434129408" serviceTitle="MyCalculateServicePortType:add"/>
+            <form formId="413294207860473856"/>
+            <fieldPerms><![CDATA[[{"name":"ID","fieldname":"ID","datatype":"bigint","labelname":"主键","inputtype":"myform","permtype":"3"},{"name":"DEVICE_CODE","fieldname":"DEVICE_CODE","datatype":"varchar","labelname":"设备编码","inputtype":"myform","permtype":"1"},{"name":"DEVICE_NAME","fieldname":"DEVICE_NAME","datatype":"varchar","labelname":"设备名称","inputtype":"myform","permtype":"1"},{"name":"ERROR_CODE","fieldname":"ERROR_CODE","datatype":"varchar","labelname":"错误编码","inputtype":"myform","permtype":"1"},{"name":"ERROR_INFO","fieldname":"ERROR_INFO","datatype":"varchar","labelname":"错误信息","inputtype":"myform","permtype":"2"}]]]></fieldPerms>
+        </function>
+        <function id="40">
+            <name>设备验收</name>
+            <funccate serviceCateId="348326424496570368" serviceCateTitle="土壤监测"/>
+            <serviceoperation serviceName="MyCalculateServicePortType.add" serviceId="412472383434129408" serviceTitle="MyCalculateServicePortType:add"/>
+            <form formId="413294445836894208"/>
+            <fieldPerms><![CDATA[[{"name":"ID","fieldname":"ID","datatype":"bigint","labelname":"主键","inputtype":"myform","permtype":"1"},{"name":"DEVICE_CODE","fieldname":"DEVICE_CODE","datatype":"varchar","labelname":"设备编码","inputtype":"myform","permtype":"1"},{"name":"DEVICE_NAME","fieldname":"DEVICE_NAME","datatype":"varchar","labelname":"设备名称","inputtype":"myform","permtype":"1"},{"name":"ERROR_CODE","fieldname":"ERROR_CODE","datatype":"varchar","labelname":"错误编码","inputtype":"myform","permtype":"1"},{"name":"ERROR_INFO","fieldname":"ERROR_INFO","datatype":"varchar","labelname":"错误信息","inputtype":"myform","permtype":"1"}]]]></fieldPerms>
+        </function>
+        <ou ouName="null" id="13">
+            <roles>412868364306743296</roles>
+        </ou>
+        <ou ouName="值班调度人员" id="20">
+            <roles>412868364306743296</roles>
+        </ou>
+        <ou ouName="null" id="25">
+            <roles>412868364306743296</roles>
+        </ou>
+        <ou ouName="null" id="45">
+            <roles>412869502003314688</roles>
+        </ou>
+        <ou ouName="null" id="48">
+            <roles>412869681540497408</roles>
+        </ou>
+        <iu iuName="故障信息" id="16">
+            <table>412867610225410048</table>
+        </iu>
+        <iu iuName="故障类型和等级判断规则" id="23">
+            <table>412867610225410048</table>
+        </iu>
+        <iu iuName="null" id="32">
+            <table>412867610225410048</table>
+        </iu>
+        <iu iuName="null" id="43">
+            <table>412867610225410048</table>
+        </iu>
+        <iu iuName="null" id="51">
+            <table>412867610225410048</table>
+        </iu>
+        <and id="30" andName="null"/>
+        <or id="55" orName="null"/>
+        <arc id="2">
+            <flow source="3" target="7"/>
+        </arc>
+        <arc id="4">
+            <flow source="5" target="18"/>
+        </arc>
+        <arc id="6">
+            <flow source="7" target="5"/>
+        </arc>
+        <arc id="8">
+            <flow source="9" target="34"/>
+        </arc>
+        <arc id="10">
+            <flow source="11" target="30"/>
+        </arc>
+        <arc id="12">
+            <flow source="13" target="7"/>
+        </arc>
+        <arc id="15">
+            <flow source="16" target="7"/>
+        </arc>
+        <arc id="17">
+            <flow source="18" target="11"/>
+        </arc>
+        <arc id="19">
+            <flow source="20" target="18"/>
+        </arc>
+        <arc id="22">
+            <flow source="23" target="18"/>
+        </arc>
+        <arc id="24">
+            <flow source="25" target="9"/>
+        </arc>
+        <arc id="27">
+            <flow source="28" target="30"/>
+        </arc>
+        <arc id="29">
+            <flow source="30" target="9"/>
+        </arc>
+        <arc id="31">
+            <flow source="32" target="9"/>
+        </arc>
+        <arc id="33">
+            <flow source="34" target="55"/>
+        </arc>
+        <arc id="35">
+            <flow source="36" target="38"/>
+        </arc>
+        <arc id="37">
+            <flow source="38" target="40"/>
+        </arc>
+        <arc id="39">
+            <flow source="40" target="41"/>
+        </arc>
+        <arc id="42">
+            <flow source="43" target="36"/>
+        </arc>
+        <arc id="44">
+            <flow source="45" target="36"/>
+        </arc>
+        <arc id="47">
+            <flow source="48" target="40"/>
+        </arc>
+        <arc id="50">
+            <flow source="51" target="40"/>
+        </arc>
+        <arc id="52">
+            <flow source="53" target="55"/>
+        </arc>
+        <arc id="54">
+            <flow source="55" target="36"/>
+        </arc>
+        <arc id="56">
+            <flow source="11" target="11"/>
+        </arc>
+    </epc>
+</epml:epml>

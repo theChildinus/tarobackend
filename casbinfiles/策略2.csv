@@ -4,4 +4,5 @@ p, 员工, 资源1, write
 p, 管理员, 物联网资源/报表, write
 p, 管理员, 物联网资源/工具, write
 p, 管理员, 物联网资源/态势图, write
+p, zhao, 物联网资源/工具, read
 g, zhao, 管理员

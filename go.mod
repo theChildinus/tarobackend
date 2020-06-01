@@ -12,6 +12,7 @@ require (
 	github.com/kr/pretty v0.1.0 // indirect
 	github.com/lib/pq v1.2.0 // indirect
 	github.com/mattn/go-sqlite3 v1.11.0 // indirect
+	github.com/pkg/errors v0.8.1
 	github.com/pkg/sftp v1.11.0
 	github.com/shiena/ansicolor v0.0.0-20151119151921-a422bbe96644 // indirect
 	golang.org/x/crypto v0.0.0-20191002192127-34f69633bfdc
