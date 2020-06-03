@@ -63,7 +63,7 @@ curl -k --header "Content-Type: application/json" \
 mysql 数据库表结构更改后，可使用该命令自动更新 goweb 中 model 层代码
 
 ```bash
-xorm reverse mysql root:123456@/taro?charset=utf8 templates/goxorm
+xorm reverse mysql "root:zky_taro_mysql@(127.0.0.1:33069)/taro?charset=utf8" templates/goxorm
 ```
 
 #### openssl 操作
